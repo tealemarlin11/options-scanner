@@ -22,10 +22,10 @@ DELTA_TARGET = 0.175     # short strike ~15–20 delta
 DELTA_MIN, DELTA_MAX = 0.12, 0.25
 
 # Spread width by share price: (max price, width in $)
-WIDTH_TIERS = [(40, 1.0), (100, 2.5), (250, 5.0), (600, 10.0), (1500, 20.0), (1e12, 50.0)]
+WIDTH_TIERS = [(40, 1.0), (100, 1.0), (250, 2.5), (600, 5.0), (1500, 10.0), (1e12, 25.0)]
 
 # ── Quality checks (used for the ✓ score and the default filters) ─────────────
-MIN_CREDIT_PCT = 20.0    # credit ≥ 20% of width
+MIN_CREDIT_PCT = 13.0    # credit ≥ 13% of width
 MIN_IV_HV = 1.0          # implied vol at least equal to 30-day realised vol
 MIN_SHORT_OI = 100       # open interest at the short strike
 MAX_BIDASK_PCT = 20.0    # short leg bid-ask spread, % of mid
