@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Futures Signals</title>
+<style>
+:root{
+  --bg:#131722;--panel:#1E222D;--panel2:#262B38;--line:#363A45;--text:#E6E8EE;--muted:#9598A1;
+  --bull:#1D9E75;--bear:#E24B4A;--warn:#EF9F27;--accent:#4C8DF6;
+  --bull-bg:rgba(29,158,117,.16);--bear-bg:rgba(226,75,74,.16);--warn-bg:rgba(239,159,39,.16);
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#F6F7F9;--panel:#FFFFFF;--panel2:#F0F2F5;--line:#DDE0E6;--text:#1B1F29;--muted:#6B7080;
+    --bull:#0F8A63;--bear:#C9302F;--warn:#B86E00;--accent:#2F6FE0;
+    --bull-bg:rgba(15,138,99,.12);--bear-bg:rgba(201,48,47,.10);--warn-bg:rgba(184,110,0,.12);}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+h1{font-size:22px;margin:0 0 2px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px}
+select,input[type=search],button{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+button{cursor:pointer}button:hover{border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tile .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.tile .v{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:2px}
+.tile .v small{font-size:13px;color:var(--muted);font-weight:500}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px;overflow-x:auto}
+.tab{background:none;border:none;border-bottom:2px solid transparent;border-radius:0;padding:10px 14px;color:var(--muted);white-space:nowrap}
+.tab.on{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+.tab .n{background:var(--panel2);border-radius:20px;padding:1px 7px;font-size:12px;margin-left:5px}
+.filters{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:10px;font-size:13px}
+.filters label{display:flex;gap:6px;align-items:center;color:var(--muted);cursor:pointer}
+.filters .sp{flex:1}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--panel2);font-size:12px;color:var(--muted);font-weight:600;cursor:pointer;user-select:none}
+th:hover{color:var(--text)}th.on{color:var(--text)}
+th.l,td.l{text-align:left}
+tbody tr.row{cursor:pointer}tbody tr.row:hover{background:var(--panel2)}
+tbody tr:last-child td{border-bottom:none}
+.tk{font-weight:700}.nm{color:var(--muted);font-size:12px;max-width:170px;overflow:hidden;text-overflow:ellipsis;display:block}
+.good{color:var(--bull)}.bad{color:var(--bear)}.warn{color:var(--warn)}.mut{color:var(--muted)}
+.b{display:inline-block;font-size:11px;font-weight:600;border-radius:5px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+.b.buy{background:var(--bull-bg);color:var(--bull)}.b.exit{background:var(--bear-bg);color:var(--bear)}
+.b.w{background:var(--warn-bg);color:var(--warn)}.b.m{background:var(--panel2);color:var(--muted)}
+.score{display:inline-flex;gap:2px}.score i{width:7px;height:14px;border-radius:2px;background:var(--line)}
+.score i.on{background:var(--bull)}
+.det td{background:var(--panel2);text-align:left;white-space:normal;padding:14px 16px}
+.dgrid{position:sticky;left:16px;width:min(1400px,calc(100vw - 72px));display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 24px}
+.dgrid h4{margin:0 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:2px 0;font-variant-numeric:tabular-nums}
+.kv span:first-child{color:var(--muted)}
+.chk{padding:2px 0}.chk b{display:inline-block;width:18px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.guide{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 22px 18px;max-width:900px}
+.guide h3{margin:18px 0 6px;font-size:15px}.guide p,.guide li{color:var(--text)}.guide td,.guide th{text-align:left;white-space:normal}
+.guide table{margin:6px 0}
+.foot{color:var(--muted);font-size:12px;margin-top:18px}
+.demo{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-weight:600}
+
+.spark{display:block}
+tr.grp td{background:var(--panel2);color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:6px 10px}
+.tk + .mut{font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="demo"></div>
+  <header>
+    <div>
+      <h1>Trend Timing · Futures Signals</h1>
+      <div class="sub" id="sub"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a class="sub" href="../">← Spread scanner</a>
+      <select id="month" aria-label="Report month"></select>
+    </div>
+  </header>
+  <div class="tiles" id="tiles"></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const D = /*__DATA__*/null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const n = (x, d = 2) => x == null ? "—" : Number(x).toLocaleString("en-GB", {minimumFractionDigits: d, maximumFractionDigits: d});
+const sgn = (x, d = 1, u = "%") => { if (x == null) return "—"; const r = +x.toFixed(d); return (r > 0 ? "+" : r < 0 ? "−" : "") + n(Math.abs(r), d) + (u === "bp" ? " bp" : u); };
+const big = x => x == null ? "—" : x >= 1e6 ? n(x / 1e6, 1) + "M" : x >= 1e3 ? n(x / 1e3, 1) + "k" : n(x, 0);
+const CUR = {USD: "$", EUR: "€", CHF: "CHF "};
+const px = (x, r) => x == null ? "—" : r.kind === "yield" ? n(x, 2) + "%" : Math.abs(x) >= 1000 ? n(x, 0) : Math.abs(x) >= 10 ? n(x, 2) : n(x, 4);
+
+const S = {tab: "sig", sort: ["_g", 1], f: {q: "", exch: "all", group: "all", side: "all", fresh: false, proxy: true}};
+
+function spark(r) {
+  const c = r.spark?.c || [], s = r.spark?.s || [];
+  if (c.length < 3) return "";
+  const all = c.concat(s).filter(v => v != null), lo = Math.min(...all), hi = Math.max(...all), W = 110, H = 30;
+  const X = i => (i / (c.length - 1)) * W, Y = v => H - 2 - ((v - lo) / (hi - lo || 1)) * (H - 4);
+  const path = a => a.map((v, i) => v == null ? "" : `${i && a[i - 1] != null ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+  const col = r.signal === "LONG" ? "var(--bull)" : "var(--bear)";
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="36-month price and 10-month average">
+    <path d="${path(s)}" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 2"/>
+    <path d="${path(c)}" fill="none" stroke="${col}" stroke-width="1.6"/></svg>`;
+}
+const pill = r => r.signal === "LONG" ? '<span class="b buy">▲ LONG</span>' : '<span class="b exit">▼ SHORT</span>';
+const winTxt = (st, r) => st.n ? `<span title="Avg ${sgn(st.avg, 1, r.unit)} per trade · data since ${r.history_from}"><span class="${st.win >= 50 ? "good" : "mut"}">${n(st.win, 0)}%</span> <span class="mut">(${st.n})</span></span>` : '<span class="mut">—</span>';
+
+const COLS = [
+  {k: "code", l: "Contract", c: "l", f: r => `<span class="tk">${esc(r.code)}</span> <span class="mut">${esc(r.exch)}</span><span class="nm">${esc(r.name)}</span>${r.proxy ? `<span class="b m" title="Data: ${esc(r.proxy)}">proxy</span>` : ""}`},
+  {k: "signal", l: "Signal", c: "l", f: r => pill(r) + (r.fresh ? '<span class="b w">NEW</span>' : "")},
+  {k: "chart", l: "3-yr chart", c: "l", f: spark, nosort: 1, tip: "Monthly closes (solid) vs 10-month average (dashed)"},
+  {k: "close", l: "Month close", f: r => px(r.close, r)},
+  {k: "sma", l: "10-mo avg", f: r => px(r.sma, r)},
+  {k: "dist", l: "vs avg", f: r => `<span class="${r.near ? "warn" : r.signal === "LONG" ? "good" : "bad"}">${sgn(r.dist, r.unit === "bp" ? 0 : 1, r.unit)}</span>`, tip: "Distance of the month close from the average (yields in basis points)"},
+  {k: "slope", l: "Avg slope", f: r => `<span class="${r.slope_agrees ? "good" : "warn"}" style="font-size:17px;font-weight:700" title="${r.slope_agrees ? "Agrees with signal" : "Disagrees with signal"}">${r.slope === "up" ? "↗" : "↘"}</span>`, tip: "Is the 10-month average itself rising or falling? Green = agrees with the signal"},
+  {k: "mom12", l: "12-mo", f: r => `<span class="${r.mom_agrees ? "good" : "warn"}">${sgn(r.mom12, r.unit === "bp" ? 0 : 1, r.unit)}</span>`, tip: "12-month change. Green = momentum agrees with the signal"},
+  {k: "months_in", l: "Since", f: r => r.since ? (r.months_in ? `${r.since}<span class="mut"> · ${r.months_in}m</span>` : '<span class="mut">this month</span>') : "—", tip: "Month of the signal close · months held since"},
+  {k: "open_pnl", l: "Open P/L", f: r => r.open_pnl == null ? "—" : `<span class="${r.open_pnl >= 0 ? "good" : "bad"}">${sgn(r.open_pnl, r.unit === "bp" ? 0 : 1, r.unit)}</span>`, tip: "Move in your favour since the signal (yields: bp)"},
+  {k: "to_line", l: "To line / contract", f: r => r.to_line == null ? "—" : (CUR[r.ccy] || "") + big(r.to_line), tip: "Value of the gap between price and the average, per full-size contract. Rough measure of what a move back to the line costs"},
+  {k: "lw", l: "Long win %", sv: r => r.long?.win, f: r => r.long ? winTxt(r.long, r) : "—", tip: "Historic win rate of LONG signals on this contract (number of trades)"},
+  {k: "sw", l: "Short win %", sv: r => r.short?.win, f: r => r.short ? winTxt(r.short, r) : "—", tip: "Historic win rate of SHORT signals (number of trades)"},
+  {k: "flags", l: "Flags", c: "l", nosort: 1, f: r => [
+      r.near ? '<span class="b w">⚠ near line</span>' : "",
+      r.stale ? `<span class="b w" title="Latest data is ${esc(r.last_month)}, not ${esc(D.signal_month)}">data to ${esc(r.last_month)}</span>` : "",
+      ].join("")},
+];
+
+function rows() {
+  const f = S.f, q = f.q.trim().toUpperCase();
+  return D.rows.filter(r => (!q || r.code.toUpperCase().includes(q) || r.name.toUpperCase().includes(q))
+    && (f.exch === "all" || r.exch === f.exch) && (f.group === "all" || r.group === f.group)
+    && (f.side === "all" || r.signal === f.side) && (!f.fresh || r.fresh) && (f.proxy || !r.proxy));
+}
+function sorted(list) {
+  const [k, d] = S.sort, c = COLS.find(c => c.k === k) || {};
+  const v = k === "_g" ? (r => D.rows.indexOf(r)) : (c.sv || (r => r[k]));
+  return [...list].sort((a, b) => { const x = v(a), y = v(b); if (x == null) return 1; if (y == null) return -1; return (typeof x === "string" ? x.localeCompare(y) : x - y) * d; });
+}
+
+function header() {
+  const c = D.counts;
+  $("#sub").innerHTML = `Signal from the <b>${esc(D.signal_month)}</b> monthly close · ${D.config.sma}-month average · long above / short below · scanned ${new Date(D.generated).toLocaleString("en-GB", {dateStyle: "medium", timeStyle: "short"})} UK time`;
+  $("#month").innerHTML = D.months.map(m => `<option value="${m}" ${m === D.month ? "selected" : ""}>${new Date(m + "-15").toLocaleDateString("en-GB", {month: "long", year: "numeric"})}</option>`).join("");
+  $("#month").onchange = e => location.href = e.target.value + ".html";
+  $("#tiles").innerHTML = [
+    ["Long", `<span class="good">${c.long}</span>`], ["Short", `<span class="bad">${c.short}</span>`],
+    ["New longs", `<span class="good">${c.new_long}</span>`], ["New shorts", `<span class="bad">${c.new_short}</span>`],
+    ["Near the line", `<span class="warn">${c.near}</span>`],
+  ].map(([k, v]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  if (D.demo) $("#demo").innerHTML = '<div class="demo">DEMO — synthetic data for layout testing only. Not real prices.</div>';
+  $("#foot").innerHTML = `Education only, not advice. US futures: Yahoo continuous front-month (not back-adjusted — roll gaps can shift the average, most in energy and livestock). EUREX: cash-index and government-yield proxies, marked “proxy”.${D.errors.length ? ` <span class="warn">${D.errors.length} contracts had no data: ${esc(D.errors.join(" · "))}</span>` : ""}`;
+}
+
+function tabs() {
+  $("#tabs").innerHTML = [["sig", "Signals", D.rows.length], ["guide", "How to read"]].map(([k, l, c]) => `<button class="tab ${S.tab === k ? "on" : ""}" data-t="${k}">${l}${c != null ? `<span class="n">${c}</span>` : ""}</button>`).join("");
+  $("#tabs").querySelectorAll(".tab").forEach(b => b.onclick = () => { S.tab = b.dataset.t; draw(); });
+}
+
+function filters() {
+  const f = S.f, opt = (v, l, cur) => `<option value="${v}" ${v === cur ? "selected" : ""}>${l}</option>`;
+  const ex = ["all", ...new Set(D.rows.map(r => r.exch))], gr = ["all", ...D.groupOrder];
+  return `<div class="filters">
+    <input type="search" id="q" placeholder="Search contract" value="${esc(f.q)}" style="width:170px">
+    <select id="exch">${ex.map(e => opt(e, e === "all" ? "All exchanges" : e, f.exch)).join("")}</select>
+    <select id="group">${gr.map(g => opt(g, g === "all" ? "All groups" : g, f.group)).join("")}</select>
+    <select id="side">${opt("all", "Long + short", f.side)}${opt("LONG", "Long only", f.side)}${opt("SHORT", "Short only", f.side)}</select>
+    <label><input type="checkbox" data-f="fresh" ${f.fresh ? "checked" : ""}> New signals only</label>
+    <label><input type="checkbox" data-f="proxy" ${f.proxy ? "checked" : ""}> Include proxies</label>
+  </div>`;
+}
+
+function table(list) {
+  if (!list.length) return `<div class="tbl"><div class="empty">No contracts match these filters.</div></div>`;
+  const [sk, sd] = S.sort;
+  const th = COLS.map(c => `<th class="${c.c || ""} ${c.k === sk || (sk === "_g" && c.k === "code") ? "on" : ""}" data-k="${c.nosort ? "" : c.k}" ${c.tip ? `title="${esc(c.tip)}"` : ""}>${c.l}${c.k === sk ? (sd < 0 ? " ▾" : " ▴") : ""}</th>`).join("");
+  let lastG = null;
+  const body = list.map(r => {
+    let pre = "";
+    if (sk === "_g" && r.group !== lastG) { lastG = r.group; pre = `<tr class="grp"><td class="l" colspan="${COLS.length}">${esc(r.group)}</td></tr>`; }
+    if (!r.signal) return pre + `<tr><td class="l"><span class="tk">${esc(r.code)}</span> <span class="mut">${esc(r.exch)}</span><span class="nm">${esc(r.name)}</span></td><td class="l mut" colspan="${COLS.length - 1}">No data this month — ${esc(r.error || "")}</td></tr>`;
+    return pre + `<tr>${COLS.map(c => `<td class="${c.c || ""}">${c.f(r)}</td>`).join("")}</tr>`;
+  }).join("");
+  return `<div class="tbl"><table><thead><tr>${th}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+function guide() {
+  return `<div class="guide">
+  <h3>The rule</h3>
+  <p>At each <b>monthly close</b>: above the ${D.config.sma}-month average = <b class="good">LONG</b>, below = <b class="bad">SHORT</b>. Always in the market — a flip both closes the old position and opens the new one. This is your Trend Timing indicator with the "cash" side replaced by a short.</p>
+  <p>For <b>bond yields</b> the rule is inverted: falling yield = rising bond price = LONG.</p>
+  <h3>Columns</h3>
+  <ul>
+    <li><b>NEW</b> — the signal flipped at this month's close.</li>
+    <li><b>vs avg</b> — how far the close is from the line. Within ±${D.config.warn_pct}% (or ±${D.config.warn_bp} bp for yields) is flagged ⚠ — high whipsaw risk.</li>
+    <li><b>Avg slope / 12-mo</b> — two independent trend checks. Green = agrees with the signal. Signals where all three agree are the strongest.</li>
+    <li><b>To line / contract</b> — the gap to the average in money, per full-size contract. Micro contracts are 1/10 of this.</li>
+    <li><b>Long / short win %</b> — how often past signals on <i>this</i> contract made money, with the number of trades. Shorts on equity indices historically win far less than longs — use this to decide whether to take the short side at all.</li>
+  </ul>
+  <h3>Data &amp; limits</h3>
+  <ul>
+    <li><b>CME, CBOT, NYMEX, COMEX</b>: continuous front-month from Yahoo. Not back-adjusted, so contract rolls create small jumps — mostly harmless for indices, metals, rates and FX; noticeable for natural gas, crude and livestock.</li>
+    <li><b>EUREX equity</b>: the cash index (DAX, Euro Stoxx 50, SMI…). The future tracks it closely; the monthly signal is almost always identical.</li>
+    <li><b>EUREX bonds</b>: Bund, Bobl, Schatz, Buxl use daily German government yields (Bundesbank). BTP and OAT use ECB <i>monthly-average</i> yields, which publish late — they may show “data to” last month.</li>
+    <li>Check the real contract on TradingView (e.g. EUREX:FGBL1!) before acting.</li>
+  </ul>
+  <p class="mut">Education only, not advice.</p></div>`;
+}
+
+function draw() {
+  tabs();
+  const v = $("#view");
+  if (S.tab === "guide") { v.innerHTML = guide(); return; }
+  const list = sorted(rows());
+  v.innerHTML = filters() + table(list);
+  const q = $("#q");
+  q.oninput = () => { S.f.q = q.value; const p = q.selectionStart; draw(); const q2 = $("#q"); q2.focus(); q2.setSelectionRange(p, p); };
+  ["exch", "group", "side"].forEach(id => $("#" + id).onchange = e => { S.f[id] = e.target.value; draw(); });
+  v.querySelectorAll("[data-f]").forEach(el => el.onchange = () => { S.f[el.dataset.f] = el.checked; draw(); });
+  v.querySelectorAll("th[data-k]").forEach(th => th.dataset.k && (th.onclick = () => {
+    const [k, d] = S.sort; S.sort = [th.dataset.k, k === th.dataset.k ? -d : (th.dataset.k === "_g" || th.dataset.k === "code" ? 1 : -1)]; draw();
+  }));
+}
+D.groupOrder = D.groupOrder || ["Equity index", "Rates", "Energy", "Metals", "Agriculture", "Currencies", "Crypto"];
+header(); draw();
+</script>
+</body>
+</html>
