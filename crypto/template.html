@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crypto Signals</title>
+<style>
+:root{
+  --bg:#131722;--panel:#1E222D;--panel2:#262B38;--line:#363A45;--text:#E6E8EE;--muted:#9598A1;
+  --bull:#1D9E75;--bear:#E24B4A;--warn:#EF9F27;--accent:#4C8DF6;
+  --bull-bg:rgba(29,158,117,.16);--bear-bg:rgba(226,75,74,.16);--warn-bg:rgba(239,159,39,.16);
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#F6F7F9;--panel:#FFFFFF;--panel2:#F0F2F5;--line:#DDE0E6;--text:#1B1F29;--muted:#6B7080;
+    --bull:#0F8A63;--bear:#C9302F;--warn:#B86E00;--accent:#2F6FE0;
+    --bull-bg:rgba(15,138,99,.12);--bear-bg:rgba(201,48,47,.10);--warn-bg:rgba(184,110,0,.12);}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+h1{font-size:22px;margin:0 0 2px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px}
+select,input[type=search],button{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+button{cursor:pointer}button:hover{border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tile .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.tile .v{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:2px}
+.tile .v small{font-size:13px;color:var(--muted);font-weight:500}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px;overflow-x:auto}
+.tab{background:none;border:none;border-bottom:2px solid transparent;border-radius:0;padding:10px 14px;color:var(--muted);white-space:nowrap}
+.tab.on{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+.tab .n{background:var(--panel2);border-radius:20px;padding:1px 7px;font-size:12px;margin-left:5px}
+.filters{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:10px;font-size:13px}
+.filters label{display:flex;gap:6px;align-items:center;color:var(--muted);cursor:pointer}
+.filters .sp{flex:1}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--panel2);font-size:12px;color:var(--muted);font-weight:600;cursor:pointer;user-select:none}
+th:hover{color:var(--text)}th.on{color:var(--text)}
+th.l,td.l{text-align:left}
+tbody tr.row{cursor:pointer}tbody tr.row:hover{background:var(--panel2)}
+tbody tr:last-child td{border-bottom:none}
+.tk{font-weight:700}.nm{color:var(--muted);font-size:12px;max-width:170px;overflow:hidden;text-overflow:ellipsis;display:block}
+.good{color:var(--bull)}.bad{color:var(--bear)}.warn{color:var(--warn)}.mut{color:var(--muted)}
+.b{display:inline-block;font-size:11px;font-weight:600;border-radius:5px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+.b.buy{background:var(--bull-bg);color:var(--bull)}.b.exit{background:var(--bear-bg);color:var(--bear)}
+.b.w{background:var(--warn-bg);color:var(--warn)}.b.m{background:var(--panel2);color:var(--muted)}
+.score{display:inline-flex;gap:2px}.score i{width:7px;height:14px;border-radius:2px;background:var(--line)}
+.score i.on{background:var(--bull)}
+.det td{background:var(--panel2);text-align:left;white-space:normal;padding:14px 16px}
+.dgrid{position:sticky;left:16px;width:min(1400px,calc(100vw - 72px));display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 24px}
+.dgrid h4{margin:0 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:2px 0;font-variant-numeric:tabular-nums}
+.kv span:first-child{color:var(--muted)}
+.chk{padding:2px 0}.chk b{display:inline-block;width:18px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.guide{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 22px 18px;max-width:900px}
+.guide h3{margin:18px 0 6px;font-size:15px}.guide p,.guide li{color:var(--text)}.guide td,.guide th{text-align:left;white-space:normal}
+.guide table{margin:6px 0}
+.foot{color:var(--muted);font-size:12px;margin-top:18px}
+.demo{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-weight:600}
+
+.spark{display:block}
+tr.grp td{background:var(--panel2);color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:6px 10px}
+.tk + .mut{font-size:11px}
+
+.banner{display:flex;align-items:center;gap:14px;border-radius:12px;padding:14px 18px;margin-bottom:14px;border:1px solid var(--line)}
+.banner.on{background:var(--bull-bg);border-color:var(--bull)}.banner.off{background:var(--bear-bg);border-color:var(--bear)}
+.banner .big{font-size:18px;font-weight:700}.banner .sm{color:var(--muted);font-size:13px}
+.sigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px;margin-bottom:16px}
+.sigbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.sigbox h3{margin:0 0 8px;font-size:14px}
+.chip{display:inline-flex;flex-direction:column;gap:1px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:7px 10px;margin:0 6px 6px 0;min-width:120px}
+.chip .t{font-weight:700}.chip .d{font-size:12px;color:var(--muted)}
+.none{color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="demo"></div>
+  <header>
+    <div>
+      <h1>Trend Timing · Crypto (Kraken)</h1>
+      <div class="sub" id="sub"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a class="sub" href="../futures/">Futures</a><span class="sub">·</span><a class="sub" href="../">Spreads</a>
+      <select id="week" aria-label="Report week"></select>
+    </div>
+  </header>
+  <div id="banner"></div>
+  <div class="sigs" id="sigs"></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const D = /*__DATA__*/null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const n = (x, d = 2) => x == null ? "—" : Number(x).toLocaleString("en-GB", {minimumFractionDigits: d, maximumFractionDigits: d});
+const sgn = (x, d = 1) => { if (x == null) return "—"; const r = +x.toFixed(d); return (r > 0 ? "+" : r < 0 ? "−" : "") + n(Math.abs(r), d) + "%"; };
+const usd = x => x == null ? "—" : x >= 1e9 ? "$" + n(x / 1e9, 2) + "B" : x >= 1e6 ? "$" + n(x / 1e6, 1) + "M" : x >= 1e3 ? "$" + n(x / 1e3, 0) + "k" : "$" + n(x, 0);
+const px = x => x == null ? "—" : x >= 1000 ? n(x, 0) : x >= 1 ? n(x, 2) : x >= 0.01 ? n(x, 4) : Number(x).toPrecision(3);
+const LIQ = {High: "good", OK: "", Thin: "warn", Avoid: "bad"}, LIQRANK = {High: 3, OK: 2, Thin: 1, Avoid: 0};
+const S = {tab: "all", sort: ["adv30", -1], f: {q: "", sig: "all", fresh: false, liq: 0, hideNew: true, gbp: false}};
+const sig = D.rows.filter(r => r.status !== "TOO_NEW");
+
+function spark(r) {
+  const c = r.spark?.c || [], s = r.spark?.s || [], L = r.spark?.l || [];
+  if (c.length < 3) return "";
+  const all = c.concat(s).filter(v => v != null), lo = Math.min(...all), hi = Math.max(...all), W = 110, H = 30;
+  const X = i => (i / (c.length - 1)) * W, Y = v => H - 2 - ((v - lo) / (hi - lo || 1)) * (H - 4);
+  let seg = "";
+  for (let i = 1; i < c.length; i++) if (c[i] != null && c[i - 1] != null)
+    seg += `<line x1="${X(i - 1).toFixed(1)}" y1="${Y(c[i - 1]).toFixed(1)}" x2="${X(i).toFixed(1)}" y2="${Y(c[i]).toFixed(1)}" stroke="${L[i] ? "var(--bull)" : "var(--muted)"}" stroke-width="2" stroke-linecap="round"/>`;
+  const sp = s.map((v, i) => v == null ? "" : `${i && s[i - 1] != null ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="52 weeks: price (green while LONG) and 20-week average (dashed)"><path d="${sp}" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 2"/>${seg}</svg>`;
+}
+const pill = r => r.status === "LONG" ? '<span class="b buy">▲ LONG</span>' : r.status === "CASH" ? '<span class="b m">○ CASH</span>' : '<span class="b m">NEW LISTING</span>';
+const tags = r => (r.fresh_buy ? '<span class="b buy">🟢 BUY</span>' : "") + (r.fresh_sell ? '<span class="b exit">🔴 SELL</span>' : "");
+const ratio = x => x == null ? "—" : n(x, 2) + "×";
+
+const COLS = [
+  {k: "rank", l: "#", f: (r, i) => `<span class="mut">${i + 1}</span>`, nosort: 1},
+  {k: "base", l: "Coin", c: "l", f: r => `<span class="tk">${esc(r.base)}</span>${r.gbp ? ' <span class="b m" title="A GBP pair also exists on Kraken">£</span>' : ""}`},
+  {k: "status", l: "Signal", c: "l", f: r => pill(r) + tags(r) + (r.status === "TOO_NEW" ? `<span class="nm">${r.weeks} weeks of data — needs ${D.config.sma + 1}</span>` : r.fresh_sell ? `<span class="nm">${esc(r.sell_why)}</span>` : r.status === "CASH" && !r.blocked ? `<span class="nm">below its average</span>` : "")},
+  {k: "chart", l: "52 weeks", c: "l", nosort: 1, f: spark, tip: "Weekly closes: green while the rule was LONG, grey while in cash. Dashed = 20-week average"},
+  {k: "close", l: "Sunday close", f: r => px(r.close)},
+  {k: "sma", l: "20-wk avg", f: r => px(r.sma)},
+  {k: "dist", l: "vs avg", f: r => `<span class="${r.near ? "warn" : r.dist >= 0 ? "good" : "bad"}">${sgn(r.dist)}</span>`, tip: `Distance from the 20-week average. Within ±${D.config.warn_pct}% = near the line`},
+  {k: "weeks_in", l: "Since", f: r => r.since ? (r.weeks_in ? `${esc(r.since)}<span class="mut"> · ${r.weeks_in}w</span>` : '<span class="mut">this week</span>') : "—", tip: "Week the current LONG or CASH state began"},
+  {k: "move_since", l: "Move since", f: r => r.move_since == null ? "—" : `<span class="${r.status === "LONG" ? (r.move_since >= 0 ? "good" : "bad") : "mut"}">${sgn(r.move_since)}</span>`, tip: "Price change since the signal (for CASH: what you avoided or missed)"},
+  {k: "adv30", l: "Avg daily vol", f: r => `<b>${usd(r.adv30)}</b>`, tip: "Average daily US$ volume on Kraken over the last 30 days"},
+  {k: "sig_vol_ratio", l: "Week vol vs 20-wk", f: r => `<span class="${r.sig_vol_ratio == null ? "mut" : r.sig_vol_ratio >= D.config.confirm ? "good" : "warn"}">${ratio(r.sig_vol_ratio)}</span>`, tip: "This week's volume ÷ the average of the previous 20 weeks. ≥1× on a BUY = volume confirms the breakout"},
+  {k: "vol_trend", l: "Vol trend", f: r => `<span class="${r.vol_trend == null ? "mut" : r.vol_trend >= 1 ? "good" : "mut"}">${r.vol_trend == null ? "—" : r.vol_trend >= 1.2 ? "↗ " + ratio(r.vol_trend) : r.vol_trend <= 0.8 ? "↘ " + ratio(r.vol_trend) : "→ " + ratio(r.vol_trend)}</span>`, tip: "This week's volume ÷ the previous 4 weeks' average"},
+  {k: "spread", l: "Spread", f: r => r.spread == null ? "—" : `<span class="${r.spread > D.config.max_spread ? "warn" : ""}">${n(r.spread, 2)}%</span>`, tip: "Bid-ask spread at scan time"},
+  {k: "liq", l: "Liquidity", c: "l", sv: r => LIQRANK[r.liq] ?? -1, f: r => `<span class="b ${LIQ[r.liq] === "good" ? "buy" : LIQ[r.liq] === "bad" ? "exit" : LIQ[r.liq] === "warn" ? "w" : "m"}">${esc(r.liq)}</span>`, tip: "From 30-day average daily volume on Kraken: High ≥ $5M · OK ≥ $1M · Thin ≥ $250k · Avoid below"},
+  {k: "vol_ann", l: "Volatility", f: r => r.vol_ann == null ? "—" : n(r.vol_ann, 0) + "%", tip: "30-day annualised volatility. BTC is usually 40–60%"},
+  {k: "flags", l: "Flags", c: "l", nosort: 1, f: r => [
+      r.blocked ? '<span class="b w" title="Above its own average but Bitcoin is below its average">⛔ BTC filter</span>' : "",
+      r.near ? '<span class="b w">⚠ near line</span>' : "",
+      r.fresh_buy ? (r.vol_confirms ? '<span class="b buy">✓ volume</span>' : '<span class="b w">weak volume</span>') : "",
+      ...(r.vol_warn || []).map(w => `<span class="b w">${esc(w)}</span>`)].join("")},
+];
+
+function header() {
+  const c = D.counts, b = D.btc;
+  $("#sub").innerHTML = `Week ending <b>${esc(D.signal_date)}</b> (00:00 UTC) · ${D.config.sma}-week average + Bitcoin filter · Kraken ${esc(D.config.quote)} spot pairs · scanned ${new Date(D.generated).toLocaleString("en-GB", {dateStyle: "medium", timeStyle: "short"})}`;
+  $("#week").innerHTML = D.weeks.map(w => `<option value="${w}" ${w === D.week ? "selected" : ""}>${w}</option>`).join("");
+  $("#week").onchange = e => location.href = e.target.value + ".html";
+  $("#banner").innerHTML = `<div class="banner ${b.on ? "on" : "off"}"><div class="big">${b.on ? "🟢 BTC filter ON" : "🔴 BTC filter OFF"}</div>
+    <div class="sm">Bitcoin ${px(b.close)} vs 20-week average ${px(b.sma)} (${sgn(b.dist)}). ${b.on ? "Coins above their own average are LONG." : "Every coin is in CASH until Bitcoin closes a week back above its average."}${b.flipped ? " <b>Changed this week.</b>" : ""}</div></div>`;
+  const chip = (r, buy) => `<div class="chip"><span class="t">${esc(r.base)}${r.gbp ? " £" : ""}</span><span class="d">${buy ? `${sgn(r.dist)} vs avg · ${usd(r.adv30)}/day · ${r.vol_confirms ? "✓ volume" : "⚠ weak volume"} · ${esc(r.liq)}` : esc(r.sell_why)}</span></div>`;
+  const buys = sig.filter(r => r.fresh_buy).sort((a, b) => (b.adv30 || 0) - (a.adv30 || 0));
+  const sells = sig.filter(r => r.fresh_sell).sort((a, b) => (b.adv30 || 0) - (a.adv30 || 0));
+  $("#sigs").innerHTML = `<div class="sigbox"><h3>🟢 BUY this week (${buys.length})</h3>${buys.length ? buys.map(r => chip(r, true)).join("") : '<div class="none">No new buy signals.</div>'}</div>
+    <div class="sigbox"><h3>🔴 SELL this week (${sells.length})</h3>${sells.length ? sells.map(r => chip(r, false)).join("") : '<div class="none">No new sell signals.</div>'}</div>`;
+  $("#tiles").innerHTML = [
+    ["Long", `<span class="good">${c.long}</span>`], ["Cash", `<span class="mut">${c.cash}</span>`],
+    ["Blocked by BTC", `<span class="warn">${c.blocked}</span>`], ["New listings", c.too_new],
+    ["Scanned", `${c.scanned}<small> / ${c.pairs} pairs</small>`],
+  ].map(([k, v]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  if (D.demo) $("#demo").innerHTML = '<div class="demo">DEMO — synthetic data for layout testing only. Not real prices.</div>';
+  $("#foot").innerHTML = `Education only, not advice. Volume is Kraken's own (what your orders trade against), not global volume. ${c.skipped} pairs traded under ${usd(D.config.min24)} in the last 24h and were not scanned.${D.errors.length ? ` <span class="warn">${D.errors.length} failed: ${esc(D.errors.slice(0, 8).join(" · "))}</span>` : ""}`;
+}
+
+function tabs() {
+  $("#tabs").innerHTML = [["all", "All coins", D.rows.length], ["guide", "How to read"]].map(([k, l, c]) => `<button class="tab ${S.tab === k ? "on" : ""}" data-t="${k}">${l}${c != null ? `<span class="n">${c}</span>` : ""}</button>`).join("");
+  $("#tabs").querySelectorAll(".tab").forEach(b => b.onclick = () => { S.tab = b.dataset.t; draw(); });
+}
+function rows() {
+  const f = S.f, q = f.q.trim().toUpperCase();
+  return D.rows.filter(r => (!q || r.base.includes(q))
+    && (f.sig === "all" || (f.sig === "blocked" ? r.blocked : r.status === f.sig))
+    && (!f.fresh || r.fresh_buy || r.fresh_sell) && (LIQRANK[r.liq] ?? 0) >= f.liq
+    && (!f.hideNew || r.status !== "TOO_NEW") && (!f.gbp || r.gbp));
+}
+function sorted(list) {
+  const [k, d] = S.sort, c = COLS.find(c => c.k === k) || {}, v = c.sv || (r => r[k]);
+  return [...list].sort((a, b) => { const x = v(a), y = v(b); if (x == null) return 1; if (y == null) return -1; return (typeof x === "string" ? x.localeCompare(y) : x - y) * d; });
+}
+function filters() {
+  const f = S.f, o = (v, l, cur) => `<option value="${v}" ${String(v) === String(cur) ? "selected" : ""}>${l}</option>`;
+  return `<div class="filters">
+    <input type="search" id="q" placeholder="Search coin" value="${esc(f.q)}" style="width:150px">
+    <select id="sig">${o("all", "All signals", f.sig)}${o("LONG", "Long only", f.sig)}${o("CASH", "Cash only", f.sig)}${o("blocked", "Blocked by BTC", f.sig)}</select>
+    <select id="liq">${o(0, "Any liquidity", f.liq)}${o(1, "Thin or better", f.liq)}${o(2, "OK or better", f.liq)}${o(3, "High only", f.liq)}</select>
+    <label><input type="checkbox" data-f="fresh" ${f.fresh ? "checked" : ""}> BUY / SELL this week only</label>
+    <label><input type="checkbox" data-f="gbp" ${f.gbp ? "checked" : ""}> Has £ pair</label>
+    <label><input type="checkbox" data-f="hideNew" ${f.hideNew ? "checked" : ""}> Hide new listings</label>
+  </div>`;
+}
+function table(list) {
+  if (!list.length) return `<div class="tbl"><div class="empty">No coins match these filters.</div></div>`;
+  const [sk, sd] = S.sort;
+  const th = COLS.map(c => `<th class="${c.c || ""} ${c.k === sk ? "on" : ""}" data-k="${c.nosort ? "" : c.k}" ${c.tip ? `title="${esc(c.tip)}"` : ""}>${c.l}${c.k === sk ? (sd < 0 ? " ▾" : " ▴") : ""}</th>`).join("");
+  return `<div class="tbl"><table><thead><tr>${th}</tr></thead><tbody>${list.map((r, i) => `<tr>${COLS.map(c => `<td class="${c.c || ""}">${c.f(r, i)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function guide() {
+  const t = D.config.tiers;
+  return `<div class="guide">
+  <h3>The rule (checked every Sunday close)</h3>
+  <ul><li><b class="good">LONG</b> — the coin's weekly close is above its ${D.config.sma}-week average <b>and</b> Bitcoin is above its own ${D.config.sma}-week average.</li>
+  <li><b>CASH</b> — anything else. If Bitcoin drops below its average, every coin goes to cash.</li>
+  <li><b>🟢 BUY</b> / <b>🔴 SELL</b> — the state changed at this Sunday's close. Act on Monday.</li>
+  <li><b>⛔ BTC filter</b> — the coin itself looks fine but Bitcoin doesn't. These are first in line when the filter turns back on.</li></ul>
+  <h3>Volume checks</h3>
+  <ul><li><b>Avg daily vol</b> — 30-day average on Kraken. Liquidity: High ≥ ${usd(t[0][0])}, OK ≥ ${usd(t[1][0])}, Thin ≥ ${usd(t[2][0])}, otherwise Avoid.</li>
+  <li><b>Week vol vs 20-wk</b> — on a BUY, ≥ ${D.config.confirm}× means the breakout came with real buying (✓ volume). Below that = weak volume, more likely to fail.</li>
+  <li><b>Vol trend</b> — this week vs the previous 4. ↗ rising interest, ↘ fading.</li>
+  <li><b>Spread</b> — above ${D.config.max_spread}% costs you extra on every entry and exit. Use limit orders on Kraken Pro.</li>
+  <li><b>Days with no trades</b> — a coin that sometimes doesn't trade at all is hard to exit in a fall.</li></ul>
+  <h3>Sizing</h3>
+  <p>Crypto swings 3–5× more than stock indices. Check the <b>Volatility</b> column: a coin at 100% is roughly twice as risky as Bitcoin at 50%, so use about half the position size.</p>
+  <h3>Backtest (2016 – May 2026, 16 coins, 0.40% fees)</h3>
+  <p>This rule: ~92%/yr, worst fall −66%, against buy &amp; hold ~91%/yr and −88%. For 2021–26: ~48%/yr and −47%, against 27% and −82%. Past results don't guarantee future ones. Only coins that survived were tested.</p>
+  <p class="mut">Education only, not advice. UK: each sell is a capital gains disposal — keep records.</p></div>`;
+}
+function draw() {
+  tabs();
+  const v = $("#view");
+  if (S.tab === "guide") { v.innerHTML = guide(); return; }
+  v.innerHTML = filters() + table(sorted(rows()));
+  const q = $("#q");
+  q.oninput = () => { S.f.q = q.value; const p = q.selectionStart; draw(); const q2 = $("#q"); q2.focus(); q2.setSelectionRange(p, p); };
+  $("#sig").onchange = e => { S.f.sig = e.target.value; draw(); };
+  $("#liq").onchange = e => { S.f.liq = +e.target.value; draw(); };
+  v.querySelectorAll("[data-f]").forEach(el => el.onchange = () => { S.f[el.dataset.f] = el.checked; draw(); });
+  v.querySelectorAll("th[data-k]").forEach(th => th.dataset.k && (th.onclick = () => { const [k, d] = S.sort; S.sort = [th.dataset.k, k === th.dataset.k ? -d : -1]; draw(); }));
+}
+header(); draw();
+</script>
+</body>
+</html>
