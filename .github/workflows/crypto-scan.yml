@@ -1,0 +1,55 @@
+name: Weekly crypto scan
+
+on:
+  schedule:
+    # Mondays 06:20 UTC, after the Sunday weekly close. Tuesday is a backup if Monday's run is missed;
+    # the script skips if the week is already done.
+    - cron: "20 6 * * 1,2"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run now even if this week is already done"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency: scan
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run crypto scanner
+        run: python -m crypto.scan ${{ (github.event_name == 'workflow_dispatch' && inputs.force) && '--force' || '' }}
+
+      - name: Save report
+        run: |
+          git config user.name  "scanner-bot"
+          git config user.email "scanner-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "No new report."; exit 0; fi
+          git commit -m "Crypto scan $(date -u +%G-W%V)"
+          git pull --rebase
+          git push
+
+      - name: Email me (only when there is a BUY, SELL or BTC filter change)
+        if: hashFiles('crypto/summary.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/crypto/"
+          { echo "🪙 **Full report:** $URL"; echo; cat crypto/summary.md; } > body.md
+          gh issue create --title "Crypto signals — week of $(date -u +'%d %b %Y')" --body-file body.md
