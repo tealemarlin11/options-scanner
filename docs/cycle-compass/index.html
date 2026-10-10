@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cycle Compass</title>
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--ink:#14161a;--ink2:#52514e;--mute:#898781;--line:#e4e2da;--track:#e9e7e0;--soft:#f1efe8;color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--track:#262930;--soft:#1e2128}}
+:root[data-theme="dark"]{--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--track:#262930;--soft:#1e2128}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:460px;margin:0 auto;padding:18px 16px 40px}
+.serif{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-variant-numeric:lining-nums tabular-nums}
+.top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+h1{font-size:22px;margin:0;font-weight:500;letter-spacing:-.01em}
+.sub{font-size:12px;color:var(--mute);margin-top:2px}
+.pill{font-size:12px;padding:4px 10px;border-radius:999px;border:.5px solid var(--line);color:var(--ink2);background:var(--card);white-space:nowrap}
+.card{background:var(--card);border:.5px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.lbl{font-size:12px;color:var(--mute);letter-spacing:.02em}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.tile{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.tile .v{font-size:28px;line-height:1.15;margin-top:4px}
+.tile .n{font-size:12px;color:var(--ink2);margin-top:2px}
+.meter{margin-top:12px}
+.meter .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.bar{height:8px;border-radius:4px;background:var(--track);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px}
+.verdict{border-radius:14px;padding:14px 16px;margin-bottom:12px;border:.5px solid}
+.verdict b{font-weight:500;font-size:16px;display:block;margin-bottom:4px}
+.verdict span{font-size:13px;color:var(--ink2)}
+.tl{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;position:relative}
+.tl div{display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:500}
+.mk{position:relative;height:16px}
+.mk i{position:absolute;top:2px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:9px solid var(--ink);transform:translateX(-6px)}
+.leg{display:grid;gap:6px;margin-top:10px;font-size:13px}
+.leg div{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px}
+.leg div.on{background:var(--soft);font-weight:500}
+.leg s{width:10px;height:10px;border-radius:2px;flex:none}
+.leg em{margin-left:auto;font-style:normal;color:var(--mute);font-size:12px}
+details{background:var(--card);border:.5px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+summary{cursor:pointer;font-weight:500;list-style:none}
+summary::-webkit-details-marker{display:none}
+.f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.f label{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}
+.f input{width:100%;font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.f .w{grid-column:1/-1}
+button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radius:8px;border:.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.small{font-size:12px;color:var(--mute);line-height:1.55}
+.chips{display:flex;gap:8px;margin-bottom:12px}.chip{flex:1;border:.5px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--card);font-size:12px;color:var(--mute)}.chip b{display:block;font-weight:500;font-size:15px;color:var(--ink)}.chip.y{border-color:#1D9E75}.chip.n{border-color:#E24B4A}
+@media (prefers-reduced-motion:no-preference){.pulse{animation:p 2s ease-in-out infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.25}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="small" style="margin-bottom:8px"><a href="../" style="color:var(--ink2)">\u2190 Spread scanner</a></div>
+  <div class="top">
+    <div><h1>Cycle Compass</h1><div class="sub">Time, depth and phase in one read</div></div>
+    <div class="pill" id="asof"></div>
+  </div>
+
+  <div class="small" id="stat" style="margin:-4px 0 12px"></div>
+
+  <div class="card" style="padding-bottom:10px">
+    <svg id="gauge" width="100%" viewBox="0 0 320 320" role="img" aria-label="Cycle gauge"><title>Cycle gauge</title><desc>Outer ring shows time elapsed in the top-to-bottom window. Inner ring shows price depth versus past bear markets.</desc></svg>
+    <div style="display:flex;justify-content:center;gap:18px;font-size:12px;color:var(--ink2);margin-top:2px">
+      <span><s style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--pc,#E24B4A);margin-right:6px"></s>Time</span>
+      <span><s style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#7F77DD;margin-right:6px"></s>Depth</span>
+    </div>
+  </div>
+
+  <div class="chips" id="chips"></div>
+  <div class="verdict" id="verdict"></div>
+
+  <div class="grid" id="tiles"></div>
+
+  <div class="card">
+    <div class="lbl">Time versus depth</div>
+    <div id="meters"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Faber trend, 10-month average</div>
+    <div id="faber"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Halving spiral</div>
+    <svg id="sp" width="100%" viewBox="0 0 360 360" role="img" aria-label="Halving spiral" style="display:block;margin-top:6px"><title>Halving spiral</title><desc>Each turn is one halving cycle. The outer turn is coloured by phase and the ring marks today.</desc></svg>
+    <div class="small" style="margin-top:4px">Each turn is one halving cycle. Grey turns are past cycles. Red dots are tops. Blue dots are bottoms. The ringed dot is today.</div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Seven phases, current cycle</div>
+    <div class="tl" id="tl" style="margin-top:10px"></div>
+    <div class="mk" id="mk"></div>
+    <div class="leg" id="leg"></div>
+  </div>
+
+  <details>
+    <summary>Settings and inputs</summary>
+    <div class="f">
+      <div><label for="top">Last confirmed top</label><input type="date" id="top"></div>
+      <div><label for="price">Price override (blank = live)</label><input type="number" id="price" inputmode="decimal"></div>
+      <div><label for="halving">Last halving</label><input type="date" id="halving"></div>
+      <div><label for="nextH">Next halving (est.)</label><input type="date" id="nextH"></div>
+      <div><label for="ath">Cycle top price (USD)</label><input type="number" id="ath" inputmode="decimal"></div>
+      <div><label for="asOfIn">View as of (optional)</label><input type="date" id="asOfIn"></div>
+      <div class="w"><label for="closes">Monthly closes override (blank = auto)</label><input type="text" id="closes"></div>
+      <div class="w"><label for="gaps">Past top-to-bottom days</label><input type="text" id="gaps"></div>
+      <div class="w"><label for="dds">Past top-to-bottom drawdowns, %</label><input type="text" id="dds"></div>
+    </div>
+    <button id="reset" type="button">Reset to defaults</button>
+    <p class="small" style="margin-top:12px">Price comes live from Coinbase in your browser. Monthly closes are also built in your browser from Coinbase daily candles. If either call fails, the saved data/prices.json and then a built-in snapshot from 10 Oct 2026 are used. Past gaps and drawdowns are approximate values from memory.</p>
+  </details>
+
+  <details>
+    <summary>How it works</summary>
+    <p class="small" style="margin-top:10px">Time score = days since the last top divided by the median past top-to-bottom length. Depth score = current drawdown divided by the median past drawdown. Phases use days since the last halving, with the top and projected bottom as anchors. The halving date is an estimate based on block pace and will drift by a few days.</p>
+  </details>
+
+  <p class="small">Descriptive tool, not financial advice. Three past cycles is a very small sample. The time clock assumes this cycle rhymes with earlier ones, and that may not hold.</p>
+</div>
+
+<script>
+var DAY=864e5,NS='http://www.w3.org/2000/svg';
+var DEF={top:'2025-10-06',halving:'2024-04-20',nextH:'2028-04-18',price:'',ath:'126080',asOfIn:'',gaps:'406, 363, 376',dds:'85, 84, 77',closes:''};
+var LIVE={price:82600,closes:[87500,78621,66996,68233,76304,73580,58559,62814,78549,83556],note:'snapshot 10 Oct 2026',live:false};
+var S=Object.assign({},DEF);
+try{var raw=localStorage.getItem('cc_state');if(raw){S=Object.assign({},DEF,JSON.parse(raw))}}catch(e){}
+var NAMES=['Post-halving','Early bull','Late bull','Distribution','Bear, maturing','Capitulation','Pre-halving'];
+var K=['#1D9E75','#639922','#EF9F27','#D85A30','#E24B4A','#7F77DD','#378ADD'];
+function parse(s){var p=s.split('-');return Date.UTC(+p[0],+p[1]-1,+p[2])}
+function fmt(t){return new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}
+function med(a){a=a.slice().sort(function(x,y){return x-y});var m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2}
+function nums(s){return String(s).split(',').map(parseFloat).filter(function(x){return x>0})}
+function el(p,n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function H(id){return document.getElementById(id)}
+
+function calc(){
+  var now;
+  if(S.asOfIn){now=parse(S.asOfIn)}else{var d=new Date();now=Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())}
+  var gaps=nums(S.gaps);if(!gaps.length)gaps=[376];
+  var dur=Math.round(med(gaps));
+  var topT=parse(S.top),halT=parse(S.halving),nxtT=parse(S.nextH);
+  var elapsed=Math.round((now-topT)/DAY);
+  var score=clamp(Math.round(elapsed/dur*100),0,100);
+  var toBottom=dur-elapsed;
+  var L=Math.round((nxtT-halT)/DAY);
+  var dayH=Math.round((now-halT)/DAY);
+  var topDay=Math.round((topT-halT)/DAY);
+  var botDay=topDay+dur;
+  var B=[0,150,365,topDay,topDay+166,botDay,botDay+240,L];
+  for(var i=1;i<8;i++){if(B[i]<=B[i-1])B[i]=B[i-1]+1}
+  var idx=6;for(var j=0;j<7;j++){if(dayH>=B[j]&&dayH<B[j+1]){idx=j;break}}
+  if(dayH<0)idx=0;
+  var price=parseFloat(S.price)||LIVE.price||NaN,ath=parseFloat(S.ath);
+  var dd=null,ddm=med(nums(S.dds).length?nums(S.dds):[80]),depth=null;
+  if(price>0&&ath>0){dd=(price/ath-1)*100;depth=clamp(Math.round((-dd)/ddm*100),0,100)}
+  var cl=nums(S.closes);if(cl.length<10)cl=LIVE.closes.slice();cl=cl.slice(-10);var sma=null;
+  if(cl.length>=10){sma=cl.reduce(function(a,b){return a+b},0)/cl.length}
+  return{closes:cl,sma:sma,price:price,now:now,dur:dur,topT:topT,botT:topT+dur*DAY,elapsed:elapsed,score:score,toBottom:toBottom,L:L,dayH:dayH,B:B,idx:idx,nxtT:nxtT,dd:dd,ddm:ddm,depth:depth,topDay:topDay,botDay:botDay,daysToHalving:Math.round((nxtT-now)/DAY)}
+}
+
+function gauge(c){
+  var g=H('gauge');g.innerHTML='<title>Cycle gauge</title><desc>Outer ring shows time elapsed. Inner ring shows depth versus past bear markets.</desc>';
+  var col=K[c.idx];document.documentElement.style.setProperty('--pc',col);
+  var cx=160,cy=160;
+  function ring(r,sw,pct,color){
+    var C=2*Math.PI*r;
+    el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:'var(--track)','stroke-width':sw});
+    if(pct>0)el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:color,'stroke-width':sw,'stroke-linecap':'round','stroke-dasharray':(C*pct/100).toFixed(1)+' '+C.toFixed(1),transform:'rotate(-90 '+cx+' '+cy+')'});
+  }
+  ring(132,14,c.score,col);
+  ring(108,8,c.depth==null?0:c.depth,'#7F77DD');
+  for(var k=0;k<4;k++){var a=k*Math.PI/2,x1=cx+119*Math.sin(a),y1=cy-119*Math.cos(a),x2=cx+146*Math.sin(a),y2=cy-146*Math.cos(a);if(k>0)el(g,'line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:'var(--bg)','stroke-width':2})}
+  var t;
+  t=el(g,'text',{x:cx,y:116,'text-anchor':'middle',fill:'var(--mute)','font-size':11,'letter-spacing':'0.08em'});t.textContent='CYCLE CLOCK';
+  t=el(g,'text',{x:cx,y:178,'text-anchor':'middle',fill:col,'font-size':68,'font-family':'Iowan Old Style,Palatino Linotype,Georgia,serif'});t.textContent=c.score;
+  t=el(g,'text',{x:cx,y:204,'text-anchor':'middle',fill:'var(--ink)','font-size':14,'font-weight':500});t.textContent=NAMES[c.idx];
+  t=el(g,'text',{x:cx,y:224,'text-anchor':'middle',fill:'var(--ink2)','font-size':12});
+  t.textContent=c.toBottom>0?c.toBottom+' days to bottom window':(c.toBottom===0?'Bottom window today':Math.abs(c.toBottom)+' days past window');
+}
+
+function verdict(c){
+  var v=H('verdict'),tone,title,body;
+  var d=c.depth,tOk=c.score>=85,rOk=c.sma!=null&&c.price>c.sma,dOk=d!=null&&d>=85;
+  var ddTxt=c.dd==null?'unknown':Math.abs(c.dd).toFixed(0)+'% against a typical '+c.ddm.toFixed(0)+'%';
+  if(tOk&&rOk&&dOk){tone='#1D9E75';title='All three agree';body='Time, trend and depth all point to a bottom zone.'}
+  else if(tOk&&rOk){tone='#EF9F27';title='Time and trend agree, depth does not';body='The clock is nearly up and price is above its 10-month average. But the drop is only '+ddTxt+'. Either this bear is shallower, or a lower low may still come.'}
+  else if(tOk){tone='#EF9F27';title='Clock says near, trend says wait';body='Price is not yet above its 10-month average. Wait for a close above it.'}
+  else if(c.score>=50){tone='#E24B4A';title='Mid bear, be patient';body='Time is past halfway. Depth is '+(d==null?'unknown':d+'% of the typical bear')+'.'}
+  else{tone='#D85A30';title='Early in the downturn';body='Plenty of time left on the clock.'}
+  v.style.borderColor=tone;v.style.background='color-mix(in srgb,'+tone+' 12%,var(--card))';
+  v.innerHTML='<b style="color:'+tone+'">'+title+'</b><span>'+body+'</span>';
+}
+
+function chips(c){
+  var r=[['Time',c.score>=85,c.score+'% of window'],['Trend',c.sma!=null&&c.price>c.sma,c.sma==null?'no data':'vs 10m average'],['Depth',c.depth!=null&&c.depth>=85,c.depth==null?'no data':c.depth+'% of typical']];
+  H('chips').innerHTML=r.map(function(x){return '<div class="chip '+(x[1]?'y':'n')+'">'+x[0]+'<b>'+(x[1]?'Yes':'Not yet')+'</b>'+x[2]+'</div>'}).join('');
+}
+
+function faber(c){
+  var h=H('faber');
+  if(c.sma==null||!(c.price>0)){h.innerHTML='<div class="small" style="margin-top:8px">Add a price and 10 monthly closes in Settings.</div>';return}
+  var up=c.price>c.sma,pct=(c.price/c.sma-1)*100,col=up?'#1D9E75':'#E24B4A';
+  var vals=c.closes.concat([c.price]),all=vals.concat([c.sma]),mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),pad=(mx-mn)*0.12||1;mn-=pad;mx+=pad;
+  var n=vals.length;
+  function X(i){return 10+i*300/(n-1)}
+  function Y(v){return 112-(v-mn)/(mx-mn)*104}
+  var pts=vals.map(function(v,i){return X(i).toFixed(1)+','+Y(v).toFixed(1)}).join(' ');
+  var s='<svg width="100%" viewBox="0 0 320 120" role="img" aria-label="Monthly closes versus 10-month average" style="display:block"><title>Monthly closes versus 10-month average</title>'+
+   '<line x1="10" x2="310" y1="'+Y(c.sma).toFixed(1)+'" y2="'+Y(c.sma).toFixed(1)+'" stroke="'+col+'" stroke-dasharray="4 4" stroke-width="1.5"/>'+
+   '<polyline points="'+pts+'" fill="none" stroke="var(--ink2)" stroke-width="1.5"/>'+
+   vals.map(function(v,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="'+(i===n-1?5:3)+'" fill="'+(i===n-1?col:'var(--ink2)')+'"/>'}).join('')+'</svg>';
+  h.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px"><span class="serif" style="font-size:28px;color:'+col+'">'+(up?'Above':'Below')+'</span><span class="serif" style="font-size:16px">'+(pct>0?'+':'')+pct.toFixed(1)+'%</span></div>'+s+
+   '<div class="small">10-month average: <b class="serif">$'+Math.round(c.sma).toLocaleString('en-GB')+'</b>. Dots are the last 10 monthly closes, then today. Dashed line is the average. Faber rule: hold risk while price is above it, step aside below it. The official signal is read at month end.</div>';
+}
+
+function tiles(c){
+  var t=[
+    ['Days to bottom window',c.toBottom>0?c.toBottom:(c.toBottom<0?'+'+Math.abs(c.toBottom):0),'~'+fmt(c.botT)],
+    ['Days since top',c.elapsed,'of '+c.dur+' projected · '+fmt(c.topT)],
+    ['Next halving',c.daysToHalving+'d','Est. '+fmt(c.nxtT)],
+    ['Drawdown from top',c.dd==null?'n/a':c.dd.toFixed(1)+'%','Typical bear: -'+c.ddm.toFixed(0)+'%']
+  ];
+  H('tiles').innerHTML=t.map(function(x){return '<div class="tile"><div class="lbl">'+x[0]+'</div><div class="v serif">'+x[1]+'</div><div class="n">'+x[2]+'</div></div>'}).join('');
+}
+
+function meters(c){
+  var d=c.depth==null?0:c.depth;
+  H('meters').innerHTML=
+   '<div class="meter"><div class="row"><span>Time elapsed</span><span class="serif">'+c.score+'%</span></div><div class="bar"><i style="width:'+c.score+'%;background:'+K[c.idx]+'"></i></div></div>'+
+   '<div class="meter"><div class="row"><span>Depth vs past bears</span><span class="serif">'+(c.depth==null?'n/a':d+'%')+'</span></div><div class="bar"><i style="width:'+d+'%;background:#7F77DD"></i></div></div>'+
+   '<div class="small" style="margin-top:10px">Gap between the two bars is the signal. A real bottom has historically closed it.</div>';
+}
+
+function spiral(c){
+  var s=H('sp');s.innerHTML='<title>Halving spiral</title><desc>Each turn is one halving cycle.</desc>';
+  var C0=180;
+  function pt(k,f){var a=2*Math.PI*f,r=20+(k+f)*30;return[C0+r*Math.sin(a),C0-r*Math.cos(a)]}
+  function arc(k,f0,f1){var d='';for(var f=f0;f<f1+1e-9;f+=0.004){var p=pt(k,Math.min(f,f1));d+=(d?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)}return d}
+  for(var k=0;k<3;k++)el(s,'path',{d:arc(k,0,1),fill:'none',stroke:'#888780','stroke-opacity':.45,'stroke-width':2,'stroke-linecap':'round'});
+  for(var i=0;i<7;i++)el(s,'path',{d:arc(3,c.B[i]/c.L,c.B[i+1]/c.L),fill:'none',stroke:K[i],'stroke-width':7});
+  [[0,.281],[1,.375],[2,.381]].forEach(function(a){var p=pt(a[0],a[1]);el(s,'circle',{cx:p[0],cy:p[1],r:4,fill:'#E24B4A'})});
+  [[0,.589],[1,.633],[2,.642]].forEach(function(a){var p=pt(a[0],a[1]);el(s,'circle',{cx:p[0],cy:p[1],r:4,fill:'#378ADD'})});
+  var tp=pt(3,clamp(c.topDay/c.L,0,1)),bp=pt(3,clamp(c.botDay/c.L,0,1)),np=pt(3,clamp(c.dayH/c.L,0,1));
+  el(s,'circle',{cx:tp[0],cy:tp[1],r:6,fill:'#E24B4A',stroke:'var(--card)','stroke-width':2});
+  el(s,'circle',{cx:bp[0],cy:bp[1],r:6,fill:'#378ADD',stroke:'var(--card)','stroke-width':2});
+  el(s,'circle',{cx:np[0],cy:np[1],r:11,fill:'none',stroke:'var(--ink)','stroke-width':1.5,'class':'pulse'});
+  var t=el(s,'text',{x:C0,y:C0+4,'text-anchor':'middle',fill:'var(--mute)','font-size':11});t.textContent='Day '+c.dayH;
+}
+
+function phases(c){
+  var tl=H('tl'),leg=H('leg');tl.innerHTML='';leg.innerHTML='';
+  for(var i=0;i<7;i++){
+    var w=(c.B[i+1]-c.B[i])/c.L*100;
+    tl.insertAdjacentHTML('beforeend','<div style="width:'+w+'%;background:'+K[i]+';opacity:'+(i===c.idx?1:.4)+'">'+(w>7?(i+1):'')+'</div>');
+    leg.insertAdjacentHTML('beforeend','<div class="'+(i===c.idx?'on':'')+'"><s style="background:'+K[i]+'"></s>'+(i+1)+'. '+NAMES[i]+'<em>day '+Math.round(c.B[i])+' to '+Math.round(c.B[i+1])+'</em></div>');
+  }
+  H('mk').innerHTML='<i style="left:'+clamp(c.dayH/c.L*100,0,100)+'%"></i>';
+}
+
+function render(){
+  var c;
+  try{c=calc()}catch(e){return}
+  if(isNaN(c.score)||isNaN(c.L))return;
+  H('asof').textContent=fmt(c.now);
+  gauge(c);chips(c);verdict(c);tiles(c);meters(c);faber(c);spiral(c);phases(c);
+}
+
+['top','price','halving','nextH','ath','asOfIn','closes','gaps','dds'].forEach(function(id){
+  var e=H(id);e.value=S[id];
+  e.addEventListener('input',function(){S[id]=e.value;try{localStorage.setItem('cc_state',JSON.stringify(S))}catch(x){}render()});
+});
+H('reset').addEventListener('click',function(){
+  S=Object.assign({},DEF);
+  try{localStorage.removeItem('cc_state')}catch(x){}
+  Object.keys(S).forEach(function(k){var e=H(k);if(e)e.value=S[k]});
+  render();
+});
+function stat(){H('stat').textContent=(LIVE.live?'\u25CF Live ':'\u25CB ')+'BTC $'+Math.round(LIVE.price).toLocaleString('en-GB')+' \u00B7 '+LIVE.note}
+function loadJSON(){fetch('data/prices.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+  if(j.closes&&j.closes.length>=10&&!LIVE.closesLive)LIVE.closes=j.closes;
+  if(!LIVE.live){if(j.price>0)LIVE.price=j.price;LIVE.note='saved '+String(j.updated).slice(0,10)}
+  stat();render()}).catch(function(){stat()})}
+function loadLive(){fetch('https://api.exchange.coinbase.com/products/BTC-USD/ticker').then(function(r){return r.json()}).then(function(j){
+  var p=parseFloat(j.price);
+  if(p>0){LIVE.price=p;LIVE.live=true;LIVE.note='Coinbase '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});stat();render()}}).catch(function(){})}
+function monthsFrom(rows){
+  var last={},n=new Date(),cur=n.getUTCFullYear()*12+n.getUTCMonth();
+  rows.sort(function(a,b){return a[0]-b[0]});
+  rows.forEach(function(r){var d=new Date(r[0]*1000);last[d.getUTCFullYear()*12+d.getUTCMonth()]=r[4]});
+  return Object.keys(last).map(Number).filter(function(k){return k<cur}).sort(function(a,b){return a-b}).map(function(k){return Math.round(last[k])});
+}
+function loadCloses(){
+  var A='https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400',e=new Date(),D=864e5;e.setUTCHours(0,0,0,0);
+  function rng(a,b){return fetch(A+'&start='+new Date(e-a*D).toISOString()+'&end='+new Date(e-b*D).toISOString()).then(function(r){return r.json()})}
+  Promise.all([rng(299,0),rng(598,299)]).then(function(x){
+    var m=monthsFrom(x[0].concat(x[1]));
+    if(m.length>=10){LIVE.closes=m.slice(-10);LIVE.closesLive=true;render()}
+  }).catch(function(){});
+}
+stat();render();loadJSON();loadLive();loadCloses();setInterval(loadLive,60000);
+</script>
+</body>
+</html>
