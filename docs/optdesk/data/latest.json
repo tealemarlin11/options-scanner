@@ -1,13 +1,32 @@
 {
- "generated": "2026-10-23T10:33:30+00:00",
+ "generated": "2026-10-23T11:07:12+00:00",
  "rules_version": "1.0",
  "is_monday": false,
  "stress": {
-  "vix": 19.56,
+  "vix": 19.82,
   "vix3m": 20.12,
-  "ratio": 0.972,
+  "ratio": 0.985,
   "on": false
  },
+ "events": {
+  "blocked": false,
+  "reason": null,
+  "upcoming": [
+   {
+    "name": "FOMC",
+    "date": "2026-10-28",
+    "days": 5
+   },
+   {
+    "name": "JOBS",
+    "date": "2026-11-06",
+    "days": 14
+   }
+  ],
+  "stale": false
+ },
+ "pause": null,
+ "blocked": null,
  "risk_pct": 0.015,
  "max_open": 3,
  "tickets": [],
@@ -21,7 +40,7 @@
     "sma200": 726.65,
     "sma50": 768.17
    },
-   "iv_rank": 34.6,
+   "iv_rank": 36.1,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
@@ -40,12 +59,7 @@
    },
    "iv_rank": 70.5,
    "rank_source": "^VXN",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-11-30: thin chain",
-    "2026-11-27: thin chain"
-   ],
-   "structure": "PCS"
+   "reason": "Price shock: last move -2.9% is over 2.5 sigma"
   },
   {
    "ticker": "IWM",
@@ -56,9 +70,13 @@
     "sma200": 278.13,
     "sma50": 286.97
    },
-   "iv_rank": null,
-   "rank_source": "^RVX",
-   "reason": "No volatility rank available"
+   "iv_rank": 25.8,
+   "rank_source": "20-day realized vol (fallback)",
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-12-18: thin chain"
+   ],
+   "structure": "PDS"
   },
   {
    "ticker": "GLD",
@@ -87,8 +105,8 @@
     "sma50": 80.58
    },
    "iv_rank": 67.6,
-   "rank_source": "20-day realized vol",
-   "reason": "Trend mixed: close is between the 50 and 200 day averages"
+   "rank_source": "20-day realized vol (fallback)",
+   "reason": "Price shock: last move +1.9% is over 2.5 sigma"
   },
   {
    "ticker": "XLE",
@@ -116,7 +134,7 @@
     "sma200": 53.69,
     "sma50": 56.12
    },
-   "iv_rank": 34.6,
+   "iv_rank": 36.1,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
@@ -126,6 +144,17 @@
   }
  ],
  "positions": [],
+ "portfolio": {
+  "open_trades": 0,
+  "spy_equiv_delta_shares": 0.0,
+  "spy_equiv_delta_dollars": 0.0,
+  "theta_per_day": 0.0,
+  "vega_per_vol_point": 0.0,
+  "max_loss_total": 0.0,
+  "greeks_missing_for": [],
+  "groups_held": {},
+  "max_open": 3
+ },
  "tail": null,
  "stats": {
   "closed": 0,
