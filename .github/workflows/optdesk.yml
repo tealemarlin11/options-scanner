@@ -1,0 +1,43 @@
+name: Option desk
+
+on:
+  schedule:
+    - cron: "30 15 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency: optdesk
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas numpy
+      - name: Build tickets and check open trades
+        run: python -m optdesk.run
+      - name: Save results (only option desk files)
+        run: |
+          git config user.name  "scanner-bot"
+          git config user.email "scanner-bot@users.noreply.github.com"
+          git add docs/optdesk/data
+          if git diff --cached --quiet; then echo "No changes."; exit 0; fi
+          git commit -m "Option desk $(date -u +%Y-%m-%d)"
+          git pull --rebase
+          git push
+      - name: Email me (opens an Issue on Mondays or when a trade needs action)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(date -u +%u)" = "1" ] || grep -q "ACTION" docs/optdesk/data/summary.md; then
+            URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/optdesk/"
+            { echo "Option desk page: $URL"; echo; cat docs/optdesk/data/summary.md; } > body.md
+            gh issue create --title "Option desk $(date -u +%Y-%m-%d)" --body-file body.md
+          fi
