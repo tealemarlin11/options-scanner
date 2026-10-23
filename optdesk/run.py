@@ -39,7 +39,7 @@ def main():
             tr = core.trend_state(close, cfg["trend"]["slow"], cfg["trend"]["fast"])
             trends[sym] = tr
             idx = cfg["vol_index"].get(sym)
-                        rank = None
+            rank = None
             if idx:
                 try:
                     rank = core.rank_pct(data.history(idx)["Close"])
