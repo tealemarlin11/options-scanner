@@ -39,7 +39,15 @@ def main():
             tr = core.trend_state(close, cfg["trend"]["slow"], cfg["trend"]["fast"])
             trends[sym] = tr
             idx = cfg["vol_index"].get(sym)
-            rank = core.rank_pct(data.history(idx)["Close"]) if idx else core.rank_pct(core.realized_vol_series(close))
+                        rank = None
+            if idx:
+                try:
+                    rank = core.rank_pct(data.history(idx)["Close"])
+                except Exception:
+                    rank = None
+            if rank is None:
+                rank = core.rank_pct(core.realized_vol_series(close))
+                idx = "20-day realized vol (fallback)"
             info = {"ticker": sym, "spot": round(float(close.iloc[-1]), 2), "trend": tr, "iv_rank": rank,
                     "rank_source": idx or "20-day realized vol"}
             structure, reason = core.choose_structure(tr, rank, stress["on"], cfg)
