@@ -161,8 +161,9 @@ def main():
                 t.update({"ticker": tc["underlying"], "expiry": e, "balance": st["tithe_balance"],
                           "can_buy": st["tithe_balance"] >= t["max_loss_per_contract"] and t["pass"]})
                 a, b = t["legs"]
-                t["order"] = (f"Buy to open {tc['underlying']} {e} {a['strike']:g}/{b['strike']:g} put spread, "
-                              f"limit {t['net_mid']:.2f} debit.")
+                t["worst_fill"] = round(t["net_mid"] + cfg["liquidity"]["walk_fraction"] * (t["natural"] - t["net_mid"]), 2)
+                t["order"] = core.order_text(t, tc["underlying"], e)
+                t["order"] += " In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
                 tail = t
     except Exception as ex:
         notes.append(f"Tail hedge check failed: {ex}")

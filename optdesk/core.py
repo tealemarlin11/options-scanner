@@ -165,15 +165,14 @@ def risk_mult(structure, cfg):
 
 
 def order_text(t, sym, expiry):
-    a, b = t["legs"]
-    kind = a["type"]
-    structure = t["structure"]
-    credit = structure in ("PCS", "CCS")
-    verb = "Sell" if credit else "Buy"
-    names = {"PCS": "put credit spread", "CCS": "call credit spread", "CDS": "call debit spread", "PDS": "put debit spread"}
-    hi, lo = sorted([a["strike"], b["strike"]], reverse=True)
-    return (f"{verb} to open {sym} {expiry} {hi:g}/{lo:g} {names[structure]}, limit {t['net_mid']:.2f} "
-            f"{'credit' if credit else 'debit'}. Do not accept worse than {t['worst_fill']:.2f}.")
+    """Spell out every leg so the direction cannot be misread."""
+    names = {"PCS": "Put credit spread", "CCS": "Call credit spread", "CDS": "Call debit spread",
+             "PDS": "Put debit spread", "TAIL": "Put debit spread (hedge)"}
+    credit = t["structure"] in ("PCS", "CCS")
+    legs = " and ".join(f"{l['action']} 1 {sym} {expiry} {l['strike']:g} {l['type']}" for l in t["legs"])
+    way = "You receive" if credit else "You pay"
+    return (f"{names[t['structure']]}: {legs}. Limit {t['net_mid']:.2f} {'credit' if credit else 'debit'} "
+            f"({way}). Do not accept worse than {t['worst_fill']:.2f}.")
 
 
 def pick_expiry(expiries, today, lo, hi, target):

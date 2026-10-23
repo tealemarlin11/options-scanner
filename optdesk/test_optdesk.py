@@ -200,6 +200,22 @@ def test_selection_counts_open_book():
     assert len(core.select_trades([mk("SPY", 1)], CFG, tail_only)) == 1
 
 
+
+
+def test_order_text_is_explicit():
+    spot = 500.0
+    df = core.prep(make_chain(spot), spot, 40)
+    t, _ = core.build_spread("PCS", df, spot, 40, CFG)
+    txt = core.order_text(t, "SPY", "2026-12-18")
+    assert "SELL 1 SPY 2026-12-18" in txt and "BUY 1 SPY" in txt and "You receive" in txt
+    df2 = core.prep(make_chain(spot, dte=62), spot, 62)
+    tail, _ = core.build_tail(df2, spot, 62, CFG)
+    tail["worst_fill"] = tail["net_mid"]
+    tt = core.order_text(tail, "SPY", "2026-12-18")
+    hi = max(l["strike"] for l in tail["legs"])
+    assert f"BUY 1 SPY 2026-12-18 {hi:g} put" in tt and "You pay" in tt
+
+
 if __name__ == "__main__":
     for n, f in list(globals().items()):
         if n.startswith("test_"):
