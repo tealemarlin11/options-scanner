@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Option desk</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--ink:#14161a;--ink2:#52514e;--mute:#898781;--line:#e4e2da;--soft:#f1efe8;--okbg:#e1f5ee;--okt:#085041;--nobg:#fcebeb;--not:#791F1F;--wabg:#faeeda;--wat:#633806;--acbg:#e6f1fb;--act:#0C447C;color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--soft:#1e2128;--okbg:#04342c;--okt:#9fe1cb;--nobg:#501313;--not:#f7c1c1;--wabg:#412402;--wat:#fac775;--acbg:#042c53;--act:#b5d4f4}}
+:root[data-theme="dark"]{--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--soft:#1e2128;--okbg:#04342c;--okt:#9fe1cb;--nobg:#501313;--not:#f7c1c1;--wabg:#412402;--wat:#fac775;--acbg:#042c53;--act:#b5d4f4}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:480px;margin:0 auto;padding:16px 14px 40px}
+a{color:var(--ink2)}
+h1{font-size:22px;font-weight:500;margin:6px 0 2px}
+h2{font-size:12px;font-weight:500;color:var(--ink2);margin:20px 0 8px}
+.sub{font-size:12px;color:var(--mute)}
+.card{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.t{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.b{font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;white-space:nowrap}
+.ok{background:var(--okbg);color:var(--okt)}.no{background:var(--nobg);color:var(--not)}.wa{background:var(--wabg);color:var(--wat)}.ac{background:var(--acbg);color:var(--act)}
+.n{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.5}
+table{width:100%;font-size:12px;border-collapse:collapse;margin-top:8px}
+td{padding:3px 0;color:var(--ink2)}td:last-child{text-align:right;color:var(--ink);font-weight:500}
+.ord{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px;word-break:break-word}
+.warn{background:var(--wabg);color:var(--wat);border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:8px}
+input{font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+button{font:inherit;font-size:13px;margin-top:8px;padding:7px 12px;border-radius:8px;border:.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.m{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:10px 12px}.m span{display:block;font-size:12px;color:var(--mute)}.m b{font-size:18px;font-weight:500}
+details{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}summary{cursor:pointer;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sub"><a href="../">&larr; Spread scanner</a></div>
+  <h1>Option desk</h1>
+  <div class="sub" id="meta">Loading</div>
+  <div class="warn">Defined-risk spreads on liquid ETFs only. Not financial advice. Paper trade first.</div>
+  <div class="card"><label class="sub" for="acct">Account size (£ or $, saved on this device only)</label><input id="acct" type="number" inputmode="decimal" placeholder="e.g. 10000"></div>
+  <div id="app"></div>
+</div>
+<script>
+var D=null;
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function acct(){var v=parseFloat($('acct').value);return v>0?v:null}
+var NAMES={PCS:'Put credit spread',CCS:'Call credit spread',CDS:'Call debit spread',PDS:'Put debit spread'};
+function contracts(t){var a=acct();if(!a)return null;var budget=a*D.risk_pct*t.risk_mult;return Math.floor(budget/t.max_loss_per_contract)}
+function ticket(t){
+  var n=contracts(t),a=acct();
+  var size=n==null?'Enter your account size above to see contracts.':(n>0?'<b style="font-weight:500;color:var(--ink)">'+n+' contract'+(n>1?'s':'')+'</b> keeps the max loss near '+(D.risk_pct*t.risk_mult*100).toFixed(2)+'% of your account.':'<b style="font-weight:500;color:var(--not)">Too large for your risk limit.</b> One contract risks '+t.max_loss_per_contract.toFixed(0)+'. Skip this one.');
+  var credit=(t.structure==='PCS'||t.structure==='CCS');
+  var h='<div class="card"><div class="t"><b style="font-weight:500">'+esc(t.ticker)+' · '+NAMES[t.structure]+'</b><span class="b '+(t.chosen?'ok':'wa')+'">'+(t.chosen?'Priority '+t.priority:'Skipped')+'</span></div>'+
+   '<div class="n">'+esc(t.expiry)+' · '+t.dte+' days · trend '+esc(t.trend)+' · vol rank '+t.iv_rank+'</div>'+
+   '<div class="ord">'+esc(t.order)+'</div>'+
+   '<table>'+t.legs.map(function(l){return '<tr><td>'+l.action+' '+l.type+' '+l.strike+' (delta '+l.delta+')</td><td>'+l.bid.toFixed(2)+' / '+l.ask.toFixed(2)+'</td></tr>'}).join('')+
+   '<tr><td>Max loss per contract</td><td>'+t.max_loss_per_contract.toFixed(0)+'</td></tr>'+
+   '<tr><td>Take profit when the spread is worth</td><td>'+t.take_profit_close_at.toFixed(2)+'</td></tr>'+
+   '<tr><td>Stop when the spread is worth</td><td>'+t.stop_close_at.toFixed(2)+'</td></tr>'+
+   '<tr><td>Time exit</td><td>21 days left</td></tr>'+
+   '<tr><td>Liquidity: slippage / open interest</td><td>'+t.slip_pct+'% / '+Math.min(t.legs[0].oi,t.legs[1].oi).toLocaleString('en-GB')+'</td></tr></table>'+
+   '<div class="n">'+size+'</div>'+
+   (credit?'<div class="n">Tail hedge share: set aside '+(0.2*t.net_mid*100).toFixed(0)+' per contract.</div>':'')+
+   (t.skipped?'<div class="n">'+esc(t.skipped)+'.</div>':'')+'</div>';
+  return h;
+}
+function render(){
+  var d=D;$('app').innerHTML='';
+  var h='';
+  if(!d.generated){$('meta').textContent='';$('app').innerHTML='<div class="warn">'+esc((d.notes||[]).join(' '))+'</div>';return}
+  $('meta').textContent='Run '+d.generated.slice(0,16).replace('T',' ')+' UTC · rules '+d.rules_version;
+  var s=d.stress||{};
+  h+='<div class="g"><div class="m"><span>VIX / VIX3M</span><b>'+(s.ratio==null?'n/a':s.ratio)+'</b></div><div class="m"><span>Stress brake</span><b style="color:var(--'+(s.on?'not':'okt')+')">'+(s.on?'ON':'Off')+'</b></div></div>';
+  if(s.on)h+='<div class="warn" style="margin-top:8px">Stress brake on. No new credit spreads. Debit spreads only.</div>';
+  h+='<h2>New trades</h2>';
+  if(!d.is_monday)h+='<div class="warn">New trades are Mondays. Other days, manage open trades only.</div>';
+  var T=d.tickets||[],ch=T.filter(function(t){return t.chosen}),sk=T.filter(function(t){return !t.chosen});
+  if(!T.length)h+='<div class="card"><div class="n" style="margin:0">No trade passes the rules today.</div></div>';
+  ch.concat(sk).forEach(function(t){h+=ticket(t)});
+  h+='<h2>Open trades, what to do</h2>';
+  var P=d.positions||[];
+  if(!P.length)h+='<div class="card"><div class="n" style="margin:0">None logged. Add trades to optdesk/journal.csv.</div></div>';
+  P.forEach(function(p){var act=(p.actions||[]);h+='<div class="card"><div class="t"><b style="font-weight:500">'+esc(p.ticker)+' '+p.structure+' · '+esc(p.expiry)+'</b><span class="b '+(act.length?'no':'ok')+'">'+(act.length?'Act':'Hold')+'</span></div><div class="n">'+p.dte+' days left'+(p.value!=null?' · worth '+p.value.toFixed(2)+' · P&amp;L '+p.pnl.toFixed(0):'')+'</div>'+act.map(function(a){return '<div class="n"><b style="font-weight:500;color:var(--ink)">'+esc(a.replace('ACTION ',''))+'</b></div>'}).join('')+'</div>'});
+  var tl=d.tail,st=d.stats||{};
+  h+='<h2>Tail hedge</h2><div class="card"><div class="n" style="margin:0">Banked balance: '+(st.tithe_balance||0).toFixed(0)+'</div>'+(tl?'<div class="n">Candidate cost '+tl.max_loss_per_contract.toFixed(0)+' per contract. '+(tl.can_buy?'<b style="font-weight:500">Bank covers one. Buy it.</b>':'Keep banking.')+'</div><div class="ord">'+esc(tl.order)+'</div>':'<div class="n">No candidate found.</div>')+'</div>';
+  h+='<h2>Scorecard</h2><div class="g"><div class="m"><span>Closed trades</span><b>'+(st.closed||0)+'</b></div><div class="m"><span>Win rate</span><b>'+(st.win_rate==null?'n/a':(st.win_rate*100).toFixed(0)+'%')+'</b></div><div class="m"><span>Average win / loss</span><b>'+(st.avg_win==null?'n/a':st.avg_win.toFixed(0)+' / '+(st.avg_loss==null?'0':st.avg_loss.toFixed(0)))+'</b></div><div class="m"><span>Expectancy per trade</span><b>'+(st.expectancy==null?'n/a':st.expectancy.toFixed(0))+'</b></div></div><div class="sub" style="margin-top:6px">Needs 30 trades before it means much.</div>';
+  var N=d.no_trade||[];
+  h+='<h2>No trade</h2><details><summary>'+N.length+' underlyings, tap to see why</summary>'+N.map(function(x){return '<div class="n"><b style="font-weight:500;color:var(--ink)">'+esc(x.ticker)+'</b> · '+esc(x.reason)+(x.details?'<br>'+esc(x.details.join(' | ')):'')+'</div>'}).join('')+'</details>';
+  if((d.notes||[]).length)h+='<details><summary>Data notes</summary>'+d.notes.map(function(x){return '<div class="n">'+esc(x)+'</div>'}).join('')+'</details>';
+  $('app').innerHTML=h;
+}
+try{$('acct').value=localStorage.getItem('od_acct')||''}catch(e){}
+$('acct').addEventListener('input',function(){try{localStorage.setItem('od_acct',$('acct').value)}catch(e){}if(D)render()});
+fetch('data/latest.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){D=d;render()}).catch(function(){$('app').innerHTML='<div class="warn">Could not load data/latest.json.</div>'});
+</script>
+</body>
+</html>
