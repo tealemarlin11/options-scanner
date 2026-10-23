@@ -1,0 +1,23 @@
+{
+  "rules_version": "1.0",
+  "universe": ["SPY", "QQQ", "IWM", "GLD", "TLT", "XLE", "XLF"],
+  "vol_index": {"SPY": "^VIX", "QQQ": "^VXN", "IWM": "^RVX", "GLD": "^GVZ", "XLE": "^OVX", "XLF": "^VIX", "TLT": null},
+  "groups": {"SPY": "equity", "QQQ": "equity", "IWM": "equity", "XLF": "equity", "GLD": "gold", "TLT": "bonds", "XLE": "energy"},
+  "max_per_group": 1,
+  "max_open": 3,
+  "risk_pct": 0.015,
+  "trend": {"slow": 200, "fast": 50},
+  "ranks": {"up_sell_min": 40, "down_sell_min": 50},
+  "stress_ratio": 1.0,
+  "credit": {"dte_min": 35, "dte_max": 45, "dte_target": 40, "delta": 0.20, "min_credit_frac": 0.18,
+             "take_profit": 0.50, "stop_multiple": 2.0, "stop_cap_frac": 0.80},
+  "debit": {"dte_min": 45, "dte_max": 60, "dte_target": 52, "long_delta": 0.60, "short_delta": 0.30,
+            "max_cost_frac": 0.40, "take_profit": 0.50, "stop_loss": 0.50, "half_size_for_put_debit": true},
+  "width_pct": 0.015,
+  "max_width": 10,
+  "exit_dte": 21,
+  "liquidity": {"min_oi": 1000, "min_volume": 50, "max_spread_abs": 0.05, "max_spread_pct": 0.08,
+                "max_slippage_frac": 0.08, "walk_fraction": 0.5},
+  "tail": {"tithe": 0.20, "dte_min": 55, "dte_max": 70, "long_otm": 0.10, "short_otm": 0.20, "underlying": "SPY"},
+  "rate": 0.04
+}
