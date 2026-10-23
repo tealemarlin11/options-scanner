@@ -1,112 +1,228 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-GB" data-theme="dark" data-size="m" data-font="lexend">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Option desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f5f1;--card:#fff;--ink:#14161a;--ink2:#52514e;--mute:#898781;--line:#e4e2da;--soft:#f1efe8;--okbg:#e1f5ee;--okt:#085041;--nobg:#fcebeb;--not:#791F1F;--wabg:#faeeda;--wat:#633806;--acbg:#e6f1fb;--act:#0C447C;color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--soft:#1e2128;--okbg:#04342c;--okt:#9fe1cb;--nobg:#501313;--not:#f7c1c1;--wabg:#412402;--wat:#fac775;--acbg:#042c53;--act:#b5d4f4}}
-:root[data-theme="dark"]{--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--soft:#1e2128;--okbg:#04342c;--okt:#9fe1cb;--nobg:#501313;--not:#f7c1c1;--wabg:#412402;--wat:#fac775;--acbg:#042c53;--act:#b5d4f4}
+:root{
+  --bg:#1c1f26;--card:#252932;--card2:#2d323d;--ink:#ececea;--ink2:#c9cbd1;--mute:#a3a7b0;--line:#3b4150;
+  --ok:#5fd0a4;--okbg:#17372e;--no:#ff8f8f;--nobg:#432123;--wa:#ffc86b;--wabg:#43361a;--ac:#8dbdff;--acbg:#1d3350;
+  --btn:#343a48;
+  --fs:17px;--lh:1.7;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="cream"]{--bg:#f6efdc;--card:#fffaf0;--card2:#f1e8d0;--ink:#2a2a26;--ink2:#4a4a43;--mute:#6d6b60;--line:#d9ceb0;
+  --ok:#0d6b4a;--okbg:#dcefe2;--no:#a52626;--nobg:#f6dcd8;--wa:#7a4b00;--wabg:#f8e6b8;--ac:#164f9a;--acbg:#dce8f7;--btn:#eadfc2}
+:root[data-theme="light"]{--bg:#f2f3f5;--card:#ffffff;--card2:#eceef2;--ink:#1d2026;--ink2:#40454f;--mute:#656b77;--line:#d5d9e0;
+  --ok:#0d6b4a;--okbg:#dff1e8;--no:#a52626;--nobg:#f8e1e1;--wa:#7a4b00;--wabg:#fbeccb;--ac:#164f9a;--acbg:#e1ecf9;--btn:#e4e7ed}
+:root[data-size="s"]{--fs:15px}:root[data-size="m"]{--fs:17px}:root[data-size="l"]{--fs:20px}
+:root[data-font="lexend"]{--ff:"Lexend",Verdana,Arial,sans-serif}
+:root[data-font="arial"]{--ff:Arial,Verdana,Helvetica,sans-serif}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:480px;margin:0 auto;padding:16px 14px 40px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:var(--fs);line-height:var(--lh);letter-spacing:.01em;word-spacing:.05em;text-align:left}
+.wrap{max-width:1500px;margin:0 auto;padding:14px 18px 40px}
 a{color:var(--ink2)}
-h1{font-size:22px;font-weight:500;margin:6px 0 2px}
-h2{font-size:12px;font-weight:500;color:var(--ink2);margin:20px 0 8px}
-.sub{font-size:12px;color:var(--mute)}
-.card{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
-.t{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.b{font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;white-space:nowrap}
-.ok{background:var(--okbg);color:var(--okt)}.no{background:var(--nobg);color:var(--not)}.wa{background:var(--wabg);color:var(--wat)}.ac{background:var(--acbg);color:var(--act)}
-.n{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.5}
-table{width:100%;font-size:12px;border-collapse:collapse;margin-top:8px}
-td{padding:3px 0;color:var(--ink2)}td:last-child{text-align:right;color:var(--ink);font-weight:500}
-.ord{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px;word-break:break-word}
-.warn{background:var(--wabg);color:var(--wat);border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:8px}
-input{font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
-button{font:inherit;font-size:13px;margin-top:8px;padding:7px 12px;border-radius:8px;border:.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
-.g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.m{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:10px 12px}.m span{display:block;font-size:12px;color:var(--mute)}.m b{font-size:18px;font-weight:500}
-details{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}summary{cursor:pointer;font-size:14px}
+h1{font-size:1.5em;font-weight:500;margin:0;line-height:1.3}
+h2{font-size:1.05em;font-weight:600;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sub{font-size:.82em;color:var(--mute)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;border-radius:0;margin:0;padding:6px 12px;background:var(--btn);color:var(--ink2);min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:500}
+button{font:inherit;font-size:.88em;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer;min-height:40px}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.hero{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;padding:16px 20px;border-radius:16px;border:1px solid var(--line);background:var(--card);margin-bottom:14px}
+.hero .big{font-size:1.35em;font-weight:500;line-height:1.4;flex:1 1 320px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:6px 12px;border-radius:999px;font-size:.84em;border:1px solid var(--line);background:var(--card2);white-space:nowrap}
+.chip.ok{background:var(--okbg);color:var(--ok);border-color:transparent}.chip.no{background:var(--nobg);color:var(--no);border-color:transparent}.chip.wa{background:var(--wabg);color:var(--wa);border-color:transparent}
+.acct{display:flex;align-items:center;gap:8px;font-size:.88em}
+.acct input{font:inherit;width:130px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.grid{grid-template-columns:minmax(0,1fr)}.wrap{padding:12px 12px 40px}}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.card{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:10px}
+.card:first-of-type{margin-top:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.badge{font-size:.8em;font-weight:500;padding:3px 10px;border-radius:8px;white-space:nowrap}
+.b-ok{background:var(--okbg);color:var(--ok)}.b-no{background:var(--nobg);color:var(--no)}.b-wa{background:var(--wabg);color:var(--wa)}.b-ac{background:var(--acbg);color:var(--ac)}
+.step{display:flex;gap:10px;margin-top:12px}
+.num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:600;margin-top:2px}
+.step b{font-weight:500}
+.order{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.9em;line-height:1.6;margin-top:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.kv{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.kv span{display:block;font-size:.76em;color:var(--mute);line-height:1.4}.kv b{font-weight:500;font-size:1.05em}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.tile span{display:block;font-size:.78em;color:var(--mute);line-height:1.4}.tile b{font-size:1.25em;font-weight:500}
+.note{font-size:.82em;color:var(--mute);margin-top:8px;line-height:1.6}
+.msg{font-size:.92em;color:var(--ink2);margin:0}
+table{width:100%;border-collapse:collapse;font-size:.88em}
+th{font-weight:500;color:var(--mute);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto}
+.good{color:var(--ok)}.bad{color:var(--no)}
+details{margin-top:8px}summary{cursor:pointer;font-size:.9em;color:var(--ink2)}
+.legs td:last-child{text-align:right;white-space:nowrap}
+.full{grid-column:1/-1}
+.warnbar{padding:12px 16px;border-radius:12px;background:var(--wabg);color:var(--wa);margin-bottom:14px;font-size:.95em}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="sub"><a href="../">&larr; Spread scanner</a></div>
-  <h1>Option desk</h1>
-  <div class="sub" id="meta">Loading</div>
-  <div class="warn">Defined-risk spreads on liquid ETFs only. Not financial advice. Paper trade first.</div>
-  <div class="card"><label class="sub" for="acct">Account size (£ or $, saved on this device only)</label><input id="acct" type="number" inputmode="decimal" placeholder="e.g. 10000"></div>
+  <div class="top">
+    <div><div class="sub"><a href="../">&larr; Spread scanner</a></div><h1>Option desk</h1><div class="sub" id="meta">Loading</div></div>
+    <div class="ctl" aria-label="Display settings">
+      <div class="seg" role="group" aria-label="Colour theme"><button data-k="theme" data-v="dark">Dark</button><button data-k="theme" data-v="cream">Cream</button><button data-k="theme" data-v="light">Light</button></div>
+      <div class="seg" role="group" aria-label="Text size"><button data-k="size" data-v="s">A</button><button data-k="size" data-v="m" style="font-size:1.1em">A</button><button data-k="size" data-v="l" style="font-size:1.3em">A</button></div>
+      <div class="seg" role="group" aria-label="Font"><button data-k="font" data-v="lexend">Lexend</button><button data-k="font" data-v="arial">Arial</button></div>
+    </div>
+  </div>
   <div id="app"></div>
 </div>
 <script>
 var D=null;
 function $(i){return document.getElementById(i)}
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function acct(){var v=parseFloat($('acct').value);return v>0?v:null}
-var NAMES={PCS:'Put credit spread',CCS:'Call credit spread',CDS:'Call debit spread',PDS:'Put debit spread'};
-function contracts(t){var a=acct();if(!a)return null;var budget=a*D.risk_pct*t.risk_mult;return Math.floor(budget/t.max_loss_per_contract)}
-function ticket(t){
-  var n=contracts(t),a=acct();
-  var cap=D.max_open*D.risk_pct*100,PF=D.portfolio||{},after=(n>0&&a)?((PF.max_loss_total||0)+n*t.max_loss_per_contract)/a*100:null;
-  var size=n==null?'Enter your account size above to see contracts.':(n>0?'<b style="font-weight:500;color:var(--ink)">'+n+' contract'+(n>1?'s':'')+'</b> keeps the max loss near '+(D.risk_pct*t.risk_mult*100).toFixed(2)+'% of your account.'+(after!=null?'<br>Open risk after this trade: '+after.toFixed(1)+'% of account (cap '+cap.toFixed(1)+'%).'+(after>cap?' <b style="font-weight:500;color:var(--not)">Over the cap, skip or reduce.</b>':''):''):'<b style="font-weight:500;color:var(--not)">Too large for your risk limit.</b> One contract risks '+t.max_loss_per_contract.toFixed(0)+'. Skip this one.');
-  var credit=(t.structure==='PCS'||t.structure==='CCS');
-  var h='<div class="card"><div class="t"><b style="font-weight:500">'+esc(t.ticker)+' · '+NAMES[t.structure]+'</b><span class="b '+(t.chosen?'ok':'wa')+'">'+(t.chosen?'Priority '+t.priority:'Skipped')+'</span></div>'+
-   '<div class="n">'+esc(t.expiry)+' · '+t.dte+' days · trend '+esc(t.trend)+' · vol rank '+t.iv_rank+'</div>'+
-   '<div class="ord">'+esc(t.order)+'</div>'+
-   '<table>'+t.legs.map(function(l){return '<tr><td>'+l.action+' '+l.type+' '+l.strike+' (delta '+l.delta+')</td><td>'+l.bid.toFixed(2)+' / '+l.ask.toFixed(2)+'</td></tr>'}).join('')+
-   '<tr><td>Max loss per contract</td><td>'+t.max_loss_per_contract.toFixed(0)+'</td></tr>'+
-   '<tr><td>Take profit when the spread is worth</td><td>'+t.take_profit_close_at.toFixed(2)+'</td></tr>'+
-   '<tr><td>Stop when the spread is worth</td><td>'+t.stop_close_at.toFixed(2)+'</td></tr>'+
-   '<tr><td>Time exit</td><td>21 days left</td></tr>'+
-   '<tr><td>Liquidity: slippage / open interest</td><td>'+t.slip_pct+'% / '+Math.min(t.legs[0].oi,t.legs[1].oi).toLocaleString('en-GB')+'</td></tr></table>'+
-   '<div class="n">'+size+'</div>'+
-   (credit?'<div class="n">Tail hedge share: set aside '+(0.2*t.net_mid*100).toFixed(0)+' per contract.</div>':'')+
-   (t.skipped?'<div class="n">'+esc(t.skipped)+'.</div>':'')+'</div>';
-  return h;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function fmt(n,d){return n==null?'n/a':Number(n).toLocaleString('en-GB',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+function acct(){var el=$('acct');var v=el?parseFloat(el.value):parseFloat(localStorage.getItem('od_acct')||'');return v>0?v:null}
+var PLAIN={PCS:['Put credit spread','You get paid now. You win if the price stays above your short strike.'],
+ CCS:['Call credit spread','You get paid now. You win if the price stays below your short strike.'],
+ CDS:['Call debit spread','You pay now. You win if the price rises past your long strike.'],
+ PDS:['Put debit spread','You pay now. You win if the price falls below your long strike.'],
+ TAIL:['Crash hedge (put debit spread)','You pay now. It only pays if the market falls a lot.']};
+function breakeven(t){var sell=t.legs.filter(function(l){return l.action==='SELL'})[0],buy=t.legs.filter(function(l){return l.action==='BUY'})[0],p=t.net_mid;
+  if(t.structure==='PCS')return sell.strike-p;if(t.structure==='CCS')return sell.strike+p;if(t.structure==='CDS')return buy.strike+p;return buy.strike-p}
+function jline(t,n){var sell=t.legs.filter(function(l){return l.action==='SELL'})[0],buy=t.legs.filter(function(l){return l.action==='BUY'})[0];
+  var d=new Date().toISOString().slice(0,10),id=t.ticker+(t.structure==='TAIL'?'-TAIL':'')+'-'+d.slice(5).replace('-','');
+  return [id,d,t.ticker,t.structure,t.expiry,sell.strike,buy.strike,(n>0?n:1),'FILL_PRICE','open','','',''].join(',')}
+window.LINES=[];
+function copyLine(i,btn){var txt=window.LINES[i];
+  function done(ok){btn.textContent=ok?'Copied. Paste into journal.csv':'Copy failed';setTimeout(function(){btn.textContent='Copy journal line'},3500)}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true)},function(){fb()})}catch(e){fb()}
+  function fb(){try{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done(true)}catch(e){done(false)}}}
+function contracts(t){var a=acct();if(!a)return null;return Math.floor(a*D.risk_pct*(t.risk_mult||1)/t.max_loss_per_contract)}
+
+function ticketCard(t){
+  var n=contracts(t),a=acct(),PF=D.portfolio||{},cap=D.max_open*D.risk_pct*100;
+  var credit=(t.structure==='PCS'||t.structure==='CCS'),pl=PLAIN[t.structure]||[t.structure,''];
+  var after=(n>0&&a)?((PF.max_loss_total||0)+n*t.max_loss_per_contract)/a*100:null;
+  var size;
+  if(n==null)size='Type your account size at the top to see how many contracts.';
+  else if(n>0)size='<b>'+n+' contract'+(n>1?'s':'')+'</b>. Worst case loss about '+fmt(n*t.max_loss_per_contract)+'.'+(after!=null?'<br>Total open risk would be '+after.toFixed(1)+'% of your account (limit '+cap.toFixed(1)+'%).'+(after>cap?' <b class="bad">Over the limit. Skip or reduce.</b>':''):'');
+  else size='<b class="bad">Too big for your risk limit.</b> One contract can lose '+fmt(t.max_loss_per_contract)+'. Skip this one.';
+  var i=window.LINES.push(jline(t,n))-1;
+  var badge=t.chosen?'<span class="badge b-ok">Priority '+t.priority+'</span>':'<span class="badge b-wa">Skipped</span>';
+  return '<div class="card"><div class="row"><b style="font-weight:600;font-size:1.1em">'+esc(t.ticker)+' &middot; '+esc(pl[0])+'</b>'+badge+'</div>'+
+   '<p class="msg" style="margin-top:4px">'+esc(pl[1])+'</p>'+
+   '<div class="note">Expires '+esc(t.expiry)+' ('+t.dte+' days) &middot; trend '+esc(t.trend)+' &middot; volatility rank '+esc(t.iv_rank)+'</div>'+
+   '<div class="step"><div class="num">1</div><div style="flex:1"><b>Place this order</b><div class="order">'+esc(t.order)+'</div><div class="note">Prices come from delayed Yahoo data. Use your broker\u2019s mid price, and never pay worse than the limit shown.</div></div></div>'+
+   '<div class="step"><div class="num">2</div><div style="flex:1"><b>Set your exits</b><div class="two"><div class="kv"><span>Take profit when worth</span><b>'+t.take_profit_close_at.toFixed(2)+'</b></div><div class="kv"><span>Stop when worth</span><b>'+t.stop_close_at.toFixed(2)+'</b></div></div><div class="note">Also close with 21 days left, or if the trend flips.</div></div></div>'+
+   '<div class="step"><div class="num">3</div><div style="flex:1"><b>Size</b><div class="msg">'+size+'</div></div></div>'+
+   '<details><summary>Details</summary><div class="tw"><table class="legs">'+t.legs.map(function(l){return '<tr><td>'+l.action+' '+l.type+' '+l.strike+'</td><td>bid '+l.bid.toFixed(2)+' / ask '+l.ask.toFixed(2)+'</td></tr>'}).join('')+
+   '<tr><td>Break-even at expiry</td><td>'+breakeven(t).toFixed(2)+'</td></tr><tr><td>Max loss / max gain per contract</td><td>'+fmt(t.max_loss_per_contract)+' / '+fmt(t.max_profit_per_contract)+'</td></tr>'+
+   '<tr><td>Liquidity: slippage, open interest</td><td>'+t.slip_pct+'%, '+fmt(Math.min(t.legs[0].oi,t.legs[1].oi))+'</td></tr></table></div>'+
+   (credit?'<div class="note">Crash hedge share: set aside about '+fmt(0.2*t.net_mid*100)+' per contract.</div>':'')+
+   (t.skipped?'<div class="note">Skipped: '+esc(t.skipped)+'.</div>':'')+'</details>'+
+   '<div style="margin-top:12px"><button onclick="copyLine('+i+',this)">Copy journal line</button></div></div>';
 }
+
+function positionCard(p){
+  var act=p.actions||[],need=act.length>0;
+  var pnl=p.pnl==null?'':'<span class="'+(p.pnl>=0?'good':'bad')+'">'+(p.pnl>=0?'+':'')+fmt(p.pnl)+'</span>';
+  return '<div class="card"><div class="row"><b style="font-weight:600">'+esc(p.ticker)+' &middot; '+esc((PLAIN[p.structure]||[p.structure])[0])+'</b><span class="badge '+(need?'b-no':'b-ok')+'">'+(need?'\u26A0 Act':'\u2714 Hold')+'</span></div>'+
+   '<div class="note">Expires '+esc(p.expiry)+' ('+p.dte+' days left)'+(p.value!=null?' &middot; worth '+p.value.toFixed(2)+' &middot; profit or loss '+pnl:'')+'</div>'+
+   act.map(function(a){return '<div class="step" style="margin-top:8px"><div class="num" style="background:var(--no);color:var(--bg)">!</div><div><b>'+esc(a.replace('ACTION ',''))+'</b></div></div>'}).join('')+'</div>';
+}
+
 function render(){
-  var d=D;$('app').innerHTML='';
-  var h='';
-  if(!d.generated){$('meta').textContent='';$('app').innerHTML='<div class="warn">'+esc((d.notes||[]).join(' '))+'</div>';return}
-  $('meta').textContent='Run '+d.generated.slice(0,16).replace('T',' ')+' UTC · rules '+d.rules_version;
-  var s=d.stress||{};
-  h+='<div class="g"><div class="m"><span>VIX / VIX3M</span><b>'+(s.ratio==null?'n/a':s.ratio)+'</b></div><div class="m"><span>Stress brake</span><b style="color:var(--'+(s.on?'not':'okt')+')">'+(s.on?'ON':'Off')+'</b></div></div>';
-  if(s.on)h+='<div class="warn" style="margin-top:8px">Stress brake on. No new credit spreads. Debit spreads only.</div>';
-  if(d.blocked)h+='<div class="warn" style="margin-top:8px"><b style="font-weight:500">New trades blocked.</b> '+esc(d.blocked)+'. Open trades are still managed.</div>';
-  var up=((d.events||{}).upcoming||[]);
-  if(up.length)h+='<div class="sub" style="margin-top:8px">Coming up: '+up.map(function(u){return esc(u.name)+' '+esc(u.date)+' ('+(u.days===0?'today':u.days+'d')+')'}).join(', ')+'</div>';
-  h+='<h2>New trades</h2>';
-  if(!d.is_monday)h+='<div class="warn">New trades are Mondays. Other days, manage open trades only.</div>';
-  var T=d.tickets||[],ch=T.filter(function(t){return t.chosen}),sk=T.filter(function(t){return !t.chosen});
-  if(!T.length)h+='<div class="card"><div class="n" style="margin:0">No trade passes the rules today.</div></div>';
-  ch.concat(sk).forEach(function(t){h+=ticket(t)});
-  h+='<h2>Open trades, what to do</h2>';
-  var P=d.positions||[];
-  if(!P.length)h+='<div class="card"><div class="n" style="margin:0">None logged. Add trades to optdesk/journal.csv.</div></div>';
-  P.forEach(function(p){var act=(p.actions||[]);h+='<div class="card"><div class="t"><b style="font-weight:500">'+esc(p.ticker)+' '+p.structure+' · '+esc(p.expiry)+'</b><span class="b '+(act.length?'no':'ok')+'">'+(act.length?'Act':'Hold')+'</span></div><div class="n">'+p.dte+' days left'+(p.value!=null?' · worth '+p.value.toFixed(2)+' · P&amp;L '+p.pnl.toFixed(0):'')+'</div>'+act.map(function(a){return '<div class="n"><b style="font-weight:500;color:var(--ink)">'+esc(a.replace('ACTION ',''))+'</b></div>'}).join('')+'</div>'});
-  var PF=d.portfolio||{},a2=acct();
-  h+='<h2>Whole portfolio</h2><div class="g">'+
-   '<div class="m"><span>Open trades</span><b>'+(PF.open_trades||0)+' of '+(PF.max_open||0)+'</b></div>'+
-   '<div class="m"><span>Open risk (max loss)</span><b>'+(PF.max_loss_total||0).toLocaleString('en-GB')+(a2?' · '+((PF.max_loss_total||0)/a2*100).toFixed(1)+'%':'')+'</b></div>'+
-   '<div class="m"><span>SPY-equivalent delta</span><b>'+(PF.spy_equiv_delta_shares||0)+' sh</b></div>'+
-   '<div class="m"><span>Theta per day</span><b>'+(PF.theta_per_day||0)+'</b></div>'+
-   '<div class="m"><span>Vega per vol point</span><b>'+(PF.vega_per_vol_point||0)+'</b></div>'+
-   '<div class="m"><span>Groups held</span><b style="font-size:14px">'+(Object.keys(PF.groups_held||{}).map(function(k){return k+' '+PF.groups_held[k]}).join(', ')||'none')+'</b></div></div>'+
-   '<div class="sub" style="margin-top:6px">Delta is beta-weighted to SPY. Greeks are model estimates from Yahoo implied volatility.'+((PF.greeks_missing_for||[]).length?' Missing for: '+PF.greeks_missing_for.join(', ')+'.':'')+'</div>';
-  var tl=d.tail,st=d.stats||{};
-  h+='<h2>Tail hedge</h2><div class="card"><div class="n" style="margin:0">Banked balance: '+(st.tithe_balance||0).toFixed(0)+'</div>'+(tl?'<div class="n">Candidate cost '+tl.max_loss_per_contract.toFixed(0)+' per contract. '+(tl.can_buy?'<b style="font-weight:500">Bank covers one. Buy it.</b>':'Keep banking.')+'</div><div class="ord">'+esc(tl.order)+'</div>':'<div class="n">No candidate found.</div>')+'</div>';
-  h+='<h2>Scorecard</h2><div class="g"><div class="m"><span>Closed trades</span><b>'+(st.closed||0)+'</b></div><div class="m"><span>Win rate</span><b>'+(st.win_rate==null?'n/a':(st.win_rate*100).toFixed(0)+'%')+'</b></div><div class="m"><span>Average win / loss</span><b>'+(st.avg_win==null?'n/a':st.avg_win.toFixed(0)+' / '+(st.avg_loss==null?'0':st.avg_loss.toFixed(0)))+'</b></div><div class="m"><span>Expectancy per trade</span><b>'+(st.expectancy==null?'n/a':st.expectancy.toFixed(0))+'</b></div></div><div class="sub" style="margin-top:6px">Needs 30 trades before it means much.</div>';
+  var d=D,h='';
+  if(!d.generated){$('meta').textContent='';$('app').innerHTML='<div class="warnbar">'+esc((d.notes||[]).join(' ')||'No scan has run yet.')+'</div>';return}
+  $('meta').textContent='Last scan '+d.generated.slice(0,16).replace('T',' ')+' UTC \u00B7 rules '+d.rules_version;
+  window.LINES=[];
+  var T=d.tickets||[],ch=T.filter(function(t){return t.chosen}),sk=T.filter(function(t){return !t.chosen}),P=d.positions||[],PF=d.portfolio||{},s=d.stress||{},st=d.stats||{};
+  var needAct=P.filter(function(p){return (p.actions||[]).length>0}),a=acct();
+  var head,icon;
+  if(needAct.length){icon='\u26A0';head=needAct.length+(needAct.length>1?' open trades need':' open trade needs')+' action now.'}
+  else if(d.blocked){icon='\u23F8';head='New trades are paused. '+d.blocked+'.'}
+  else if(ch.length&&d.is_monday){icon='\u2714';head=ch.length+(ch.length>1?' new trades':' new trade')+' to place today.'}
+  else if(ch.length){icon='\u2139';head='Nothing to do today. '+ch.length+' setup'+(ch.length>1?'s pass':' passes')+' for Monday.'}
+  else if(!d.is_monday){icon='\u2714';head='Nothing to do today. New trades are placed on Mondays.'}
+  else{icon='\u2714';head='No trade passes the rules today.'}
+  var ups=((d.events||{}).upcoming||[]);
+  h+='<div class="hero"><div class="big">'+icon+' '+esc(head)+'</div><div class="chips">'+
+    '<span class="chip '+(s.on?'no':'ok')+'">Stress brake: '+(s.on?'ON':'off')+(s.ratio!=null?' ('+s.ratio+')':'')+'</span>'+
+    (ups.length?ups.slice(0,3).map(function(u){return '<span class="chip '+(u.days<=2?'wa':'')+'">'+esc(u.name)+' '+esc(u.date.slice(5))+' ('+(u.days===0?'today':u.days+'d')+')</span>'}).join(''):'')+
+    '<span class="chip">Open trades '+(PF.open_trades||0)+' of '+(PF.max_open||d.max_open)+'</span></div>'+
+    '<label class="acct">Account size <input id="acct" type="number" inputmode="decimal" placeholder="10000" value="'+(a||'')+'"></label></div>';
+
+  h+='<div class="grid">';
+  // column 1: new trades
+  h+='<div class="col"><div class="panel"><h2>\uD83D\uDCCB New trades'+(d.is_monday?'':' <span class="badge b-wa">Preview for Monday</span>')+'</h2>';
+  if(d.blocked)h+='<p class="msg">Paused: '+esc(d.blocked)+'. Open trades are still managed.</p>';
+  else if(!T.length)h+='<p class="msg">No trade passes the rules right now. See the table at the bottom for why.</p>';
+  ch.concat(sk).forEach(function(t){h+=ticketCard(t)});
+  h+='</div></div>';
+  // column 2: open trades + tail hedge
+  h+='<div class="col"><div class="panel"><h2>\uD83D\uDCC2 Your open trades</h2>';
+  if(!P.length)h+='<p class="msg">None logged. Add trades to optdesk/journal.csv. Use the Copy journal line button on a trade.</p>';
+  P.forEach(function(p){h+=positionCard(p)});
+  h+='</div>';
+  var tl=d.tail;
+  h+='<div class="panel"><h2>\uD83D\uDEE1 Crash hedge</h2><p class="msg">Banked so far: <b>'+fmt(st.tithe_balance||0)+'</b></p>';
+  if(tl){var ti=window.LINES.push(jline(tl,1))-1;
+    h+='<p class="msg">Cost about '+fmt(tl.max_loss_per_contract)+' per contract. '+(tl.can_buy?'<b>Your bank covers one.</b>':'Keep banking.')+'</p><div class="order">'+esc(tl.order)+'</div><div class="note">Indicative price from delayed data. Check your broker\u2019s mid.</div><div style="margin-top:10px"><button onclick="copyLine('+ti+',this)">Copy journal line</button></div>'}
+  else h+='<p class="msg">No candidate found.</p>';
+  h+='</div></div>';
+  // column 3: portfolio + scorecard
+  h+='<div class="col"><div class="panel"><h2>\uD83D\uDCCA Whole portfolio</h2><div class="tiles">'+
+   '<div class="tile"><span>Open risk (worst case)</span><b>'+fmt(PF.max_loss_total||0)+(a?' \u00B7 '+((PF.max_loss_total||0)/a*100).toFixed(1)+'%':'')+'</b></div>'+
+   '<div class="tile"><span>Market exposure (SPY shares)</span><b>'+fmt(PF.spy_equiv_delta_shares||0,1)+'</b></div>'+
+   '<div class="tile"><span>Time decay per day</span><b>'+fmt(PF.theta_per_day||0,2)+'</b></div>'+
+   '<div class="tile"><span>Volatility sensitivity</span><b>'+fmt(PF.vega_per_vol_point||0,2)+'</b></div>'+
+   '<div class="tile" style="grid-column:1/-1"><span>Groups held</span><b style="font-size:1em">'+(Object.keys(PF.groups_held||{}).map(function(k){return k+' '+PF.groups_held[k]}).join(', ')||'none')+'</b></div></div>'+
+   '<div class="note">Exposure is beta-weighted to SPY. Greeks are estimates from Yahoo volatility.'+((PF.greeks_missing_for||[]).length?' Missing for '+esc(PF.greeks_missing_for.join(', '))+'.':'')+'</div></div>';
+  h+='<div class="panel"><h2>\uD83C\uDFAF Scorecard</h2><div class="tiles">'+
+   '<div class="tile"><span>Closed trades</span><b>'+(st.closed||0)+'</b></div>'+
+   '<div class="tile"><span>Win rate</span><b>'+(st.win_rate==null?'n/a':(st.win_rate*100).toFixed(0)+'%')+'</b></div>'+
+   '<div class="tile"><span>Average win</span><b>'+(st.avg_win==null?'n/a':fmt(st.avg_win))+'</b></div>'+
+   '<div class="tile"><span>Average loss</span><b>'+(st.avg_loss==null?'n/a':fmt(st.avg_loss))+'</b></div>'+
+   '<div class="tile" style="grid-column:1/-1"><span>Profit per trade, on average</span><b>'+(st.expectancy==null?'n/a':fmt(st.expectancy))+'</b></div></div><div class="note">Needs 30 closed trades before it means much.</div></div></div>';
+  // full width: why no trade
   var N=d.no_trade||[];
-  h+='<h2>No trade</h2><details><summary>'+N.length+' underlyings, tap to see why</summary>'+N.map(function(x){return '<div class="n"><b style="font-weight:500;color:var(--ink)">'+esc(x.ticker)+'</b> · '+esc(x.reason)+(x.details?'<br>'+esc(x.details.join(' | ')):'')+'</div>'}).join('')+'</details>';
-  if((d.notes||[]).length)h+='<details><summary>Data notes</summary>'+d.notes.map(function(x){return '<div class="n">'+esc(x)+'</div>'}).join('')+'</details>';
+  h+='<div class="panel full"><h2>\uD83D\uDD0D Why each ETF is not a trade</h2><div class="tw"><table><tr><th>ETF</th><th>Trend</th><th>Volatility rank</th><th>Result</th></tr>'+
+    N.map(function(x){var why=x.reason+(x.details?' \u2014 '+x.details[0]:'');return '<tr><td><b style="font-weight:500">'+esc(x.ticker)+'</b></td><td>'+esc(x.trend?x.trend.state:'\u2013')+'</td><td>'+(x.iv_rank==null?'\u2013':esc(x.iv_rank))+'</td><td>\u2716 '+esc(why)+'</td></tr>'}).join('')+
+    T.map(function(t){return '<tr><td><b style="font-weight:500">'+esc(t.ticker)+'</b></td><td>'+esc(t.trend)+'</td><td>'+esc(t.iv_rank)+'</td><td class="good">\u2714 '+(t.chosen?'Trade ticket above':'Passes, but skipped: '+esc(t.skipped||''))+'</td></tr>'}).join('')+
+    '</table></div>'+((d.notes||[]).length?'<details><summary>Data notes ('+d.notes.length+')</summary>'+d.notes.map(function(x){return '<div class="note">'+esc(x)+'</div>'}).join('')+'</details>':'')+'</div>';
+  h+='</div><p class="note">Defined-risk spreads on liquid ETFs only. Not financial advice. Paper trade first.</p>';
   $('app').innerHTML=h;
+  var el=$('acct');if(el)el.addEventListener('change',function(){try{localStorage.setItem('od_acct',el.value)}catch(e){}render()});
 }
-try{$('acct').value=localStorage.getItem('od_acct')||''}catch(e){}
-$('acct').addEventListener('input',function(){try{localStorage.setItem('od_acct',$('acct').value)}catch(e){}if(D)render()});
-fetch('data/latest.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){D=d;render()}).catch(function(){$('app').innerHTML='<div class="warn">Could not load data/latest.json.</div>'});
+
+function applyPrefs(){
+  var r=document.documentElement;
+  ['theme','size','font'].forEach(function(k){
+    var v=null;try{v=localStorage.getItem('od_'+k)}catch(e){}
+    if(v)r.setAttribute('data-'+k,v);
+    var cur=r.getAttribute('data-'+k);
+    document.querySelectorAll('button[data-k="'+k+'"]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-v')===cur?'true':'false')});
+  });
+}
+document.querySelectorAll('button[data-k]').forEach(function(b){b.addEventListener('click',function(){
+  try{localStorage.setItem('od_'+b.getAttribute('data-k'),b.getAttribute('data-v'))}catch(e){}
+  document.documentElement.setAttribute('data-'+b.getAttribute('data-k'),b.getAttribute('data-v'));applyPrefs()})});
+applyPrefs();
+fetch('data/latest.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){D=d;render()}).catch(function(){$('app').innerHTML='<div class="warnbar">Could not load data/latest.json.</div>'});
 </script>
 </body>
 </html>
