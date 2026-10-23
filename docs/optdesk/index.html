@@ -50,7 +50,8 @@ var NAMES={PCS:'Put credit spread',CCS:'Call credit spread',CDS:'Call debit spre
 function contracts(t){var a=acct();if(!a)return null;var budget=a*D.risk_pct*t.risk_mult;return Math.floor(budget/t.max_loss_per_contract)}
 function ticket(t){
   var n=contracts(t),a=acct();
-  var size=n==null?'Enter your account size above to see contracts.':(n>0?'<b style="font-weight:500;color:var(--ink)">'+n+' contract'+(n>1?'s':'')+'</b> keeps the max loss near '+(D.risk_pct*t.risk_mult*100).toFixed(2)+'% of your account.':'<b style="font-weight:500;color:var(--not)">Too large for your risk limit.</b> One contract risks '+t.max_loss_per_contract.toFixed(0)+'. Skip this one.');
+  var cap=D.max_open*D.risk_pct*100,PF=D.portfolio||{},after=(n>0&&a)?((PF.max_loss_total||0)+n*t.max_loss_per_contract)/a*100:null;
+  var size=n==null?'Enter your account size above to see contracts.':(n>0?'<b style="font-weight:500;color:var(--ink)">'+n+' contract'+(n>1?'s':'')+'</b> keeps the max loss near '+(D.risk_pct*t.risk_mult*100).toFixed(2)+'% of your account.'+(after!=null?'<br>Open risk after this trade: '+after.toFixed(1)+'% of account (cap '+cap.toFixed(1)+'%).'+(after>cap?' <b style="font-weight:500;color:var(--not)">Over the cap, skip or reduce.</b>':''):''):'<b style="font-weight:500;color:var(--not)">Too large for your risk limit.</b> One contract risks '+t.max_loss_per_contract.toFixed(0)+'. Skip this one.');
   var credit=(t.structure==='PCS'||t.structure==='CCS');
   var h='<div class="card"><div class="t"><b style="font-weight:500">'+esc(t.ticker)+' · '+NAMES[t.structure]+'</b><span class="b '+(t.chosen?'ok':'wa')+'">'+(t.chosen?'Priority '+t.priority:'Skipped')+'</span></div>'+
    '<div class="n">'+esc(t.expiry)+' · '+t.dte+' days · trend '+esc(t.trend)+' · vol rank '+t.iv_rank+'</div>'+
@@ -74,6 +75,9 @@ function render(){
   var s=d.stress||{};
   h+='<div class="g"><div class="m"><span>VIX / VIX3M</span><b>'+(s.ratio==null?'n/a':s.ratio)+'</b></div><div class="m"><span>Stress brake</span><b style="color:var(--'+(s.on?'not':'okt')+')">'+(s.on?'ON':'Off')+'</b></div></div>';
   if(s.on)h+='<div class="warn" style="margin-top:8px">Stress brake on. No new credit spreads. Debit spreads only.</div>';
+  if(d.blocked)h+='<div class="warn" style="margin-top:8px"><b style="font-weight:500">New trades blocked.</b> '+esc(d.blocked)+'. Open trades are still managed.</div>';
+  var up=((d.events||{}).upcoming||[]);
+  if(up.length)h+='<div class="sub" style="margin-top:8px">Coming up: '+up.map(function(u){return esc(u.name)+' '+esc(u.date)+' ('+(u.days===0?'today':u.days+'d')+')'}).join(', ')+'</div>';
   h+='<h2>New trades</h2>';
   if(!d.is_monday)h+='<div class="warn">New trades are Mondays. Other days, manage open trades only.</div>';
   var T=d.tickets||[],ch=T.filter(function(t){return t.chosen}),sk=T.filter(function(t){return !t.chosen});
@@ -83,6 +87,15 @@ function render(){
   var P=d.positions||[];
   if(!P.length)h+='<div class="card"><div class="n" style="margin:0">None logged. Add trades to optdesk/journal.csv.</div></div>';
   P.forEach(function(p){var act=(p.actions||[]);h+='<div class="card"><div class="t"><b style="font-weight:500">'+esc(p.ticker)+' '+p.structure+' · '+esc(p.expiry)+'</b><span class="b '+(act.length?'no':'ok')+'">'+(act.length?'Act':'Hold')+'</span></div><div class="n">'+p.dte+' days left'+(p.value!=null?' · worth '+p.value.toFixed(2)+' · P&amp;L '+p.pnl.toFixed(0):'')+'</div>'+act.map(function(a){return '<div class="n"><b style="font-weight:500;color:var(--ink)">'+esc(a.replace('ACTION ',''))+'</b></div>'}).join('')+'</div>'});
+  var PF=d.portfolio||{},a2=acct();
+  h+='<h2>Whole portfolio</h2><div class="g">'+
+   '<div class="m"><span>Open trades</span><b>'+(PF.open_trades||0)+' of '+(PF.max_open||0)+'</b></div>'+
+   '<div class="m"><span>Open risk (max loss)</span><b>'+(PF.max_loss_total||0).toLocaleString('en-GB')+(a2?' · '+((PF.max_loss_total||0)/a2*100).toFixed(1)+'%':'')+'</b></div>'+
+   '<div class="m"><span>SPY-equivalent delta</span><b>'+(PF.spy_equiv_delta_shares||0)+' sh</b></div>'+
+   '<div class="m"><span>Theta per day</span><b>'+(PF.theta_per_day||0)+'</b></div>'+
+   '<div class="m"><span>Vega per vol point</span><b>'+(PF.vega_per_vol_point||0)+'</b></div>'+
+   '<div class="m"><span>Groups held</span><b style="font-size:14px">'+(Object.keys(PF.groups_held||{}).map(function(k){return k+' '+PF.groups_held[k]}).join(', ')||'none')+'</b></div></div>'+
+   '<div class="sub" style="margin-top:6px">Delta is beta-weighted to SPY. Greeks are model estimates from Yahoo implied volatility.'+((PF.greeks_missing_for||[]).length?' Missing for: '+PF.greeks_missing_for.join(', ')+'.':'')+'</div>';
   var tl=d.tail,st=d.stats||{};
   h+='<h2>Tail hedge</h2><div class="card"><div class="n" style="margin:0">Banked balance: '+(st.tithe_balance||0).toFixed(0)+'</div>'+(tl?'<div class="n">Candidate cost '+tl.max_loss_per_contract.toFixed(0)+' per contract. '+(tl.can_buy?'<b style="font-weight:500">Bank covers one. Buy it.</b>':'Keep banking.')+'</div><div class="ord">'+esc(tl.order)+'</div>':'<div class="n">No candidate found.</div>')+'</div>';
   h+='<h2>Scorecard</h2><div class="g"><div class="m"><span>Closed trades</span><b>'+(st.closed||0)+'</b></div><div class="m"><span>Win rate</span><b>'+(st.win_rate==null?'n/a':(st.win_rate*100).toFixed(0)+'%')+'</b></div><div class="m"><span>Average win / loss</span><b>'+(st.avg_win==null?'n/a':st.avg_win.toFixed(0)+' / '+(st.avg_loss==null?'0':st.avg_loss.toFixed(0)))+'</b></div><div class="m"><span>Expectancy per trade</span><b>'+(st.expectancy==null?'n/a':st.expectancy.toFixed(0))+'</b></div></div><div class="sub" style="margin-top:6px">Needs 30 trades before it means much.</div>';
