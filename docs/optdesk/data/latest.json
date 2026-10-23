@@ -1,1 +1,142 @@
-{"generated":null,"tickets":[],"no_trade":[],"positions":[],"tail":null,"stats":{"closed":0},"stress":{},"notes":["No run yet. Run the Option desk workflow from the Actions tab."]}
+{
+ "generated": "2026-10-23T10:33:30+00:00",
+ "rules_version": "1.0",
+ "is_monday": false,
+ "stress": {
+  "vix": 19.56,
+  "vix3m": 20.12,
+  "ratio": 0.972,
+  "on": false
+ },
+ "risk_pct": 0.015,
+ "max_open": 3,
+ "tickets": [],
+ "no_trade": [
+  {
+   "ticker": "SPY",
+   "spot": 763.96,
+   "trend": {
+    "state": "UP",
+    "close": 763.96,
+    "sma200": 726.65,
+    "sma50": 768.17
+   },
+   "iv_rank": 34.6,
+   "rank_source": "^VIX",
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-12-18: could not pair strikes by delta"
+   ],
+   "structure": "CDS"
+  },
+  {
+   "ticker": "QQQ",
+   "spot": 704.47,
+   "trend": {
+    "state": "UP",
+    "close": 704.47,
+    "sma200": 676.89,
+    "sma50": 726.37
+   },
+   "iv_rank": 70.5,
+   "rank_source": "^VXN",
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-11-30: thin chain",
+    "2026-11-27: thin chain"
+   ],
+   "structure": "PCS"
+  },
+  {
+   "ticker": "IWM",
+   "spot": 276.67,
+   "trend": {
+    "state": "DOWN",
+    "close": 276.67,
+    "sma200": 278.13,
+    "sma50": 286.97
+   },
+   "iv_rank": null,
+   "rank_source": "^RVX",
+   "reason": "No volatility rank available"
+  },
+  {
+   "ticker": "GLD",
+   "spot": 369.0,
+   "trend": {
+    "state": "DOWN",
+    "close": 369.0,
+    "sma200": 414.42,
+    "sma50": 395.15
+   },
+   "iv_rank": 17.3,
+   "rank_source": "^GVZ",
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-12-18: could not pair strikes by delta"
+   ],
+   "structure": "PDS"
+  },
+  {
+   "ticker": "TLT",
+   "spot": 81.74,
+   "trend": {
+    "state": "MIXED",
+    "close": 81.74,
+    "sma200": 84.81,
+    "sma50": 80.58
+   },
+   "iv_rank": 67.6,
+   "rank_source": "20-day realized vol",
+   "reason": "Trend mixed: close is between the 50 and 200 day averages"
+  },
+  {
+   "ticker": "XLE",
+   "spot": 67.57,
+   "trend": {
+    "state": "UP",
+    "close": 67.57,
+    "sma200": 58.06,
+    "sma50": 64.17
+   },
+   "iv_rank": 29.4,
+   "rank_source": "^OVX",
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-12-18: open interest 8 under 1000; volume 2 under 50; bid-ask 2.50 too wide; open interest 397 under 1000; volume 1 under 50; bid-ask 1.40 too wide; cost 6.00 over 40% of the 10 width; slippage 1.95 is 32% of the cost"
+   ],
+   "structure": "CDS"
+  },
+  {
+   "ticker": "XLF",
+   "spot": 56.65,
+   "trend": {
+    "state": "UP",
+    "close": 56.65,
+    "sma200": 53.69,
+    "sma50": 56.12
+   },
+   "iv_rank": 34.6,
+   "rank_source": "^VIX",
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-12-18: thin chain"
+   ],
+   "structure": "CDS"
+  }
+ ],
+ "positions": [],
+ "tail": null,
+ "stats": {
+  "closed": 0,
+  "total_pnl": 0,
+  "win_rate": null,
+  "avg_win": null,
+  "avg_loss": null,
+  "expectancy": null,
+  "tithe_banked": 0,
+  "tail_spent": 0,
+  "tithe_balance": 0
+ },
+ "notes": []
+}
