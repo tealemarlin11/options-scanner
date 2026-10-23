@@ -25,11 +25,11 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:var(--fs);line-height:var(--lh);letter-spacing:.01em;word-spacing:.05em;text-align:left}
-.wrap{max-width:1500px;margin:0 auto;padding:14px 18px 40px}
+.wrap{max-width:1500px;margin:0 auto;padding:10px 18px 12px}
 a{color:var(--ink2)}
 h1{font-size:1.5em;font-weight:500;margin:0;line-height:1.3}
-h2{font-size:1.05em;font-weight:600;margin:0 0 10px;display:flex;align-items:center;gap:8px}
-.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:12px}
+h2{font-size:1.05em;font-weight:600;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;margin-bottom:10px}
 .sub{font-size:.82em;color:var(--mute)}
 .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -37,18 +37,20 @@ h2{font-size:1.05em;font-weight:600;margin:0 0 10px;display:flex;align-items:cen
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:500}
 button{font:inherit;font-size:.88em;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer;min-height:40px}
 button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
-.hero{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;padding:16px 20px;border-radius:16px;border:1px solid var(--line);background:var(--card);margin-bottom:14px}
-.hero .big{font-size:1.35em;font-weight:500;line-height:1.4;flex:1 1 320px}
+.hero{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;padding:12px 20px;border-radius:16px;border:1px solid var(--line);background:var(--card);margin-bottom:12px}
+.hero .big{font-size:1.2em;font-weight:500;line-height:1.4;flex:1 1 320px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:6px 12px;border-radius:999px;font-size:.84em;border:1px solid var(--line);background:var(--card2);white-space:nowrap}
 .chip.ok{background:var(--okbg);color:var(--ok);border-color:transparent}.chip.no{background:var(--nobg);color:var(--no);border-color:transparent}.chip.wa{background:var(--wabg);color:var(--wa);border-color:transparent}
 .acct{display:flex;align-items:center;gap:8px;font-size:.88em}
 .acct input{font:inherit;width:130px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
 @media (max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:700px){.grid{grid-template-columns:minmax(0,1fr)}.wrap{padding:12px 12px 40px}}
-.col{display:flex;flex-direction:column;gap:14px;min-width:0}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.why{padding:6px 0;border-bottom:1px solid var(--line)}.why:last-of-type{border-bottom:0}
+.why .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.why .tag{font-size:.78em;color:var(--mute);white-space:nowrap}.why .r{font-size:.84em;line-height:1.45;margin-top:0;color:var(--ink2)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .card{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:10px}
 .card:first-of-type{margin-top:0}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -61,10 +63,10 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .kv{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 .kv span{display:block;font-size:.76em;color:var(--mute);line-height:1.4}.kv b{font-weight:500;font-size:1.05em}
-.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.tile{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-.tile span{display:block;font-size:.78em;color:var(--mute);line-height:1.4}.tile b{font-size:1.25em;font-weight:500}
-.note{font-size:.82em;color:var(--mute);margin-top:8px;line-height:1.6}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tile{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:7px 12px}
+.tile span{display:block;font-size:.78em;color:var(--mute);line-height:1.35}.tile b{font-size:1.15em;font-weight:500;line-height:1.4}
+.note{font-size:.82em;color:var(--mute);margin-top:6px;line-height:1.55}
 .msg{font-size:.92em;color:var(--ink2);margin:0}
 table{width:100%;border-collapse:collapse;font-size:.88em}
 th{font-weight:500;color:var(--mute);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
@@ -145,10 +147,27 @@ function positionCard(p){
    act.map(function(a){return '<div class="step" style="margin-top:8px"><div class="num" style="background:var(--no);color:var(--bg)">!</div><div><b>'+esc(a.replace('ACTION ',''))+'</b></div></div>'}).join('')+'</div>';
 }
 
+function whyText(x){
+  var r=x.reason||'';
+  if(x.details&&x.details.length){
+    var parts=String(x.details[0]).replace(/^\d{4}-\d{2}-\d{2}:\s*/,'').split('; ');
+    var seen={},out=[];parts.forEach(function(p){if(!seen[p]){seen[p]=1;out.push(p)}});
+    return 'Liquidity: '+out[0]+(out.length>1?' (+'+(out.length-1)+' more)':'');
+  }
+  if(r.indexOf('Trend mixed')===0)return 'Trend mixed: between the 50 and 200 day averages';
+  return r;
+}
+function whyPanel(){
+  var N=D.no_trade||[],T=D.tickets||[],h='<div class="panel"><h2>\uD83D\uDD0D Why each ETF is not a trade</h2>';
+  N.forEach(function(x){h+='<div class="why"><div class="t"><b style="font-weight:600">'+esc(x.ticker)+'</b><span class="tag">'+esc(x.trend?x.trend.state:'\u2013')+(x.iv_rank==null?'':' \u00B7 vol rank '+esc(Math.round(x.iv_rank)))+'</span></div><div class="r">\u2716 '+esc(whyText(x))+'</div></div>'});
+  T.forEach(function(t){h+='<div class="why"><div class="t"><b style="font-weight:600">'+esc(t.ticker)+'</b><span class="tag">'+esc(t.trend)+' \u00B7 vol rank '+esc(Math.round(t.iv_rank))+'</span></div><div class="r good">\u2714 '+(t.chosen?'Trade ticket above':'Passes, but skipped: '+esc(t.skipped||''))+'</div></div>'});
+  if((D.notes||[]).length)h+='<details><summary>Data notes ('+D.notes.length+')</summary>'+D.notes.map(function(x){return '<div class="note">'+esc(x)+'</div>'}).join('')+'</details>';
+  return h+'</div>';
+}
 function render(){
   var d=D,h='';
   if(!d.generated){$('meta').textContent='';$('app').innerHTML='<div class="warnbar">'+esc((d.notes||[]).join(' ')||'No scan has run yet.')+'</div>';return}
-  $('meta').textContent='Last scan '+d.generated.slice(0,16).replace('T',' ')+' UTC \u00B7 rules '+d.rules_version;
+  $('meta').textContent='Last scan '+d.generated.slice(0,16).replace('T',' ')+' UTC \u00B7 Defined-risk spreads on liquid ETFs only \u00B7 Not financial advice \u00B7 Paper trade first';
   window.LINES=[];
   var T=d.tickets||[],ch=T.filter(function(t){return t.chosen}),sk=T.filter(function(t){return !t.chosen}),P=d.positions||[],PF=d.portfolio||{},s=d.stress||{},st=d.stats||{};
   var needAct=P.filter(function(p){return (p.actions||[]).length>0}),a=acct();
@@ -170,9 +189,9 @@ function render(){
   // column 1: new trades
   h+='<div class="col"><div class="panel"><h2>\uD83D\uDCCB New trades'+(d.is_monday?'':' <span class="badge b-wa">Preview for Monday</span>')+'</h2>';
   if(d.blocked)h+='<p class="msg">Paused: '+esc(d.blocked)+'. Open trades are still managed.</p>';
-  else if(!T.length)h+='<p class="msg">No trade passes the rules right now. See the table at the bottom for why.</p>';
+  else if(!T.length)h+='<p class="msg">No trade passes the rules right now.</p>';
   ch.concat(sk).forEach(function(t){h+=ticketCard(t)});
-  h+='</div></div>';
+  h+='</div>'+whyPanel()+'</div>';
   // column 2: open trades + tail hedge
   h+='<div class="col"><div class="panel"><h2>\uD83D\uDCC2 Your open trades</h2>';
   if(!P.length)h+='<p class="msg">None logged. Add trades to optdesk/journal.csv. Use the Copy journal line button on a trade.</p>';
@@ -198,13 +217,7 @@ function render(){
    '<div class="tile"><span>Average win</span><b>'+(st.avg_win==null?'n/a':fmt(st.avg_win))+'</b></div>'+
    '<div class="tile"><span>Average loss</span><b>'+(st.avg_loss==null?'n/a':fmt(st.avg_loss))+'</b></div>'+
    '<div class="tile" style="grid-column:1/-1"><span>Profit per trade, on average</span><b>'+(st.expectancy==null?'n/a':fmt(st.expectancy))+'</b></div></div><div class="note">Needs 30 closed trades before it means much.</div></div></div>';
-  // full width: why no trade
-  var N=d.no_trade||[];
-  h+='<div class="panel full"><h2>\uD83D\uDD0D Why each ETF is not a trade</h2><div class="tw"><table><tr><th>ETF</th><th>Trend</th><th>Volatility rank</th><th>Result</th></tr>'+
-    N.map(function(x){var why=x.reason+(x.details?' \u2014 '+x.details[0]:'');return '<tr><td><b style="font-weight:500">'+esc(x.ticker)+'</b></td><td>'+esc(x.trend?x.trend.state:'\u2013')+'</td><td>'+(x.iv_rank==null?'\u2013':esc(x.iv_rank))+'</td><td>\u2716 '+esc(why)+'</td></tr>'}).join('')+
-    T.map(function(t){return '<tr><td><b style="font-weight:500">'+esc(t.ticker)+'</b></td><td>'+esc(t.trend)+'</td><td>'+esc(t.iv_rank)+'</td><td class="good">\u2714 '+(t.chosen?'Trade ticket above':'Passes, but skipped: '+esc(t.skipped||''))+'</td></tr>'}).join('')+
-    '</table></div>'+((d.notes||[]).length?'<details><summary>Data notes ('+d.notes.length+')</summary>'+d.notes.map(function(x){return '<div class="note">'+esc(x)+'</div>'}).join('')+'</details>':'')+'</div>';
-  h+='</div><p class="note">Defined-risk spreads on liquid ETFs only. Not financial advice. Paper trade first.</p>';
+  h+='</div>';
   $('app').innerHTML=h;
   var el=$('acct');if(el)el.addEventListener('change',function(){try{localStorage.setItem('od_acct',el.value)}catch(e){}render()});
 }
