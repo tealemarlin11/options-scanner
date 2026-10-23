@@ -145,6 +145,61 @@ def test_tail_and_expiry():
     assert [d for _, d in r] == [38, 44]
 
 
+
+
+def test_events_pause_shock(tmp="/tmp/pause_test.txt"):
+    ev = {"FOMC": ["2026-10-28"], "CPI": ["2026-11-10"], "JOBS": ["2026-11-06"]}
+    mon = dt.date(2026, 10, 26)
+    r = core.event_check(ev, mon, 2)
+    assert r["blocked"] and "FOMC" in r["reason"]
+    assert not core.event_check(ev, dt.date(2026, 10, 29), 2)["blocked"]
+    assert core.event_check(ev, dt.date(2026, 11, 9), 2)["blocked"]
+    assert core.event_check(ev, dt.date(2026, 11, 6), 0)["blocked"]
+    assert core.event_check(ev, dt.date(2026, 10, 26), 2)["stale"] is True
+    open(tmp, "w").write("# comment\n2026-11-20 Geopolitical shock\n")
+    p = core.pause_check(tmp, dt.date(2026, 11, 10))
+    assert p and p["until"] == "2026-11-20" and "Geopolitical" in p["reason"]
+    assert core.pause_check(tmp, dt.date(2026, 11, 21)) is None
+    open(tmp, "w").write("# only comments\n")
+    assert core.pause_check(tmp, dt.date(2026, 11, 10)) is None
+    s = px(100)
+    assert core.shock_check(s, 2.5)[0] is False
+    s2 = s.copy()
+    s2.iloc[-1] = s2.iloc[-2] * 0.94
+    hit, mv = core.shock_check(s2, 2.5)
+    assert hit and mv < -5
+
+
+def test_greeks_and_portfolio():
+    g = core.greeks(500, 500, 40 / 365, 0.2, True)
+    assert 0.5 < g["delta"] < 0.6 and g["theta"] < 0 and g["vega"] > 0 and g["gamma"] > 0
+    gp = core.greeks(500, 500, 40 / 365, 0.2, False)
+    assert abs((g["delta"] - gp["delta"]) - 1.0) < 1e-9            # call minus put delta = 1
+    today = dt.date.today()
+    r = row(expiry=str(today + dt.timedelta(days=40)), short_strike=480.0, long_strike=470.0, price=1.5)
+    ivs = {("put", 480.0): 0.22, ("put", 470.0): 0.23}
+    pg = core.position_greeks(r, ivs, 500.0, today)
+    assert pg["delta"] > 0 and pg["theta"] > 0 and pg["vega"] < 0          # short put spread
+    d = row(structure="CDS", short_strike=520.0, long_strike=500.0, price=6.0, expiry=str(today + dt.timedelta(days=50)))
+    dg = core.position_greeks(d, {("call", 500.0): 0.2, ("call", 520.0): 0.2}, 500.0, today)
+    assert dg["delta"] > 0 and dg["theta"] < 0
+    assert core.position_greeks(r, {}, 500.0, today) is None
+    assert core.max_loss(r) == (10 - 1.5) * 100 * 2 and core.max_loss(d) == 6.0 * 100 * 2
+    s = core.portfolio_summary([{"ticker": "SPY", "structure": "PCS", "spot": 500, "beta": 1.0, "greeks": pg, "max_loss": 1700},
+                                {"ticker": "QQQ", "structure": "CDS", "spot": 400, "beta": 1.2, "greeks": dg, "max_loss": 600},
+                                {"ticker": "GLD", "structure": "PCS", "spot": 300, "beta": 0.1, "greeks": None, "max_loss": 200}], 500.0)
+    assert s["max_loss_total"] == 2500 and s["greeks_missing_for"] == ["GLD"] and s["open_trades"] == 3
+
+
+def test_selection_counts_open_book():
+    mk = lambda tk, s: {"ticker": tk, "pass": True, "slip_pct": s}
+    held = [{"ticker": "QQQ", "structure": "PCS", "status": "open"}, {"ticker": "GLD", "structure": "CCS", "status": "open"}]
+    ch = core.select_trades([mk("SPY", 1), mk("TLT", 2), mk("XLE", 3)], CFG, held)
+    assert [t["ticker"] for t in ch] == ["TLT"], ch                      # SPY blocked by QQQ, XLE by cap
+    tail_only = [{"ticker": "SPY", "structure": "TAIL", "status": "open"}]
+    assert len(core.select_trades([mk("SPY", 1)], CFG, tail_only)) == 1
+
+
 if __name__ == "__main__":
     for n, f in list(globals().items()):
         if n.startswith("test_"):

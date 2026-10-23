@@ -31,13 +31,31 @@ def main():
         stress = {"vix": None, "vix3m": None, "ratio": None, "on": True}
         notes.append(f"VIX data failed, stress brake forced on: {ex}")
 
-    tickets, no_trade, trends = [], [], {}
+    try:
+        events = json.load(open(os.path.join(ROOT, cfg["events_file"])))
+    except Exception as ex:
+        events = {}
+        notes.append(f"Event calendar could not be read: {ex}")
+    ev = core.event_check(events, today, cfg["event_blackout_days"])
+    if ev["stale"]:
+        notes.append("Event calendar is running out. Add next year's FOMC, CPI and jobs dates to optdesk/events.json.")
+    pause = core.pause_check(os.path.join(ROOT, cfg["pause_file"]), today)
+    global_block = pause and f"Manual pause: {pause['reason']}" + (f" (until {pause['until']})" if pause["until"] else "")
+    global_block = global_block or ev["reason"]
+
+    tickets, no_trade, trends, closes = [], [], {}, {}
+    if global_block:
+        no_trade.append({"ticker": "ALL", "reason": global_block})
     for sym in cfg["universe"]:
         try:
             h = data.history(sym)
             close = h["Close"]
+            closes[sym] = close
             tr = core.trend_state(close, cfg["trend"]["slow"], cfg["trend"]["fast"])
             trends[sym] = tr
+            if global_block:
+                continue
+            shock, move = core.shock_check(close, cfg["shock_sigma"])
             idx = cfg["vol_index"].get(sym)
             rank = None
             if idx:
@@ -50,6 +68,9 @@ def main():
                 idx = "20-day realized vol (fallback)"
             info = {"ticker": sym, "spot": round(float(close.iloc[-1]), 2), "trend": tr, "iv_rank": rank,
                     "rank_source": idx or "20-day realized vol"}
+            if shock:
+                no_trade.append({**info, "reason": f"Price shock: last move {move:+.1f}% is over {cfg['shock_sigma']} sigma"})
+                continue
             structure, reason = core.choose_structure(tr, rank, stress["on"], cfg)
             if structure is None:
                 no_trade.append({**info, "reason": reason})
@@ -82,25 +103,50 @@ def main():
         except Exception as ex:
             no_trade.append({"ticker": sym, "reason": f"Data error: {ex}"})
 
-    chosen = core.select_trades(tickets, cfg)
+    rows, jn = core.parse_journal(os.path.join(ROOT, "optdesk", "journal.csv"))
+    notes += jn
+    chosen = core.select_trades(tickets, cfg, rows)
     for t in tickets:
         t["chosen"] = t in chosen
 
-    rows, jn = core.parse_journal(os.path.join(ROOT, "optdesk", "journal.csv"))
-    notes += jn
-    positions = []
+    open_rows = [x for x in rows if x["status"] == "open"]
+    spy_close = closes.get("SPY")
+    if spy_close is None:
+        spy_close = data.history("SPY")["Close"]
+    positions, items = [], []
     cache = {}
-    for r in [x for x in rows if x["status"] == "open"]:
+    for r in open_rows:
         try:
             key = (r["ticker"], r["expiry"])
             if key not in cache:
                 c = data.chain(*key)
-                cache[key] = {("call" if ic else "put", float(k)): (float(b) + float(a)) / 2
-                              for k, b, a, ic in zip(c["strike"], c["bid"], c["ask"], c["is_call"])}
-            tr = trends.get(r["ticker"]) or core.trend_state(data.history(r["ticker"])["Close"])
-            positions.append(core.manage(r, cache[key], tr["close"], tr, today, cfg))
+                mids, ivs = {}, {}
+                for k, b, a, v, ic in zip(c["strike"], c["bid"], c["ask"], c["iv"], c["is_call"]):
+                    kk = ("call" if ic else "put", float(k))
+                    mids[kk] = (float(b) + float(a)) / 2
+                    ivs[kk] = float(v)
+                cache[key] = (mids, ivs)
+            mids, ivs = cache[key]
+            if r["ticker"] not in closes:
+                closes[r["ticker"]] = data.history(r["ticker"])["Close"]
+            tr = trends.get(r["ticker"]) or core.trend_state(closes[r["ticker"]])
+            spot = float(closes[r["ticker"]].iloc[-1])
+            m = core.manage(r, mids, spot, tr, today, cfg)
+            g = core.position_greeks(r, ivs, spot, today, cfg["rate"])
+            m["greeks"] = None if g is None else {k: round(v, 2) for k, v in g.items()}
+            positions.append(m)
+            items.append({"ticker": r["ticker"], "structure": r["structure"], "spot": spot,
+                          "beta": core.beta_to(closes[r["ticker"]], spy_close), "greeks": g, "max_loss": core.max_loss(r)})
         except Exception as ex:
             notes.append(f"{r['id']} check failed: {ex}")
+    portfolio = core.portfolio_summary(items, float(spy_close.iloc[-1]))
+    groups_held = {}
+    for r in open_rows:
+        if r["structure"] != "TAIL":
+            g = cfg["groups"].get(r["ticker"], r["ticker"])
+            groups_held[g] = groups_held.get(g, 0) + 1
+    portfolio["groups_held"] = groups_held
+    portfolio["max_open"] = cfg["max_open"]
 
     st = core.stats(rows, cfg)
     tail = None
@@ -123,16 +169,21 @@ def main():
 
     payload = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
                "rules_version": cfg["rules_version"], "is_monday": today.weekday() == 0, "stress": stress,
+               "events": ev, "pause": pause, "blocked": global_block,
                "risk_pct": cfg["risk_pct"], "max_open": cfg["max_open"], "tickets": tickets, "no_trade": no_trade,
-               "positions": positions, "tail": tail, "stats": st, "notes": notes}
+               "positions": positions, "portfolio": portfolio, "tail": tail, "stats": st, "notes": notes}
     json.dump(payload, open(os.path.join(OUT, "latest.json"), "w"), indent=1, default=_j)
 
-    lines = [f"Option desk, {today}", f"Stress brake: {'ON' if stress['on'] else 'off'}", ""]
+    lines = [f"Option desk, {today}", f"Stress brake: {'ON' if stress['on'] else 'off'}"]
+    if global_block:
+        lines.append(f"NEW TRADES BLOCKED: {global_block}")
+    lines.append("")
     if payload["is_monday"]:
         lines.append("New trades (Monday): " + (", ".join(f"{t['ticker']} {t['structure']}" for t in chosen) or "none"))
     for p in positions:
         for a in p["actions"]:
             lines.append(f"{p['ticker']} {p['structure']} {p['expiry']}: {a}")
+    lines.append(f"Open risk: {portfolio['max_loss_total']:.0f}, SPY-equivalent delta {portfolio['spy_equiv_delta_shares']} shares, theta/day {portfolio['theta_per_day']}")
     open(os.path.join(OUT, "summary.md"), "w").write("\n".join(lines))
     print("\n".join(lines))
 

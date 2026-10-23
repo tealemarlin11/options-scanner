@@ -186,14 +186,25 @@ def pick_expiry(expiries, today, lo, hi, target):
     return sorted(out, key=lambda x: abs(x[1] - target))
 
 
-def select_trades(tickets, cfg):
-    """Rank passing tickets by slippage; keep one per correlation group, up to max_open."""
+def select_trades(tickets, cfg, open_rows=None):
+    """Rank passing tickets by slippage. Respect correlation groups and the open-trade cap,
+    counting trades you already hold."""
     ok = sorted([t for t in tickets if t.get("pass")], key=lambda t: (t.get("slip_pct") or 99))
-    chosen, groups = [], {}
+    held = [r for r in (open_rows or []) if r.get("status") == "open" and r.get("structure") != "TAIL"]
+    groups = {}
+    for r in held:
+        g = cfg["groups"].get(r["ticker"], r["ticker"])
+        groups[g] = groups.get(g, 0) + 1
+    n_open = len(held)
+    chosen = []
     for t in ok:
         g = cfg["groups"].get(t["ticker"], t["ticker"])
-        if groups.get(g, 0) >= cfg["max_per_group"] or len(chosen) >= cfg["max_open"]:
-            t["skipped"] = "Group or open-trade limit"
+        if groups.get(g, 0) >= cfg["max_per_group"]:
+            t["skipped"] = "You already hold a trade in this group" if any(
+                cfg["groups"].get(r["ticker"], r["ticker"]) == g for r in held) else "Group limit"
+            continue
+        if n_open + len(chosen) >= cfg["max_open"]:
+            t["skipped"] = "Open-trade limit reached"
             continue
         groups[g] = groups.get(g, 0) + 1
         chosen.append(t)
@@ -312,3 +323,114 @@ def build_tail(df, spot, dte, cfg):
          "width": float(lg["strike"] - sh["strike"]), "max_loss_per_contract": round(cost * 100, 2),
          "pass": not why, "fails": why}
     return t, why
+
+
+def greeks(S, K, T, iv, is_call, r=0.04):
+    """Black-Scholes greeks per share. theta per day, vega per 1 volatility point."""
+    if not (iv and iv > 0 and T > 0 and S > 0 and K > 0):
+        return None
+    sq = math.sqrt(T)
+    d1 = (math.log(S / K) + (r + 0.5 * iv * iv) * T) / (iv * sq)
+    d2 = d1 - iv * sq
+    pdf = math.exp(-0.5 * d1 * d1) / math.sqrt(2 * math.pi)
+    delta = _cdf(d1) if is_call else _cdf(d1) - 1.0
+    base = -(S * pdf * iv) / (2 * sq)
+    th = base - r * K * math.exp(-r * T) * _cdf(d2) if is_call else base + r * K * math.exp(-r * T) * _cdf(-d2)
+    return {"delta": delta, "gamma": pdf / (S * iv * sq), "vega": S * pdf * sq / 100.0, "theta": th / 365.0}
+
+
+def position_greeks(row, ivs, spot, today, r=0.04):
+    """Net greeks for one journal row. Long leg at long_strike, short leg at short_strike."""
+    kind = "put" if row["structure"] in ("PCS", "PDS", "TAIL") else "call"
+    T = max((dt.date.fromisoformat(row["expiry"]) - today).days, 1) / 365.0
+    out = {"delta": 0.0, "gamma": 0.0, "vega": 0.0, "theta": 0.0}
+    for strike, sign in ((row["long_strike"], 1), (row["short_strike"], -1)):
+        g = greeks(spot, strike, T, ivs.get((kind, strike)), kind == "call", r)
+        if g is None:
+            return None
+        for k in out:
+            out[k] += sign * g[k] * 100 * row["contracts"]
+    return out
+
+
+def max_loss(row):
+    width = abs(row["short_strike"] - row["long_strike"])
+    credit = row["structure"] in ("PCS", "CCS")
+    per = (width - row["price"]) if credit else row["price"]
+    return max(per, 0.0) * 100 * row["contracts"]
+
+
+def portfolio_summary(items, spy_spot):
+    """items: dicts with greeks (or None), spot, beta, max_loss, ticker, structure."""
+    d = th = ve = ml = 0.0
+    missing = []
+    for it in items:
+        ml += it["max_loss"]
+        g = it.get("greeks")
+        if g is None:
+            missing.append(it["ticker"])
+            continue
+        d += g["delta"] * it["spot"] * (it.get("beta") or 1.0) / spy_spot
+        th += g["theta"]
+        ve += g["vega"]
+    return {"open_trades": len([i for i in items if i["structure"] != "TAIL"]),
+            "spy_equiv_delta_shares": round(d, 1), "spy_equiv_delta_dollars": round(d * spy_spot, 0),
+            "theta_per_day": round(th, 2), "vega_per_vol_point": round(ve, 2),
+            "max_loss_total": round(ml, 0), "greeks_missing_for": missing}
+
+
+def beta_to(close, spy_close, win=252):
+    a = close.pct_change().dropna().tail(win)
+    b = spy_close.pct_change().dropna().reindex(a.index).dropna()
+    a = a.reindex(b.index)
+    if len(b) < 60 or b.var() == 0:
+        return 1.0
+    return round(float(a.cov(b) / b.var()), 2)
+
+
+def event_check(events, today, window, warn_days=30):
+    ups, last = [], None
+    for name, dates in events.items():
+        if name.startswith("_"):
+            continue
+        for d in dates:
+            day = dt.date.fromisoformat(d)
+            last = day if last is None or day > last else last
+            n = (day - today).days
+            if 0 <= n <= 14:
+                ups.append({"name": name, "date": d, "days": n})
+    ups.sort(key=lambda x: x["days"])
+    hit = [u for u in ups if u["days"] <= window]
+    return {"blocked": bool(hit),
+            "reason": ("Event blackout: " + ", ".join(f"{u['name']} {u['date']}" for u in hit)) if hit else None,
+            "upcoming": ups,
+            "stale": last is None or (last - today).days < warn_days}
+
+
+def pause_check(path, today):
+    try:
+        lines = open(path).read().splitlines()
+    except FileNotFoundError:
+        return None
+    for ln in lines:
+        ln = ln.strip()
+        if not ln or ln.startswith("#"):
+            continue
+        head, _, rest = ln.partition(" ")
+        try:
+            until = dt.date.fromisoformat(head)
+        except ValueError:
+            return {"until": None, "reason": ln}
+        if until >= today:
+            return {"until": str(until), "reason": rest.strip() or "Manual pause"}
+    return None
+
+
+def shock_check(close, sigma_mult, win=20):
+    r = close.pct_change().dropna()
+    if len(r) < win + 2:
+        return False, None
+    last, sd = float(r.iloc[-1]), float(r.iloc[-(win + 1):-1].std())
+    if sd > 0 and abs(last) >= sigma_mult * sd:
+        return True, round(last * 100, 2)
+    return False, None

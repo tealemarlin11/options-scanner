@@ -1,0 +1,4 @@
+# Manual news switch. To pause new trades, add a line like:
+# 2026-11-20 Geopolitical shock, wait
+# New trades stay paused until that date. Delete the line to resume.
+# Open trades are still managed while paused.
