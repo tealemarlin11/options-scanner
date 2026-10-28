@@ -1,11 +1,11 @@
 {
- "generated": "2026-10-27T16:16:37+00:00",
+ "generated": "2026-10-28T16:22:34+00:00",
  "rules_version": "1.0",
  "is_monday": false,
  "stress": {
-  "vix": 17.53,
-  "vix3m": 19.45,
-  "ratio": 0.901,
+  "vix": 17.33,
+  "vix3m": 19.34,
+  "ratio": 0.896,
   "on": false
  },
  "events": {
@@ -15,17 +15,17 @@
    {
     "name": "FOMC",
     "date": "2026-10-28",
-    "days": 1
+    "days": 0
    },
    {
     "name": "JOBS",
     "date": "2026-11-06",
-    "days": 10
+    "days": 9
    },
    {
     "name": "CPI",
     "date": "2026-11-10",
-    "days": 14
+    "days": 13
    }
   ],
   "stale": false
@@ -55,48 +55,48 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 65,
+  "dte": 64,
   "legs": [
    {
     "action": "BUY",
     "type": "put",
-    "strike": 693.0,
-    "bid": 4.13,
-    "ask": 4.16,
-    "mid": 4.14,
-    "oi": 110,
-    "volume": 1,
+    "strike": 694.0,
+    "bid": 4.07,
+    "ask": 4.1,
+    "mid": 4.08,
+    "oi": 46,
+    "volume": 5,
     "delta": -0.1
    },
    {
     "action": "SELL",
     "type": "put",
-    "strike": 616.0,
-    "bid": 1.62,
-    "ask": 1.64,
-    "mid": 1.63,
-    "oi": 327,
-    "volume": 2,
+    "strike": 617.0,
+    "bid": 1.58,
+    "ask": 1.6,
+    "mid": 1.59,
+    "oi": 130,
+    "volume": 1,
     "delta": -0.03
    }
   ],
-  "net_mid": 2.51,
-  "natural": 2.54,
+  "net_mid": 2.5,
+  "natural": 2.52,
   "width": 77.0,
-  "max_loss_per_contract": 251.5,
+  "max_loss_per_contract": 249.5,
   "pass": false,
   "fails": [
-   "open interest 110 under 1000",
-   "volume 1 under 50",
-   "open interest 327 under 1000",
-   "volume 2 under 50"
+   "open interest 46 under 1000",
+   "volume 5 under 50",
+   "open interest 130 under 1000",
+   "volume 1 under 50"
   ],
   "ticker": "SPY",
   "expiry": "2026-12-31",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 2.52,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 693 put and SELL 1 SPY 2026-12-31 616 put. Limit 2.51 debit (You pay). Do not accept worse than 2.52. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 2.51,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 694 put and SELL 1 SPY 2026-12-31 617 put. Limit 2.50 debit (You pay). Do not accept worse than 2.51. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,

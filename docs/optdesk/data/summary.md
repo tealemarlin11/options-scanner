@@ -1,4 +1,4 @@
-Option desk, 2026-10-27
+Option desk, 2026-10-28
 Stress brake: off
 NEW TRADES BLOCKED: Event blackout: FOMC 2026-10-28
 
