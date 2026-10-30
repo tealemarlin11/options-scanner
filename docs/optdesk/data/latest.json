@@ -1,11 +1,11 @@
 {
- "generated": "2026-10-29T16:23:55+00:00",
+ "generated": "2026-10-30T16:18:54+00:00",
  "rules_version": "1.0",
  "is_monday": false,
  "stress": {
-  "vix": 16.31,
-  "vix3m": 18.88,
-  "ratio": 0.864,
+  "vix": 20.05,
+  "vix3m": 20.99,
+  "ratio": 0.955,
   "on": false
  },
  "events": {
@@ -15,12 +15,12 @@
    {
     "name": "JOBS",
     "date": "2026-11-06",
-    "days": 8
+    "days": 7
    },
    {
     "name": "CPI",
     "date": "2026-11-10",
-    "days": 12
+    "days": 11
    }
   ],
   "stale": false
@@ -33,95 +33,87 @@
  "no_trade": [
   {
    "ticker": "SPY",
-   "spot": 769.19,
+   "spot": 757.22,
    "trend": {
     "state": "UP",
-    "close": 769.19,
-    "sma200": 728.53,
-    "sma50": 767.63
+    "close": 757.22,
+    "sma200": 728.86,
+    "sma50": 767.52
    },
-   "iv_rank": 16.2,
+   "iv_rank": 37.4,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: volume 2 under 50; volume 44 under 50; cost 16.46 over 40% of the 31 width"
+    "2026-12-18: cost 18.45 over 40% of the 34 width"
    ],
    "structure": "CDS"
   },
   {
    "ticker": "QQQ",
-   "spot": 715.22,
+   "spot": 692.34,
    "trend": {
     "state": "UP",
-    "close": 715.22,
-    "sma200": 679.16,
-    "sma50": 725.41
+    "close": 692.34,
+    "sma200": 679.53,
+    "sma50": 725.04
    },
-   "iv_rank": 40.9,
+   "iv_rank": 64.9,
    "rank_source": "^VXN",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-04: open interest 262 under 1000; open interest 432 under 1000; volume 24 under 50; credit 1.32 under 18% of the 10 width"
-   ],
-   "structure": "PCS"
+   "reason": "Price shock: last move -3.2% is over 2.5 sigma"
   },
   {
    "ticker": "IWM",
-   "spot": 284.58,
+   "spot": 279.27,
    "trend": {
     "state": "UP",
-    "close": 284.58,
-    "sma200": 278.64,
-    "sma50": 284.65
+    "close": 279.27,
+    "sma200": 278.72,
+    "sma50": 284.27
    },
-   "iv_rank": 32.0,
+   "iv_rank": 36.8,
    "rank_source": "20-day realized vol (fallback)",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: volume 33 under 50; open interest 804 under 1000; volume 8 under 50; cost 6.83 over 40% of the 15 width"
+    "2026-12-18: volume 13 under 50; volume 15 under 50; cost 7.51 over 40% of the 16 width"
    ],
    "structure": "CDS"
   },
   {
    "ticker": "GLD",
-   "spot": 367.91,
+   "spot": 356.95,
    "trend": {
     "state": "DOWN",
-    "close": 367.91,
-    "sma200": 413.27,
-    "sma50": 391.75
+    "close": 356.95,
+    "sma200": 412.93,
+    "sma50": 390.6
    },
-   "iv_rank": 12.1,
+   "iv_rank": 25.5,
    "rank_source": "^GVZ",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-18: open interest 201 under 1000; volume 12 under 50; open interest 236 under 1000; volume 1 under 50; cost 9.20 over 40% of the 20 width"
-   ],
-   "structure": "PDS"
+   "reason": "Price shock: last move -3.1% is over 2.5 sigma"
   },
   {
    "ticker": "TLT",
-   "spot": 81.27,
+   "spot": 81.44,
    "trend": {
     "state": "MIXED",
-    "close": 81.27,
-    "sma200": 84.65,
-    "sma50": 80.5
+    "close": 81.44,
+    "sma200": 84.62,
+    "sma50": 80.49
    },
-   "iv_rank": 60.4,
+   "iv_rank": 59.8,
    "rank_source": "20-day realized vol (fallback)",
    "reason": "Trend mixed: close is between the 50 and 200 day averages"
   },
   {
    "ticker": "XLE",
-   "spot": 68.32,
+   "spot": 69.67,
    "trend": {
     "state": "UP",
-    "close": 68.32,
-    "sma200": 58.62,
-    "sma50": 64.8
+    "close": 69.67,
+    "sma200": 58.73,
+    "sma50": 64.92
    },
-   "iv_rank": 29.9,
+   "iv_rank": 34.2,
    "rank_source": "^OVX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
@@ -131,18 +123,18 @@
   },
   {
    "ticker": "XLF",
-   "spot": 56.99,
+   "spot": 56.63,
    "trend": {
     "state": "UP",
-    "close": 56.99,
-    "sma200": 53.71,
-    "sma50": 55.96
+    "close": 56.63,
+    "sma200": 53.72,
+    "sma50": 55.95
    },
-   "iv_rank": 16.2,
+   "iv_rank": 37.4,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: volume 29 under 50; bid-ask 0.22 too wide; cost 1.52 over 40% of the 3 width; slippage 0.13 is 9% of the cost"
+    "2026-12-18: volume 23 under 50; volume 5 under 50; bid-ask 0.05 too wide; cost 1.39 over 40% of the 3 width"
    ],
    "structure": "CDS"
   }
@@ -161,47 +153,48 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 63,
+  "dte": 62,
   "legs": [
    {
     "action": "BUY",
     "type": "put",
-    "strike": 692.0,
-    "bid": 3.65,
-    "ask": 3.69,
-    "mid": 3.67,
-    "oi": 229,
+    "strike": 681.0,
+    "bid": 4.95,
+    "ask": 4.99,
+    "mid": 4.97,
+    "oi": 111,
     "volume": 1,
-    "delta": -0.09
+    "delta": -0.11
    },
    {
     "action": "SELL",
     "type": "put",
-    "strike": 615.0,
-    "bid": 1.39,
-    "ask": 1.4,
-    "mid": 1.4,
-    "oi": 7797,
-    "volume": 5,
-    "delta": -0.03
+    "strike": 606.0,
+    "bid": 1.94,
+    "ask": 1.97,
+    "mid": 1.96,
+    "oi": 15,
+    "volume": 2,
+    "delta": -0.04
    }
   ],
-  "net_mid": 2.28,
-  "natural": 2.3,
-  "width": 77.0,
-  "max_loss_per_contract": 227.5,
+  "net_mid": 3.02,
+  "natural": 3.05,
+  "width": 75.0,
+  "max_loss_per_contract": 301.5,
   "pass": false,
   "fails": [
-   "open interest 229 under 1000",
+   "open interest 111 under 1000",
    "volume 1 under 50",
-   "volume 5 under 50"
+   "open interest 15 under 1000",
+   "volume 2 under 50"
   ],
   "ticker": "SPY",
   "expiry": "2026-12-31",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 2.29,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 692 put and SELL 1 SPY 2026-12-31 615 put. Limit 2.28 debit (You pay). Do not accept worse than 2.29. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 3.04,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 681 put and SELL 1 SPY 2026-12-31 606 put. Limit 3.02 debit (You pay). Do not accept worse than 3.04. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
