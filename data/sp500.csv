@@ -127,7 +127,6 @@ COO,Cooper Companies (The),Health Care
 CPRT,Copart,Industrials
 GLW,Corning Inc.,Information Technology
 CPAY,Corpay,Financials
-CTVA,Corteva,Materials
 CSGP,CoStar Group,Real Estate
 COST,Costco,Consumer Staples
 CRH,CRH plc,Materials
@@ -306,7 +305,7 @@ MAS,Masco,Industrials
 MA,Mastercard,Financials
 MKC,McCormick & Company,Consumer Staples
 MCD,McDonald's,Consumer Discretionary
-MCK,McKesson Corporation,Health Care
+MCK,McKesson,Health Care
 MDT,Medtronic,Health Care
 MRK,Merck & Co.,Health Care
 META,Meta Platforms,Communication Services
@@ -357,7 +356,6 @@ PCAR,Paccar,Industrials
 PKG,Packaging Corporation of America,Materials
 PLTR,Palantir Technologies,Information Technology
 PANW,Palo Alto Networks,Information Technology
-PSKY,Paramount Skydance Corporation,Communication Services
 PH,Parker Hannifin,Industrials
 PAYX,Paychex,Industrials
 PYPL,PayPal,Financials
@@ -376,24 +374,23 @@ PG,Procter & Gamble,Consumer Staples
 PGR,Progressive Corporation,Financials
 PLD,Prologis,Real Estate
 PRU,Prudential Financial,Financials
-PEG,Public Service Enterprise Group,Utilities
 PTC,PTC Inc.,Information Technology
+PEG,Public Service Enterprise Group,Utilities
 PSA,Public Storage,Real Estate
 PHM,PulteGroup,Consumer Discretionary
-PWR,Quanta Services,Industrials
-QCOM,Qualcomm,Information Technology
-DGX,Quest Diagnostics,Health Care
 Q,Qnity Electronics,Information Technology
+QCOM,Qualcomm,Information Technology
+PWR,Quanta Services,Industrials
+DGX,Quest Diagnostics,Health Care
 RL,Ralph Lauren Corporation,Consumer Discretionary
 RJF,Raymond James Financial,Financials
 RDDT,Reddit,Communication Services
-RTX,RTX Corporation,Industrials
 O,Realty Income,Real Estate
 REG,Regency Centers,Real Estate
 REGN,Regeneron Pharmaceuticals,Health Care
 RF,Regions Financial Corporation,Financials
 RSG,Republic Services,Industrials
-RMD,ResMed|,Health Care
+RMD,ResMed,Health Care
 RVTY,Revvity,Health Care
 HOOD,Robinhood Markets,Financials
 ROK,Rockwell Automation,Industrials
@@ -401,6 +398,7 @@ ROL,"Rollins, Inc.",Industrials
 ROP,Roper Technologies,Information Technology
 ROST,Ross Stores,Consumer Discretionary
 RCL,Royal Caribbean Group,Consumer Discretionary
+RTX,RTX Corporation,Industrials
 SPGI,S&P Global,Financials
 CRM,Salesforce,Information Technology
 SNDK,Sandisk,Information Technology
@@ -411,6 +409,7 @@ SRE,Sempra,Utilities
 NOW,ServiceNow,Information Technology
 SHW,Sherwin-Williams,Materials
 SPG,Simon Property Group,Real Estate
+SKYD,Skydance,Communication Services
 SWKS,Skyworks Solutions,Information Technology
 SJM,J.M. Smucker Company (The),Consumer Staples
 SW,Smurfit Westrock,Materials
@@ -450,6 +449,7 @@ TDG,TransDigm Group,Industrials
 TRV,Travelers Companies (The),Financials
 TRMB,Trimble Inc.,Information Technology
 TFC,Truist Financial,Financials
+TWLO,Twilio,Information Technology
 TYL,Tyler Technologies,Information Technology
 TSN,Tyson Foods,Consumer Staples
 USB,U.S. Bancorp,Financials
@@ -477,12 +477,12 @@ V,Visa Inc.,Financials
 VST,Vistra Corp.,Utilities
 VMRK,Vivmark Residential,Real Estate
 VMC,Vulcan Materials Company,Materials
+VYLR,Vylor,Consumer Staples
 WRB,W. R. Berkley Corporation,Financials
 GWW,W. W. Grainger,Industrials
 WAB,Wabtec,Industrials
 WMT,Walmart,Consumer Staples
 DIS,Walt Disney Company (The),Communication Services
-WBD,Warner Bros. Discovery,Communication Services
 WM,Waste Management,Industrials
 WAT,Waters Corporation,Health Care
 WEC,WEC Energy Group,Utilities
