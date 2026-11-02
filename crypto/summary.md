@@ -1,49 +1,48 @@
-**Week ending Sun 25 Oct 2026** · BTC filter **ON 🟢** · LONG 142 · CASH 89
+**Week ending Sun 01 Nov 2026** · BTC filter **ON 🟢** · LONG 108 · CASH 100
 
 ### 🟢 BUY signals
 
 | Coin | vs 20-wk avg | Avg daily vol (Kraken) | Volume | Liquidity |
 |---|---|---|---|---|
-| **ZBCN** | +7.6% | $0.33M | ✅ confirms | Thin |
-| **MEGA** | +3.4% | $0.29M | ✅ confirms | Thin |
-| **BABY** | +3.2% | $0.15M | ⚠️ weak | Avoid |
-| **STBL** | +9.6% | $0.14M | ⚠️ weak | Avoid |
-| **ARKM** | +4.7% | $0.09M | ⚠️ weak | Avoid |
-| **ACU** | +12.6% | $0.06M | ⚠️ weak | Avoid |
-| **RLS** | +3.4% | $0.04M | ⚠️ weak | Avoid |
-| **UP** | +7.4% | $0.03M | ⚠️ weak | Avoid |
-| **ANIME** | +1.1% | $0.02M | ⚠️ weak | Avoid |
-| **ORDER** | +31.3% | $0.02M | ⚠️ weak | Avoid |
-| **CVC** | +7.4% | $0.01M | ⚠️ weak | Avoid |
-| **GAME2** | +1.9% | $0.01M | ⚠️ weak | Avoid |
-| **FOREST** | +61.0% | $0.01M | ⚠️ weak | Avoid |
+| **POL** | +1.0% | $0.53M | ⚠️ weak | Thin |
+| **MORPHO** | +0.2% | $0.49M | ✅ confirms | Thin |
+| **LSK** | +13.9% | $0.21M | ⚠️ weak | Avoid |
+| **AIN** | +289.0% | $0.18M | ⚠️ weak | Avoid |
+| **ESPORTS** | +9.0% | $0.12M | ⚠️ weak | Avoid |
+| **BLESS** | +5.5% | $0.07M | ⚠️ weak | Avoid |
+| **EVAA** | +59.7% | $0.05M | ⚠️ weak | Avoid |
+| **PROVE** | +6.1% | $0.03M | ⚠️ weak | Avoid |
 
 ### 🔴 SELL signals (move to cash)
 
-- **HBAR** — coin fell below average
-- **FET** — coin fell below average
-- **MINA** — coin fell below average
-- **TRX** — coin fell below average
-- **SAND** — coin fell below average
-- **VIRTUAL** — coin fell below average
-- **POL** — coin fell below average
-- **SHIB** — coin fell below average
-- **MORPHO** — coin fell below average
-- **EIGEN** — coin fell below average
-- **SYRUP** — coin fell below average
-- **WIF** — coin fell below average
-- **JASMY** — coin fell below average
-- **APE** — coin fell below average
-- **BRL1** — coin fell below average
-- **SYN** — coin fell below average
-- **LSK** — coin fell below average
-- **ETC** — coin fell below average
-- **GLMR** — coin fell below average
-- **OOB** — coin fell below average
-- **AXS** — coin fell below average
-- **VELO** — coin fell below average
-- **ZIG** — coin fell below average
-- **SPK** — coin fell below average
-- **MLN** — coin fell below average
+- **XRP** — coin fell below average
+- **ADA** — coin fell below average
+- **TAO** — coin fell below average
+- **WLD** — coin fell below average
+- **CRV** — coin fell below average
+- **DOT** — coin fell below average
+- **PENGU** — coin fell below average
+- **ALGO** — coin fell below average
+- **ICP** — coin fell below average
+- **RENDER** — coin fell below average
+- **AKE** — coin fell below average
+- **ATOM** — coin fell below average
+- **APT** — coin fell below average
+- **XCN** — coin fell below average
+- **SEI** — coin fell below average
+- **LDO** — coin fell below average
+- **MANA** — coin fell below average
+- **XTZ** — coin fell below average
+- **VSN** — coin fell below average
+- **SKR** — coin fell below average
+- **WAL** — coin fell below average
+- **BABY** — coin fell below average
+- **VET** — coin fell below average
+- **MNT** — coin fell below average
+- **ARKM** — coin fell below average
+- **DCR** — coin fell below average
+- **AZTEC** — coin fell below average
+- **AUSD** — coin fell below average
+- **1INCH** — coin fell below average
 
 _Education only — not advice. Check the live price and order book on Kraken before trading._
