@@ -1,156 +1,39 @@
 {
- "generated": "2026-11-03T21:13:16+00:00",
+ "generated": "2026-11-04T21:26:54+00:00",
  "rules_version": "1.0",
  "is_monday": false,
  "stress": {
-  "vix": 20.72,
-  "vix3m": 21.25,
-  "ratio": 0.975,
+  "vix": 16.7,
+  "vix3m": 18.84,
+  "ratio": 0.886,
   "on": false
  },
  "events": {
-  "blocked": false,
-  "reason": null,
+  "blocked": true,
+  "reason": "Event blackout: JOBS 2026-11-06",
   "upcoming": [
    {
     "name": "JOBS",
     "date": "2026-11-06",
-    "days": 3
+    "days": 2
    },
    {
     "name": "CPI",
     "date": "2026-11-10",
-    "days": 7
+    "days": 6
    }
   ],
   "stale": false
  },
  "pause": null,
- "blocked": null,
+ "blocked": "Event blackout: JOBS 2026-11-06",
  "risk_pct": 0.015,
  "max_open": 3,
  "tickets": [],
  "no_trade": [
   {
-   "ticker": "SPY",
-   "spot": 754.42,
-   "trend": {
-    "state": "UP",
-    "close": 754.42,
-    "sma200": 729.47,
-    "sma50": 767.04
-   },
-   "iv_rank": 41.2,
-   "rank_source": "^VIX",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-11: open interest 285 under 1000; credit 1.27 under 18% of the 10 width",
-    "2026-12-18: credit 1.26 under 18% of the 10 width"
-   ],
-   "structure": "PCS"
-  },
-  {
-   "ticker": "QQQ",
-   "spot": 685.28,
-   "trend": {
-    "state": "UP",
-    "close": 685.28,
-    "sma200": 680.14,
-    "sma50": 723.93
-   },
-   "iv_rank": 82.7,
-   "rank_source": "^VXN",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-11: open interest 368 under 1000; open interest 159 under 1000; credit 1.46 under 18% of the 10 width",
-    "2026-12-18: credit 1.56 under 18% of the 10 width"
-   ],
-   "structure": "PCS"
-  },
-  {
-   "ticker": "IWM",
-   "spot": 279.8,
-   "trend": {
-    "state": "UP",
-    "close": 279.8,
-    "sma200": 278.86,
-    "sma50": 283.5
-   },
-   "iv_rank": 34.2,
-   "rank_source": "20-day realized vol (fallback)",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-31: open interest 401 under 1000; volume 12 under 50; open interest 32 under 1000; volume 1 under 50; cost 7.74 over 40% of the 17 width",
-    "2026-12-18: volume 3 under 50; cost 7.04 over 40% of the 15 width"
-   ],
-   "structure": "CDS"
-  },
-  {
-   "ticker": "GLD",
-   "spot": 359.3,
-   "trend": {
-    "state": "DOWN",
-    "close": 359.3,
-    "sma200": 412.3,
-    "sma50": 387.99
-   },
-   "iv_rank": 23.6,
-   "rank_source": "^GVZ",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-31: open interest 673 under 1000; volume 7 under 50; open interest 926 under 1000; volume 34 under 50; cost 11.18 over 40% of the 25 width",
-    "2026-12-18: volume 2 under 50; cost 10.45 over 40% of the 24 width"
-   ],
-   "structure": "PDS"
-  },
-  {
-   "ticker": "TLT",
-   "spot": 81.11,
-   "trend": {
-    "state": "MIXED",
-    "close": 81.11,
-    "sma200": 84.56,
-    "sma50": 80.46
-   },
-   "iv_rank": 64.8,
-   "rank_source": "20-day realized vol (fallback)",
-   "reason": "Trend mixed: close is between the 50 and 200 day averages"
-  },
-  {
-   "ticker": "XLE",
-   "spot": 66.71,
-   "trend": {
-    "state": "UP",
-    "close": 66.71,
-    "sma200": 58.93,
-    "sma50": 65.07
-   },
-   "iv_rank": 36.0,
-   "rank_source": "^OVX",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-31: bid-ask 0.35 too wide; open interest 981 under 1000; volume 4 under 50; bid-ask 0.23 too wide; cost 2.33 over 40% of the 5 width; slippage 0.29 is 12% of the cost",
-    "2026-12-18: could not pair strikes by delta"
-   ],
-   "structure": "CDS"
-  },
-  {
-   "ticker": "XLF",
-   "spot": 57.19,
-   "trend": {
-    "state": "UP",
-    "close": 57.19,
-    "sma200": 53.75,
-    "sma50": 55.93
-   },
-   "iv_rank": 41.2,
-   "rank_source": "^VIX",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2026-12-11: open interest 60 under 1000; volume 1 under 50; bid-ask 0.08 too wide; open interest 2 under 1000; volume 2 under 50; credit 0.16 under 18% of the 1.5 width; slippage 0.06 is 41% of the credit",
-    "2026-12-18: credit 0.13 under 18% of the 1 width; slippage 0.02 is 19% of the credit"
-   ],
-   "structure": "PCS"
+   "ticker": "ALL",
+   "reason": "Event blackout: JOBS 2026-11-06"
   }
  ],
  "positions": [],
@@ -167,48 +50,46 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 58,
+  "dte": 57,
   "legs": [
    {
     "action": "BUY",
     "type": "put",
-    "strike": 679.0,
-    "bid": 4.61,
-    "ask": 4.64,
-    "mid": 4.62,
-    "oi": 725,
-    "volume": 3,
-    "delta": -0.11
+    "strike": 690.0,
+    "bid": 3.12,
+    "ask": 3.15,
+    "mid": 3.13,
+    "oi": 3681,
+    "volume": 113,
+    "delta": -0.09
    },
    {
     "action": "SELL",
     "type": "put",
-    "strike": 604.0,
-    "bid": 1.79,
-    "ask": 1.82,
-    "mid": 1.81,
-    "oi": 17,
-    "volume": 1,
-    "delta": -0.04
+    "strike": 613.0,
+    "bid": 1.14,
+    "ask": 1.15,
+    "mid": 1.15,
+    "oi": 90,
+    "volume": 4,
+    "delta": -0.03
    }
   ],
-  "net_mid": 2.82,
-  "natural": 2.85,
-  "width": 75.0,
-  "max_loss_per_contract": 282.0,
+  "net_mid": 1.99,
+  "natural": 2.01,
+  "width": 77.0,
+  "max_loss_per_contract": 199.0,
   "pass": false,
   "fails": [
-   "open interest 725 under 1000",
-   "volume 3 under 50",
-   "open interest 17 under 1000",
-   "volume 1 under 50"
+   "open interest 90 under 1000",
+   "volume 4 under 50"
   ],
   "ticker": "SPY",
   "expiry": "2026-12-31",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 2.84,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 679 put and SELL 1 SPY 2026-12-31 604 put. Limit 2.82 debit (You pay). Do not accept worse than 2.84. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 2.0,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 690 put and SELL 1 SPY 2026-12-31 613 put. Limit 1.99 debit (You pay). Do not accept worse than 2.00. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
