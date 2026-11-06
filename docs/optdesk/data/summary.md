@@ -1,4 +1,4 @@
-Option desk, 2026-11-05
+Option desk, 2026-11-06
 Stress brake: ON
 NEW TRADES BLOCKED: Event blackout: JOBS 2026-11-06
 

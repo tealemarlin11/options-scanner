@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-05T21:32:16+00:00",
+ "generated": "2026-11-06T21:00:05+00:00",
  "rules_version": "1.0",
  "is_monday": false,
  "stress": {
-  "vix": 28.18,
-  "vix3m": 25.55,
-  "ratio": 1.103,
+  "vix": 24.8,
+  "vix3m": 24.02,
+  "ratio": 1.032,
   "on": true
  },
  "events": {
@@ -15,12 +15,12 @@
    {
     "name": "JOBS",
     "date": "2026-11-06",
-    "days": 1
+    "days": 0
    },
    {
     "name": "CPI",
     "date": "2026-11-10",
-    "days": 5
+    "days": 4
    }
   ],
   "stale": false
@@ -50,45 +50,47 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 56,
+  "dte": 55,
   "legs": [
    {
     "action": "BUY",
     "type": "put",
-    "strike": 660.0,
-    "bid": 7.49,
-    "ask": 7.65,
-    "mid": 7.57,
-    "oi": 2795,
-    "volume": 280,
-    "delta": -0.15
+    "strike": 662.0,
+    "bid": 5.99,
+    "ask": 6.03,
+    "mid": 6.01,
+    "oi": 424,
+    "volume": 2,
+    "delta": -0.13
    },
    {
     "action": "SELL",
     "type": "put",
-    "strike": 586.0,
-    "bid": 3.05,
-    "ask": 3.11,
-    "mid": 3.08,
-    "oi": 30,
-    "volume": 80,
+    "strike": 589.0,
+    "bid": 2.37,
+    "ask": 2.41,
+    "mid": 2.39,
+    "oi": 127,
+    "volume": 111,
     "delta": -0.05
    }
   ],
-  "net_mid": 4.49,
-  "natural": 4.6,
-  "width": 74.0,
-  "max_loss_per_contract": 449.0,
+  "net_mid": 3.62,
+  "natural": 3.66,
+  "width": 73.0,
+  "max_loss_per_contract": 362.0,
   "pass": false,
   "fails": [
-   "open interest 30 under 1000"
+   "open interest 424 under 1000",
+   "volume 2 under 50",
+   "open interest 127 under 1000"
   ],
   "ticker": "SPY",
   "expiry": "2026-12-31",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 4.54,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 660 put and SELL 1 SPY 2026-12-31 586 put. Limit 4.49 debit (You pay). Do not accept worse than 4.54. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 3.64,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 662 put and SELL 1 SPY 2026-12-31 589 put. Limit 3.62 debit (You pay). Do not accept worse than 3.64. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
