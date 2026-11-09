@@ -1,39 +1,34 @@
 {
- "generated": "2026-11-06T21:00:05+00:00",
+ "generated": "2026-11-09T23:50:20+00:00",
  "rules_version": "1.0",
- "is_monday": false,
+ "is_monday": true,
  "stress": {
-  "vix": 24.8,
-  "vix3m": 24.02,
-  "ratio": 1.032,
-  "on": true
+  "vix": 19.92,
+  "vix3m": 20.85,
+  "ratio": 0.955,
+  "on": false
  },
  "events": {
   "blocked": true,
-  "reason": "Event blackout: JOBS 2026-11-06",
+  "reason": "Event blackout: CPI 2026-11-10",
   "upcoming": [
-   {
-    "name": "JOBS",
-    "date": "2026-11-06",
-    "days": 0
-   },
    {
     "name": "CPI",
     "date": "2026-11-10",
-    "days": 4
+    "days": 1
    }
   ],
   "stale": false
  },
  "pause": null,
- "blocked": "Event blackout: JOBS 2026-11-06",
+ "blocked": "Event blackout: CPI 2026-11-10",
  "risk_pct": 0.015,
  "max_open": 3,
  "tickets": [],
  "no_trade": [
   {
    "ticker": "ALL",
-   "reason": "Event blackout: JOBS 2026-11-06"
+   "reason": "Event blackout: CPI 2026-11-10"
   }
  ],
  "positions": [],
@@ -50,47 +45,43 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 55,
+  "dte": 67,
   "legs": [
    {
     "action": "BUY",
     "type": "put",
-    "strike": 662.0,
-    "bid": 5.99,
-    "ask": 6.03,
-    "mid": 6.01,
-    "oi": 424,
-    "volume": 2,
-    "delta": -0.13
+    "strike": 675.0,
+    "bid": 4.78,
+    "ask": 4.83,
+    "mid": 4.8,
+    "oi": 19905,
+    "volume": 839,
+    "delta": -0.11
    },
    {
     "action": "SELL",
     "type": "put",
-    "strike": 589.0,
-    "bid": 2.37,
-    "ask": 2.41,
-    "mid": 2.39,
-    "oi": 127,
-    "volume": 111,
-    "delta": -0.05
+    "strike": 600.0,
+    "bid": 1.85,
+    "ask": 1.87,
+    "mid": 1.86,
+    "oi": 39259,
+    "volume": 669,
+    "delta": -0.04
    }
   ],
-  "net_mid": 3.62,
-  "natural": 3.66,
-  "width": 73.0,
-  "max_loss_per_contract": 362.0,
-  "pass": false,
-  "fails": [
-   "open interest 424 under 1000",
-   "volume 2 under 50",
-   "open interest 127 under 1000"
-  ],
+  "net_mid": 2.94,
+  "natural": 2.98,
+  "width": 75.0,
+  "max_loss_per_contract": 294.5,
+  "pass": true,
+  "fails": [],
   "ticker": "SPY",
-  "expiry": "2026-12-31",
+  "expiry": "2027-01-15",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 3.64,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2026-12-31 662 put and SELL 1 SPY 2026-12-31 589 put. Limit 3.62 debit (You pay). Do not accept worse than 3.64. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 2.96,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-15 675 put and SELL 1 SPY 2027-01-15 600 put. Limit 2.94 debit (You pay). Do not accept worse than 2.96. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
