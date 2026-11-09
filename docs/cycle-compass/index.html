@@ -101,7 +101,7 @@ button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radiu
   <details>
     <summary>Settings and data</summary>
     <div class="f">
-      <div><label for="asOfIn">View as of (testing only)</label><input type="date" id="asOfIn"></div>
+      <div><label for="asOfIn">View as of (testing only)</label><input type="date" id="asOfIn" autocomplete="off" name="cc_asof_test"></div>
       <div style="display:flex;align-items:flex-end"><button id="reload" type="button" style="margin-top:0">Reload data</button></div>
     </div>
     <div class="small" style="margin-top:12px" id="cyc"></div>
@@ -201,7 +201,7 @@ function model(){
   var dd=(price!=null&&topPx)?(price/topPx-1)*100:null,depth=dd==null?null:clamp(Math.round((-dd)/ddm*100),0,100);
   var cl=rows?monthlyCloses(rows,now):[];cl=cl.slice(-10);
   var sma=(cl.length>=10&&!stale)?cl.reduce(function(a,b){return a+b},0)/10:null;
-  return {now:now,hals:hals,cur:cur,cycles:cycles,h0:h0,h1:h1,L:L,dayH:dayH,dur:dur,ddm:ddm,top:top,topPx:topPx,conf:conf,topDay:topDay,elapsed:elapsed,score:score,toBottom:toBottom,B:B,idx:idx,
+  return {asOf:!!asOf,now:now,hals:hals,cur:cur,cycles:cycles,h0:h0,h1:h1,L:L,dayH:dayH,dur:dur,ddm:ddm,top:top,topPx:topPx,conf:conf,topDay:topDay,elapsed:elapsed,score:score,toBottom:toBottom,B:B,idx:idx,
     price:stale?null:price,dd:stale?null:dd,depth:stale?null:depth,closes:cl,sma:sma,stale:stale,why:why,botT:(conf&&top!=null)?top+dur*DAY:null,nxtT:h1,daysToHalving:Math.round((h1-now)/DAY)}
 }
 
@@ -291,6 +291,9 @@ function phases(m){
 }
 function status(m){
   var s=H('stat'),ok=!m.stale&&DATA.price!=null;
+  if(m.asOf){s.style.color='#EF9F27';s.style.fontWeight='500';s.textContent='\u23EA Replaying '+fmt(m.now)+', not today. Clear the date under Settings and data to see today.';
+    var c0=H('cyc');return}
+  s.style.color='';s.style.fontWeight='';
   var src=DATA.rowsSrc?DATA.rowsSrc:'no source';
   s.textContent=m.stale?('\u26A0 No fresh data. '+(m.why||'')+'. Time clock only.'):((ok?'\u25CF Live ':'\u25CB ')+'BTC $'+Math.round(m.price).toLocaleString('en-GB')+' \u00B7 price '+(DATA.priceSrc||src)+' \u00B7 history '+src+(DATA.height?' \u00B7 block '+DATA.height.toLocaleString('en-GB'):''));
   var c=H('cyc'),rows='';
@@ -304,7 +307,7 @@ function status(m){
 }
 function render(){
   var m;try{m=model()}catch(e){H('stat').textContent='Error: '+e.message;return}
-  H('asof').textContent=fmt(m.now);
+  H('asof').textContent=m.asOf?('Viewing '+fmt(m.now)+' (past)'):fmt(m.now);H('asof').style.background=m.asOf?'#EF9F27':'';H('asof').style.color=m.asOf?'#1a1a1a':'';
   gauge(m);chips(m);verdict(m);tiles(m);meters(m);faber(m);spiral(m);phases(m);status(m);
 }
 
@@ -339,7 +342,9 @@ function loadHeight(){
     return fetch('https://blockstream.info/api/blocks/tip/height').then(function(r){return r.text()}).then(function(t){use(parseInt(t,10))}).catch(function(){DATA.height=null;DATA.nextEst=null})}).then(render);
 }
 function loadAll(){return loadHeight().then(loadHistory).then(loadPrice)}
+H('asOfIn').value='';
 H('asOfIn').addEventListener('input',render);
+window.addEventListener('pageshow',function(e){if(e.persisted){H('asOfIn').value='';render()}});
 H('reload').addEventListener('click',function(){H('stat').textContent='Reloading';loadAll()});
 render();loadAll();
 setInterval(loadPrice,60000);
