@@ -78,11 +78,12 @@ var SRC={
   canisters:['https://ic-api.internetcomputer.org/api/v3/metrics/registered-canisters-count'],
   ii:['https://ic-api.internetcomputer.org/api/v3/metrics/internet-identity-user-count'],
   instr:['https://ic-api.internetcomputer.org/api/v3/metrics/instruction-rate'],
-  gov:['https://ic-api.internetcomputer.org/api/v3/governance-metrics','https://ic-api.internetcomputer.org/api/v3/metrics/governance-metrics'],
-  supply:['https://ledger-api.internetcomputer.org/api/v1/supply']
+  gov:['https://ic-api.internetcomputer.org/api/v3/governance-metrics'],
+  disBuckets:['https://ic-api.internetcomputer.org/api/v3/staking-metrics/governance_dissolving_neurons_e8s_bucket'],
+  supply:['https://ic-api.internetcomputer.org/api/v3/metrics/governance_total_supply_icp','https://ledger-api.internetcomputer.org/api/v1/supply/total']
 };
 var M70={start:'2026-01-13',startInfl:9.72,endInfl:5.42,end:'2027-01-13',target:2.92,burnTarget:0.77};
-var D={icp:null,btc:null,price:null,priceSrc:null,burn:null,can:null,ii:null,instr:null,gov:null,supply:null,cfg:null,status:{}};
+var D={dbg:{},icp:null,btc:null,price:null,priceSrc:null,burn:null,can:null,ii:null,instr:null,gov:null,supply:null,cfg:null,status:{}};
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function today(){var d=new Date();return Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())}
@@ -153,6 +154,46 @@ function toBuckets(x){
   return out.length?out.sort(function(a,b){return a[0]-b[0]}):null;
 }
 
+
+function promIndex(j){
+  var arr=j&&(Array.isArray(j.metrics)?j.metrics:(j.data&&Array.isArray(j.data.metrics)?j.data.metrics:null));
+  if(!arr||!arr.length||typeof arr[0]!=='object')return null;
+  var by={};arr.forEach(function(m){if(m&&m.name)by[m.name]=m.subsets||m.values||[]});
+  return Object.keys(by).length?by:null;
+}
+function subVal(x){var v=x&&x.value;if(Array.isArray(v))return Number(v[1]);if(v!=null&&isFinite(Number(v)))return Number(v);return NaN}
+function namesLike(by,re,excl){return Object.keys(by).filter(function(k){return re.test(k)&&!(excl&&excl.test(k))})}
+function bucketsFromSubsets(subs){
+  var out=[],labelKey=null;
+  subs.forEach(function(x){
+    var lab=x.metric||x.labels||{},key=null;
+    Object.keys(lab).forEach(function(lk){
+      if(key===null&&lk!=='__name__'&&lk!=='job'&&lk!=='instance'&&lk!=='network'&&lab[lk]!==''&&isFinite(Number(lab[lk]))){key=Number(lab[lk]);if(!labelKey)labelKey=lk}
+    });
+    var v=subVal(x);if(key!==null&&isFinite(v))out.push([key,v]);
+  });
+  out.sort(function(a,b){return a[0]-b[0]});
+  return out.length>=3?{dis:out,labelKey:labelKey}:null;
+}
+function bestBuckets(by,re,excl){
+  var best=null;
+  namesLike(by,re,excl).forEach(function(k){var b=bucketsFromSubsets(by[k]||[]);if(b&&(!best||b.dis.length>best.dis.length)){best=b;best.name=k}});
+  return best;
+}
+function govFromProm(j){
+  var by=promIndex(j);
+  if(!by){D.dbg.gov='top-level keys: '+(j&&typeof j==='object'?Object.keys(j).slice(0,15).join(', '):typeof j);return null}
+  function one(re){var ks=namesLike(by,re);for(var i=0;i<ks.length;i++){var sb=by[ks[i]];if(sb&&sb.length){var v=subVal(sb[0]);if(isFinite(v))return v}}return null}
+  var staked=one(/total_staked_e8s$/),supply=one(/total_supply_icp$/),lt6=one(/less_than_6_months_dissolve_delay_e8s$/);
+  var b=bestBuckets(by,/dissolving_neurons_e8s/,/not_dissolving|staked_maturity|count/);
+  D.dbg.gov='metric names: '+Object.keys(by).slice(0,40).join(', ');
+  if(staked==null&&!b&&supply==null)return null;
+  if(supply!=null&&supply>1e11)supply=supply/1e8;
+  return{staked:staked!=null?staked/1e8:null,supply:supply,lt6:lt6!=null?lt6/1e8:null,dis:b?b.dis:null,labelKey:b?b.labelKey:null,cum:!!b&&b.labelKey==='le'};
+}
+function describeGov(r){
+  return [r.staked!=null?'staked ok':'staked missing',r.supply!=null?'supply ok':'supply missing',r.lt6!=null?'under-6-month stake ok':'under-6-month stake missing',r.dis?('buckets '+r.dis.length+' (label '+r.labelKey+')'):'buckets missing'].join(' \u00B7 ');
+}
 function rowsCoinbase(base,days){
   var end=today()+DAY,start=end-days*DAY,reqs=[];
   for(var s=start;s<end;s+=299*DAY){var e=Math.min(s+299*DAY,end);reqs.push(jget(base+'&start='+new Date(s).toISOString()+'&end='+new Date(e).toISOString()))}
@@ -175,11 +216,10 @@ function loadChain(){
   jobs.push(job('ii',SRC.ii,function(j){var s=oneSeries(j);return s&&s.length>5?s:null}));
   jobs.push(job('instr',SRC.instr,function(j){var s=oneSeries(j);return s&&s.length>5?s:null}));
   jobs.push(job('supply',SRC.supply,function(j){var s=oneSeries(j);return s&&s.length>5?s:null},120));
-  jobs.push(firstOk(SRC.gov,function(j){
-    var st=findKey(j,'total_staked_e8s'),sup=findKey(j,'total_supply_icp'),dis=toBuckets(findKey(j,'dissolving_neurons_e8s_buckets')),lt6=findKey(j,'neurons_with_less_than_6_months_dissolve_delay_e8s');
-    if(st==null&&dis==null)return null;
-    return{staked:st!=null?Number(st)/1e8:null,supply:sup!=null?Number(sup):null,dis:dis,lt6:lt6!=null?Number(lt6)/1e8:null};
-  }).then(function(r){D.gov=r;note('gov',true,'ok')},function(e){D.gov=null;note('gov',false,e.message)}));
+  jobs.push(firstOk(SRC.gov,function(j){return govFromProm(j)}).then(function(r){
+    if(r.dis)return r;
+    return firstOk(SRC.disBuckets,function(j2){var by=promIndex(j2),bb=null;if(by){bb=bestBuckets(by,/.*/)}else{D.dbg.dis='top-level keys: '+(j2&&typeof j2==='object'?Object.keys(j2).slice(0,15).join(', '):typeof j2)}if(!bb&&by)D.dbg.dis='metric names: '+Object.keys(by).slice(0,30).join(', ');return bb}).then(function(bb){r.dis=bb.dis;r.labelKey=bb.labelKey;r.cum=bb.labelKey==='le';return r},function(){return r});
+  }).then(function(r){D.gov=r;note('gov',true,describeGov(r))},function(e){D.gov=null;note('gov',false,e.message)}));
   return Promise.all(jobs).then(render);
 }
 function loadCfg(){
@@ -235,9 +275,11 @@ function compute(){
     c.burnFade=(c.burn30>0&&c.burn7!=null)?c.burn7<0.7*c.burn30:null;
     var d=0;for(var i=b.length-1;i>=0&&b[i]>=0.3;i--)d++;c.burnDays=d;
   }
-  var g=D.gov;
-  c.supply=g&&g.supply?g.supply:null;
-  var cfg=D.cfg||{};
+  var g=D.gov,cfg=D.cfg||{};
+  c.supply=null;c.supplySrc=null;
+  if(g&&g.supply){c.supply=g.supply;c.supplySrc='governance'}
+  else if(D.supply&&D.supply.length){var sv0=D.supply[D.supply.length-1][1];c.supply=sv0>1e11?sv0/1e8:sv0;c.supplySrc='ledger series'}
+  else{c.supply=cfg.supply_icp_estimate||545000000;c.supplySrc='estimate from neurons.json'}
   var t=c.now,a=parseD(M70.start),z=parseD(M70.end);
   c.inflPath=clamp(M70.startInfl+(M70.endInfl-M70.startInfl)*((t-a)/(z-a)),M70.endInfl,M70.startInfl);
   c.infl=cfg.inflation_pct_override!=null?cfg.inflation_pct_override:c.inflPath;
@@ -247,11 +289,16 @@ function compute(){
     c.burnIcpYr=c.burn30*SECYR/pxdr;c.issueIcpYr=c.infl/100*c.supply;
     c.ratio=c.burnIcpYr/c.issueIcpYr;c.breakeven=c.issueIcpYr*pxdr/SECYR;
   }
-  if(D.supply){var sv=D.supply.map(function(p){return p[1]});c.netSupply=chg(D.supply,90)}
+  if(D.supply){c.netSupply=chg(D.supply,90)}
   if(g&&g.dis&&c.supply){
-    var keys=g.dis.map(function(p){return p[0]}),mx=keys[keys.length-1],unit=mx<=200?30.44:(mx>1e6?1/86400:1);
-    c.unit=mx<=200?'months':(mx>1e6?'seconds':'days');
-    function within(days){var s=0;g.dis.forEach(function(p){if(p[0]*unit<=days+3)s+=p[1]});return s/1e8}
+    var keys=g.dis.map(function(p){return p[0]}),mx=keys[keys.length-1],lk=(g.labelKey||'').toLowerCase(),unit,uname;
+    if(/second/.test(lk)){unit=1/86400;uname='seconds'}else if(/month/.test(lk)){unit=30.44;uname='months'}else if(/year/.test(lk)){unit=365.25;uname='years'}else if(/day/.test(lk)){unit=1;uname='days'}
+    else if(mx<=200){unit=30.44;uname='months (guessed)'}else if(mx>1e6){unit=1/86400;uname='seconds (guessed)'}else{unit=1;uname='days (guessed)'}
+    c.unit=uname;
+    function within(days){
+      if(g.cum){var v=0;g.dis.forEach(function(p){if(p[0]*unit<=days+3)v=p[1]});return v/1e8}
+      var sm=0;g.dis.forEach(function(p){if(p[0]*unit<=days+3)sm+=p[1]});return sm/1e8;
+    }
     c.wall={d30:within(30),d90:within(90),d180:within(180),d365:within(365)};
     c.wallPct={d30:c.wall.d30/c.supply*100,d90:c.wall.d90/c.supply*100,d180:c.wall.d180/c.supply*100,d365:c.wall.d365/c.supply*100};
     c.wallLevel=c.wallPct.d90>3?'High':(c.wallPct.d90>=1?'Medium':'Low');
@@ -359,7 +406,7 @@ function render(){
   h+='<div class="col"><div class="panel"><h2>\uD83D\uDD25 Deflation meter</h2>';
   if(c.ratio!=null){
     var r=clamp(c.ratio,0,1),C=2*Math.PI*46;
-    h+='<div class="row" style="justify-content:flex-start;gap:14px"><svg width="92" height="92" viewBox="0 0 120 120" role="img" aria-label="Burn divided by issuance is '+c.ratio.toFixed(2)+'"><circle cx="60" cy="60" r="46" fill="none" style="stroke:var(--card2)" stroke-width="11"/><circle cx="60" cy="60" r="46" fill="none" style="stroke:var(--no)" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+(C*r).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 60 60)"/><text x="60" y="66" text-anchor="middle" style="fill:var(--ink);font-size:24px">'+c.ratio.toFixed(2)+'</text></svg><div class="sub">Burn \u00F7 issuance. Full ring is break-even.'+(c.netSupply!=null?'<br>Supply, 90 days: <span class="'+(c.netSupply>0?'bad':'good')+'">'+pct(c.netSupply)+'</span>':'')+'</div></div><div class="sub" style="margin-top:6px">Issuance uses '+c.infl.toFixed(2)+'% a year'+(c.inflIsPath?' (Mission 70 paper path, not measured)':' (your override)')+'.</div>';
+    h+='<div class="row" style="justify-content:flex-start;gap:14px"><svg width="92" height="92" viewBox="0 0 120 120" role="img" aria-label="Burn divided by issuance is '+c.ratio.toFixed(2)+'"><circle cx="60" cy="60" r="46" fill="none" style="stroke:var(--card2)" stroke-width="11"/><circle cx="60" cy="60" r="46" fill="none" style="stroke:var(--no)" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+(C*r).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 60 60)"/><text x="60" y="66" text-anchor="middle" style="fill:var(--ink);font-size:24px">'+c.ratio.toFixed(2)+'</text></svg><div class="sub">Burn \u00F7 issuance. Full ring is break-even.'+(c.netSupply!=null?'<br>Supply, 90 days: <span class="'+(c.netSupply>0?'bad':'good')+'">'+pct(c.netSupply)+'</span>':'')+'</div></div><div class="sub" style="margin-top:6px">Issuance uses '+c.infl.toFixed(2)+'% a year'+(c.inflIsPath?' (Mission 70 paper path, not measured)':' (your override)')+'.'+(c.supplySrc==='estimate from neurons.json'?' Supply is an estimate.':'')+'</div>';
   }else h+='<div class="sub">No burn or supply data yet. See Data status below.</div>';
   h+='</div>';
   h+='<div class="panel"><h2>\uD83C\uDFAF Mission 70</h2>';
@@ -388,7 +435,7 @@ function render(){
   h+='</div>';
   // data status
   var keys=Object.keys(D.status),bad=keys.filter(function(k){return !D.status[k].ok}).length;
-  h+='<details'+(bad?' open':'')+'><summary>Data status ('+(keys.length-bad)+' of '+keys.length+' sources working)</summary>'+keys.map(function(k){var s=D.status[k];return '<div class="sub"><b style="font-weight:500;color:var(--ink)">'+esc(k)+'</b> \u00B7 '+(s.ok?'ok':'<span class="bad">failed</span>')+' \u00B7 '+esc(s.msg)+'</div>'}).join('')+'<div class="sub" style="margin-top:6px">ICP network sources are unverified until the first live run. A failed source shows \u201Cno data\u201D, never made-up numbers.</div></details>';
+  h+='<details'+(bad?' open':'')+'><summary>Data status ('+(keys.length-bad)+' of '+keys.length+' sources working)</summary>'+keys.map(function(k){var s=D.status[k];return '<div class="sub"><b style="font-weight:500;color:var(--ink)">'+esc(k)+'</b> \u00B7 '+(s.ok?'ok':'<span class="bad">failed</span>')+' \u00B7 '+esc(s.msg)+(D.dbg[k]&&(!s.ok||/missing/.test(s.msg))?'<br>'+esc(D.dbg[k]):'')+'</div>'}).join('')+'<div class="sub" style="margin-top:6px">ICP network sources are unverified until the first live run. A failed source shows \u201Cno data\u201D, never made-up numbers.</div></details>';
   $('app').innerHTML=h;
   document.querySelectorAll('button[data-s]').forEach(function(b){b.addEventListener('click',function(){SCN=b.getAttribute('data-s');render()})});
 }
