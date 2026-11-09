@@ -1,48 +1,69 @@
-**Week ending Sun 01 Nov 2026** · BTC filter **ON 🟢** · LONG 108 · CASH 100
+**Week ending Sun 08 Nov 2026** · BTC filter **ON 🟢** · LONG 69 · CASH 177
 
 ### 🟢 BUY signals
 
 | Coin | vs 20-wk avg | Avg daily vol (Kraken) | Volume | Liquidity |
 |---|---|---|---|---|
-| **POL** | +1.0% | $0.53M | ⚠️ weak | Thin |
-| **MORPHO** | +0.2% | $0.49M | ✅ confirms | Thin |
-| **LSK** | +13.9% | $0.21M | ⚠️ weak | Avoid |
-| **AIN** | +289.0% | $0.18M | ⚠️ weak | Avoid |
-| **ESPORTS** | +9.0% | $0.12M | ⚠️ weak | Avoid |
-| **BLESS** | +5.5% | $0.07M | ⚠️ weak | Avoid |
-| **EVAA** | +59.7% | $0.05M | ⚠️ weak | Avoid |
-| **PROVE** | +6.1% | $0.03M | ⚠️ weak | Avoid |
+| **UP** | +1.4% | $0.09M | ⚠️ weak | Avoid |
+| **AUSD** | +0.0% | $0.07M | ⚠️ weak | Avoid |
+| **TRUST** | +12.5% | $0.07M | ⚠️ weak | Avoid |
+| **CLANKER** | +2.4% | $0.06M | ⚠️ weak | Avoid |
+| **ACT** | +0.0% | $0.02M | ⚠️ weak | Avoid |
+| **TRU** | +0.6% | $0.01M | ⚠️ weak | Avoid |
 
 ### 🔴 SELL signals (move to cash)
 
-- **XRP** — coin fell below average
-- **ADA** — coin fell below average
-- **TAO** — coin fell below average
-- **WLD** — coin fell below average
-- **CRV** — coin fell below average
-- **DOT** — coin fell below average
-- **PENGU** — coin fell below average
-- **ALGO** — coin fell below average
-- **ICP** — coin fell below average
-- **RENDER** — coin fell below average
-- **AKE** — coin fell below average
-- **ATOM** — coin fell below average
-- **APT** — coin fell below average
-- **XCN** — coin fell below average
-- **SEI** — coin fell below average
-- **LDO** — coin fell below average
-- **MANA** — coin fell below average
-- **XTZ** — coin fell below average
-- **VSN** — coin fell below average
-- **SKR** — coin fell below average
-- **WAL** — coin fell below average
-- **BABY** — coin fell below average
-- **VET** — coin fell below average
-- **MNT** — coin fell below average
-- **ARKM** — coin fell below average
-- **DCR** — coin fell below average
-- **AZTEC** — coin fell below average
-- **AUSD** — coin fell below average
-- **1INCH** — coin fell below average
+- **ETH** — coin fell below average
+- **SOL** — coin fell below average
+- **HYPE** — coin fell below average
+- **SUI** — coin fell below average
+- **LINK** — coin fell below average
+- **AVAX** — coin fell below average
+- **PUMP** — coin fell below average
+- **LTC** — coin fell below average
+- **ENA** — coin fell below average
+- **STRK** — coin fell below average
+- **ONDO** — coin fell below average
+- **TIA** — coin fell below average
+- **USELESS** — coin fell below average
+- **BCH** — coin fell below average
+- **FIL** — coin fell below average
+- **AERO** — coin fell below average
+- **Q** — coin fell below average
+- **KAS** — coin fell below average
+- **W** — coin fell below average
+- **JUP** — coin fell below average
+- **OP** — coin fell below average
+- **POL** — coin fell below average
+- **MORPHO** — coin fell below average
+- **CHIP** — coin fell below average
+- **ASTER** — coin fell below average
+- **PENDLE** — coin fell below average
+- **LSK** — coin fell below average
+- **ZBCN** — coin fell below average
+- **SKY** — coin fell below average
+- **PLUME** — coin fell below average
+- **GRT** — coin fell below average
+- **CVX** — coin fell below average
+- **ESPORTS** — coin fell below average
+- **SHX** — coin fell below average
+- **STBL** — coin fell below average
+- **PHA** — coin fell below average
+- **A** — coin fell below average
+- **COMP** — coin fell below average
+- **TRAC** — coin fell below average
+- **ORCA** — coin fell below average
+- **DOG** — coin fell below average
+- **CAKE** — coin fell below average
+- **RLS** — coin fell below average
+- **QCAD** — coin fell below average
+- **PROVE** — coin fell below average
+- **FLUX** — coin fell below average
+- **SC** — coin fell below average
+- **EGLD** — coin fell below average
+- **JITOSOL** — coin fell below average
+- **OMI** — coin fell below average
+- **USDD** — coin fell below average
+- **LCAP** — coin fell below average
 
 _Education only — not advice. Check the live price and order book on Kraken before trading._
