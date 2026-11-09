@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cycle Compass</title>
 <style>
-:root{--bg:#f6f5f1;--card:#ffffff;--ink:#14161a;--ink2:#52514e;--mute:#898781;--line:#e4e2da;--track:#e9e7e0;--soft:#f1efe8;color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--track:#262930;--soft:#1e2128}}
-:root[data-theme="dark"]{--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--track:#262930;--soft:#1e2128}
+:root{--bg:#f6f5f1;--card:#ffffff;--ink:#14161a;--ink2:#52514e;--mute:#898781;--line:#e4e2da;--track:#e9e7e0;--soft:#f1efe8;--depth:#14161a;color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--track:#262930;--soft:#1e2128;--depth:#ffffff}}
+:root[data-theme="dark"]{--bg:#0e1013;--card:#171a20;--ink:#f0efec;--ink2:#c3c2b7;--mute:#8d8b84;--line:#2a2d34;--track:#262930;--soft:#1e2128;--depth:#ffffff}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
@@ -66,7 +66,7 @@ button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radiu
     <svg id="gauge" width="100%" viewBox="0 0 320 320" role="img" aria-label="Cycle gauge"><title>Cycle gauge</title><desc>Outer ring shows time elapsed in the top-to-bottom window. Inner ring shows price depth versus past bear markets.</desc></svg>
     <div style="display:flex;justify-content:center;gap:18px;font-size:12px;color:var(--ink2);margin-top:2px">
       <span><s style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--pc,#E24B4A);margin-right:6px"></s>Time</span>
-      <span><s style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#7F77DD;margin-right:6px"></s>Depth</span>
+      <span><s style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--depth);margin-right:6px;border:1px solid var(--line)"></s>Depth</span>
     </div>
   </div>
 
@@ -212,7 +212,7 @@ function gauge(m){
   function ring(r,sw,pct,color){var C=2*Math.PI*r;
     el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:'var(--track)','stroke-width':sw});
     if(pct>0)el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:color,'stroke-width':sw,'stroke-linecap':'round','stroke-dasharray':(C*pct/100).toFixed(1)+' '+C.toFixed(1),transform:'rotate(-90 '+cx+' '+cy+')'})}
-  ring(132,14,m.score,col);ring(108,8,m.depth==null?0:m.depth,'#7F77DD');
+  ring(132,14,m.score,col);ring(108,8,m.depth==null?0:m.depth,'var(--depth)');
   for(var k=1;k<4;k++){var a=k*Math.PI/2;el(g,'line',{x1:cx+119*Math.sin(a),y1:cy-119*Math.cos(a),x2:cx+146*Math.sin(a),y2:cy-146*Math.cos(a),stroke:'var(--bg)','stroke-width':2})}
   var t=el(g,'text',{x:cx,y:116,'text-anchor':'middle',fill:'var(--mute)','font-size':11,'letter-spacing':'0.08em'});t.textContent='CYCLE CLOCK';
   t=el(g,'text',{x:cx,y:178,'text-anchor':'middle',fill:col,'font-size':68,'font-family':'Iowan Old Style,Palatino Linotype,Georgia,serif'});t.textContent=m.conf?m.score:'\u2013';
@@ -249,7 +249,7 @@ function tiles(m){
 function meters(m){
   var d=m.depth==null?0:m.depth;
   H('meters').innerHTML='<div class="meter"><div class="row"><span>Time elapsed</span><span class="serif">'+(m.conf?m.score+'%':'n/a')+'</span></div><div class="bar"><i style="width:'+m.score+'%;background:'+K[m.idx]+'"></i></div></div>'+
-   '<div class="meter"><div class="row"><span>Depth vs past bears</span><span class="serif">'+(m.depth==null?'n/a':d+'%')+'</span></div><div class="bar"><i style="width:'+d+'%;background:#7F77DD"></i></div></div>'+
+   '<div class="meter"><div class="row"><span>Depth vs past bears</span><span class="serif">'+(m.depth==null?'n/a':d+'%')+'</span></div><div class="bar"><i style="width:'+d+'%;background:var(--depth)"></i></div></div>'+
    '<div class="small" style="margin-top:10px">Gap between the two bars is the signal. A real bottom has historically closed it.</div>';
 }
 function faber(m){
