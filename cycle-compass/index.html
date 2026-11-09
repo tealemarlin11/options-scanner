@@ -54,7 +54,7 @@ button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radiu
 </head>
 <body>
 <div class="wrap">
-  <div class="small" style="margin-bottom:8px"><a href="../" style="color:var(--ink2)">\u2190 Spread scanner</a></div>
+  <div class="small" style="margin-bottom:8px"><a href="../" style="color:var(--ink2)">&larr; Spread scanner</a></div>
   <div class="top">
     <div><h1>Cycle Compass</h1><div class="sub">Time, depth and phase in one read</div></div>
     <div class="pill" id="asof"></div>
@@ -99,211 +99,251 @@ button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radiu
   </div>
 
   <details>
-    <summary>Settings and inputs</summary>
+    <summary>Settings and data</summary>
     <div class="f">
-      <div><label for="top">Last confirmed top</label><input type="date" id="top"></div>
-      <div><label for="price">Price override (blank = live)</label><input type="number" id="price" inputmode="decimal"></div>
-      <div><label for="halving">Last halving</label><input type="date" id="halving"></div>
-      <div><label for="nextH">Next halving (est.)</label><input type="date" id="nextH"></div>
-      <div><label for="ath">Cycle top price (USD)</label><input type="number" id="ath" inputmode="decimal"></div>
-      <div><label for="asOfIn">View as of (optional)</label><input type="date" id="asOfIn"></div>
-      <div class="w"><label for="closes">Monthly closes override (blank = auto)</label><input type="text" id="closes"></div>
-      <div class="w"><label for="gaps">Past top-to-bottom days</label><input type="text" id="gaps"></div>
-      <div class="w"><label for="dds">Past top-to-bottom drawdowns, %</label><input type="text" id="dds"></div>
+      <div><label for="asOfIn">View as of (testing only)</label><input type="date" id="asOfIn"></div>
+      <div style="display:flex;align-items:flex-end"><button id="reload" type="button" style="margin-top:0">Reload data</button></div>
     </div>
-    <button id="reset" type="button">Reset to defaults</button>
-    <p class="small" style="margin-top:12px">Price comes live from Coinbase in your browser. Monthly closes are also built in your browser from Coinbase daily candles. If either call fails, the saved data/prices.json and then a built-in snapshot from 10 Oct 2026 are used. Past gaps and drawdowns are approximate values from memory.</p>
+    <div class="small" style="margin-top:12px" id="cyc"></div>
+    <p class="small" style="margin-top:12px">Nothing is typed in or saved. Price, daily history, cycle tops and the halving estimate all load automatically. To change the past cycle dates, edit the PAST table at the top of the script in index.html.</p>
   </details>
 
   <details>
     <summary>How it works</summary>
-    <p class="small" style="margin-top:10px">Time score = days since the last top divided by the median past top-to-bottom length. Depth score = current drawdown divided by the median past drawdown. Phases use days since the last halving, with the top and projected bottom as anchors. The halving date is an estimate based on block pace and will drift by a few days.</p>
+    <p class="small" style="margin-top:10px">The cycle top is the highest daily close since the last halving. It counts as confirmed once price has fallen 20% from it. Time score = days since the top divided by the median past top-to-bottom length. Depth score = current drawdown divided by the median past drawdown. Phases use days since the last halving. The next halving date comes from the live Bitcoin block height, falling back to a table estimate. When today passes the next halving, a new ring starts by itself.</p>
   </details>
 
   <p class="small">Descriptive tool, not financial advice. Three past cycles is a very small sample. The time clock assumes this cycle rhymes with earlier ones, and that may not hold.</p>
 </div>
-
 <script>
 var DAY=864e5,NS='http://www.w3.org/2000/svg';
-var DEF={top:'2025-10-06',halving:'2024-04-20',nextH:'2028-04-18',price:'',ath:'126080',asOfIn:'',gaps:'406, 363, 376',dds:'85, 84, 77',closes:''};
-var LIVE={price:82600,closes:[87500,78621,66996,68233,76304,73580,58559,62814,78549,83556],note:'snapshot 10 Oct 2026',live:false};
-var S=Object.assign({},DEF);
-try{var raw=localStorage.getItem('cc_state');if(raw){S=Object.assign({},DEF,JSON.parse(raw))}}catch(e){}
+var PAST=[
+  {h:'2012-11-28',top:'2013-12-04',bot:'2015-01-14',dd:85},
+  {h:'2016-07-09',top:'2017-12-17',bot:'2018-12-15',dd:84},
+  {h:'2020-05-11',top:'2021-11-10',bot:'2022-11-21',dd:77}
+];
+var HALVINGS=['2012-11-28','2016-07-09','2020-05-11','2024-04-20'];
+var NEXT_TABLE='2028-04-18';
+var HALVING_BLOCKS=210000;
+var FALLBACK_TOP={date:'2025-10-06',close:124752};
+var OFF={late:365,after_top:166,after_bot:240,early:150};
+var CONFIRM_DROP=0.20,STALE_DAYS=3;
 var NAMES=['Post-halving','Early bull','Late bull','Distribution','Bear, maturing','Capitulation','Pre-halving'];
 var K=['#1D9E75','#639922','#EF9F27','#D85A30','#E24B4A','#7F77DD','#378ADD'];
+var DATA={rows:null,rowsSrc:null,price:null,priceSrc:null,height:null,nextEst:null,msgs:[],loadedAt:null};
+try{localStorage.removeItem('cc_state')}catch(e){}
+function H(id){return document.getElementById(id)}
 function parse(s){var p=s.split('-');return Date.UTC(+p[0],+p[1]-1,+p[2])}
 function fmt(t){return new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}
 function med(a){a=a.slice().sort(function(x,y){return x-y});var m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2}
-function nums(s){return String(s).split(',').map(parseFloat).filter(function(x){return x>0})}
-function el(p,n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
 function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
-function H(id){return document.getElementById(id)}
+function el(p,n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
+function todayUTC(){var d=new Date();return Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())}
 
-function calc(){
-  var now;
-  if(S.asOfIn){now=parse(S.asOfIn)}else{var d=new Date();now=Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())}
-  var gaps=nums(S.gaps);if(!gaps.length)gaps=[376];
-  var dur=Math.round(med(gaps));
-  var topT=parse(S.top),halT=parse(S.halving),nxtT=parse(S.nextH);
-  var elapsed=Math.round((now-topT)/DAY);
-  var score=clamp(Math.round(elapsed/dur*100),0,100);
-  var toBottom=dur-elapsed;
-  var L=Math.round((nxtT-halT)/DAY);
-  var dayH=Math.round((now-halT)/DAY);
-  var topDay=Math.round((topT-halT)/DAY);
-  var botDay=topDay+dur;
-  var B=[0,150,365,topDay,topDay+166,botDay,botDay+240,L];
-  for(var i=1;i<8;i++){if(B[i]<=B[i-1])B[i]=B[i-1]+1}
-  var idx=6;for(var j=0;j<7;j++){if(dayH>=B[j]&&dayH<B[j+1]){idx=j;break}}
-  if(dayH<0)idx=0;
-  var price=parseFloat(S.price)||LIVE.price||NaN,ath=parseFloat(S.ath);
-  var dd=null,ddm=med(nums(S.dds).length?nums(S.dds):[80]),depth=null;
-  if(price>0&&ath>0){dd=(price/ath-1)*100;depth=clamp(Math.round((-dd)/ddm*100),0,100)}
-  var cl=nums(S.closes);if(cl.length<10)cl=LIVE.closes.slice();cl=cl.slice(-10);var sma=null;
-  if(cl.length>=10){sma=cl.reduce(function(a,b){return a+b},0)/cl.length}
-  return{closes:cl,sma:sma,price:price,now:now,dur:dur,topT:topT,botT:topT+dur*DAY,elapsed:elapsed,score:score,toBottom:toBottom,L:L,dayH:dayH,B:B,idx:idx,nxtT:nxtT,dd:dd,ddm:ddm,depth:depth,topDay:topDay,botDay:botDay,daysToHalving:Math.round((nxtT-now)/DAY)}
+function detect(rows,h0,h1){
+  var seg=rows.filter(function(r){return r[0]>=h0&&r[0]<h1});
+  if(seg.length<30)return null;
+  var top=seg[0];seg.forEach(function(r){if(r[1]>top[1])top=r});
+  var after=seg.filter(function(r){return r[0]>=top[0]}),bot=after[0];
+  after.forEach(function(r){if(r[1]<bot[1])bot=r});
+  return {top:top[0],topPx:top[1],bot:bot[0],botPx:bot[1]};
+}
+function monthlyCloses(rows,nowMs){
+  var n=new Date(nowMs),cur=n.getUTCFullYear()*12+n.getUTCMonth(),last={};
+  rows.forEach(function(r){var d=new Date(r[0]);last[d.getUTCFullYear()*12+d.getUTCMonth()]=r[1]});
+  return Object.keys(last).map(Number).filter(function(k){return k<cur}).sort(function(a,b){return a-b}).map(function(k){return Math.round(last[k])});
 }
 
-function gauge(c){
-  var g=H('gauge');g.innerHTML='<title>Cycle gauge</title><desc>Outer ring shows time elapsed. Inner ring shows depth versus past bear markets.</desc>';
-  var col=K[c.idx];document.documentElement.style.setProperty('--pc',col);
-  var cx=160,cy=160;
-  function ring(r,sw,pct,color){
-    var C=2*Math.PI*r;
-    el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:'var(--track)','stroke-width':sw});
-    if(pct>0)el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:color,'stroke-width':sw,'stroke-linecap':'round','stroke-dasharray':(C*pct/100).toFixed(1)+' '+C.toFixed(1),transform:'rotate(-90 '+cx+' '+cy+')'});
+function model(){
+  var asOf=H('asOfIn')&&H('asOfIn').value,now=asOf?parse(asOf):todayUTC();
+  var rowsAll=DATA.rows,rows=rowsAll?rowsAll.filter(function(r){return r[0]<=now+DAY}):null;
+  var realNow=todayUTC(),stale=false,why=null;
+  var price=null;
+  if(rows&&rows.length){
+    var lastT=rows[rows.length-1][0];
+    if(!asOf&&(realNow-lastT)/DAY>STALE_DAYS){stale=true;why='History ends '+fmt(lastT)}
+    price=asOf?rows[rows.length-1][1]:(DATA.price||rows[rows.length-1][1]);
+  }else{stale=true;why='No price history loaded'}
+  var nextEst=DATA.nextEst||parse(NEXT_TABLE);
+  var hals=HALVINGS.map(parse).concat([nextEst]);
+  while(now>=hals[hals.length-1])hals.push(hals[hals.length-1]+1460*DAY);
+  var cur=0;for(var i=0;i<hals.length-1;i++){if(hals[i]<=now)cur=i}
+  var h0=hals[cur],h1=hals[cur+1],L=Math.round((h1-h0)/DAY),dayH=Math.round((now-h0)/DAY);
+  var cycles=[],gaps=[],dds=[];
+  for(var k=0;k<cur;k++){
+    var c={h:hals[k],next:hals[k+1]};
+    if(PAST[k]){c.top=parse(PAST[k].top);c.bot=parse(PAST[k].bot);c.dd=PAST[k].dd}
+    else if(rows){var d=detect(rows,hals[k],hals[k+1]);if(d){c.top=d.top;c.bot=d.bot;c.dd=Math.round((1-d.botPx/d.topPx)*100)}}
+    if(c.top&&c.bot){gaps.push(Math.round((c.bot-c.top)/DAY));dds.push(c.dd)}
+    cycles.push(c);
   }
-  ring(132,14,c.score,col);
-  ring(108,8,c.depth==null?0:c.depth,'#7F77DD');
-  for(var k=0;k<4;k++){var a=k*Math.PI/2,x1=cx+119*Math.sin(a),y1=cy-119*Math.cos(a),x2=cx+146*Math.sin(a),y2=cy-146*Math.cos(a);if(k>0)el(g,'line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:'var(--bg)','stroke-width':2})}
-  var t;
-  t=el(g,'text',{x:cx,y:116,'text-anchor':'middle',fill:'var(--mute)','font-size':11,'letter-spacing':'0.08em'});t.textContent='CYCLE CLOCK';
-  t=el(g,'text',{x:cx,y:178,'text-anchor':'middle',fill:col,'font-size':68,'font-family':'Iowan Old Style,Palatino Linotype,Georgia,serif'});t.textContent=c.score;
-  t=el(g,'text',{x:cx,y:204,'text-anchor':'middle',fill:'var(--ink)','font-size':14,'font-weight':500});t.textContent=NAMES[c.idx];
-  t=el(g,'text',{x:cx,y:224,'text-anchor':'middle',fill:'var(--ink2)','font-size':12});
-  t.textContent=c.toBottom>0?c.toBottom+' days to bottom window':(c.toBottom===0?'Bottom window today':Math.abs(c.toBottom)+' days past window');
+  if(!gaps.length){gaps=[376];dds=[84]}
+  var dur=Math.round(med(gaps)),ddm=med(dds);
+  var top=null,topPx=null,conf=false;
+  var seg=rows?rows.filter(function(r){return r[0]>=h0&&r[0]<=now+DAY}):[];
+  if(seg.length){
+    var t=seg[0];seg.forEach(function(r){if(r[1]>t[1])t=r});top=t[0];topPx=t[1];
+    if(price!=null&&price>topPx&&!stale){top=Math.min(now,realNow);topPx=price}
+    var after=seg.filter(function(r){return r[0]>=top});
+    var lo=price!=null?price:Infinity;after.forEach(function(r){if(r[1]<lo)lo=r[1]});
+    conf=lo<=topPx*(1-CONFIRM_DROP);
+  }else if(cur===3){top=parse(FALLBACK_TOP.date);topPx=FALLBACK_TOP.close;conf=price!=null?price<=topPx*(1-CONFIRM_DROP):true}
+  var topDay=top!=null?Math.round((top-h0)/DAY):null;
+  var elapsed=(conf&&top!=null)?Math.round((now-top)/DAY):0;
+  var score=conf?clamp(Math.round(elapsed/dur*100),0,100):0;
+  var toBottom=conf?dur-elapsed:null;
+  var topEff=conf?topDay:Math.max(dayH+1,OFF.late+1);
+  var B=[0,OFF.early,OFF.late,topEff,topEff+OFF.after_top,topEff+dur,topEff+dur+OFF.after_bot,L];
+  for(var j=1;j<8;j++){if(B[j]<=B[j-1])B[j]=B[j-1]+1}
+  var idx;
+  if(conf){idx=6;for(var q=0;q<7;q++){if(dayH>=B[q]&&dayH<B[q+1]){idx=q;break}}}
+  else idx=dayH<OFF.early?0:(dayH<OFF.late?1:2);
+  var dd=(price!=null&&topPx)?(price/topPx-1)*100:null,depth=dd==null?null:clamp(Math.round((-dd)/ddm*100),0,100);
+  var cl=rows?monthlyCloses(rows,now):[];cl=cl.slice(-10);
+  var sma=(cl.length>=10&&!stale)?cl.reduce(function(a,b){return a+b},0)/10:null;
+  return {now:now,hals:hals,cur:cur,cycles:cycles,h0:h0,h1:h1,L:L,dayH:dayH,dur:dur,ddm:ddm,top:top,topPx:topPx,conf:conf,topDay:topDay,elapsed:elapsed,score:score,toBottom:toBottom,B:B,idx:idx,
+    price:stale?null:price,dd:stale?null:dd,depth:stale?null:depth,closes:cl,sma:sma,stale:stale,why:why,botT:(conf&&top!=null)?top+dur*DAY:null,nxtT:h1,daysToHalving:Math.round((h1-now)/DAY)}
 }
 
-function verdict(c){
+function gauge(m){
+  var g=H('gauge');g.innerHTML='<title>Cycle gauge</title><desc>Outer ring shows time elapsed. Inner ring shows depth versus past bear markets.</desc>';
+  var col=K[m.idx];document.documentElement.style.setProperty('--pc',col);
+  var cx=160,cy=160;
+  function ring(r,sw,pct,color){var C=2*Math.PI*r;
+    el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:'var(--track)','stroke-width':sw});
+    if(pct>0)el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:color,'stroke-width':sw,'stroke-linecap':'round','stroke-dasharray':(C*pct/100).toFixed(1)+' '+C.toFixed(1),transform:'rotate(-90 '+cx+' '+cy+')'})}
+  ring(132,14,m.score,col);ring(108,8,m.depth==null?0:m.depth,'#7F77DD');
+  for(var k=1;k<4;k++){var a=k*Math.PI/2;el(g,'line',{x1:cx+119*Math.sin(a),y1:cy-119*Math.cos(a),x2:cx+146*Math.sin(a),y2:cy-146*Math.cos(a),stroke:'var(--bg)','stroke-width':2})}
+  var t=el(g,'text',{x:cx,y:116,'text-anchor':'middle',fill:'var(--mute)','font-size':11,'letter-spacing':'0.08em'});t.textContent='CYCLE CLOCK';
+  t=el(g,'text',{x:cx,y:178,'text-anchor':'middle',fill:col,'font-size':68,'font-family':'Iowan Old Style,Palatino Linotype,Georgia,serif'});t.textContent=m.conf?m.score:'\u2013';
+  t=el(g,'text',{x:cx,y:204,'text-anchor':'middle',fill:'var(--ink)','font-size':14,'font-weight':500});t.textContent=NAMES[m.idx];
+  t=el(g,'text',{x:cx,y:224,'text-anchor':'middle',fill:'var(--ink2)','font-size':12});
+  t.textContent=!m.conf?'No confirmed top yet':(m.toBottom>0?m.toBottom+' days to bottom window':(m.toBottom===0?'Bottom window today':Math.abs(m.toBottom)+' days past window'));
+}
+function chips(m){
+  var r=[['Time',m.conf&&m.score>=85,m.conf?m.score+'% of window':'no top yet'],['Trend',m.sma!=null&&m.price>m.sma,m.sma==null?'no data':'vs 10m average'],['Depth',m.depth!=null&&m.depth>=85,m.depth==null?'no data':m.depth+'% of typical']];
+  H('chips').innerHTML=r.map(function(x){return '<div class="chip '+(x[1]?'y':'n')+'">'+x[0]+'<b>'+(x[1]?'Yes':'Not yet')+'</b>'+x[2]+'</div>'}).join('');
+}
+function verdict(m){
   var v=H('verdict'),tone,title,body;
-  var d=c.depth,tOk=c.score>=85,rOk=c.sma!=null&&c.price>c.sma,dOk=d!=null&&d>=85;
-  var ddTxt=c.dd==null?'unknown':Math.abs(c.dd).toFixed(0)+'% against a typical '+c.ddm.toFixed(0)+'%';
-  if(tOk&&rOk&&dOk){tone='#1D9E75';title='All three agree';body='Time, trend and depth all point to a bottom zone.'}
+  var d=m.depth,tOk=m.conf&&m.score>=85,rOk=m.sma!=null&&m.price>m.sma,dOk=d!=null&&d>=85;
+  var ddTxt=m.dd==null?'unknown':Math.abs(m.dd).toFixed(0)+'% against a typical '+m.ddm.toFixed(0)+'%';
+  if(m.stale){tone='#EF9F27';title='No fresh price data';body='Showing the time clock only. '+(m.why||'')+'. Price, trend and depth need a live data source. Reload, or check a VPN or ad blocker.'}
+  else if(!m.conf){tone='#378ADD';title='Near the cycle high';body='Price is within 20% of its cycle high ($'+Math.round(m.topPx).toLocaleString('en-GB')+', '+fmt(m.top)+'). The bear clock starts only after a 20% fall from the top.'}
+  else if(tOk&&rOk&&dOk){tone='#1D9E75';title='All three agree';body='Time, trend and depth all point to a bottom zone.'}
   else if(tOk&&rOk){tone='#EF9F27';title='Time and trend agree, depth does not';body='The clock is nearly up and price is above its 10-month average. But the drop is only '+ddTxt+'. Either this bear is shallower, or a lower low may still come.'}
   else if(tOk){tone='#EF9F27';title='Clock says near, trend says wait';body='Price is not yet above its 10-month average. Wait for a close above it.'}
-  else if(c.score>=50){tone='#E24B4A';title='Mid bear, be patient';body='Time is past halfway. Depth is '+(d==null?'unknown':d+'% of the typical bear')+'.'}
+  else if(m.score>=50){tone='#E24B4A';title='Mid bear, be patient';body='Time is past halfway. Depth is '+(d==null?'unknown':d+'% of the typical bear')+'.'}
   else{tone='#D85A30';title='Early in the downturn';body='Plenty of time left on the clock.'}
   v.style.borderColor=tone;v.style.background='color-mix(in srgb,'+tone+' 12%,var(--card))';
   v.innerHTML='<b style="color:'+tone+'">'+title+'</b><span>'+body+'</span>';
 }
-
-function chips(c){
-  var r=[['Time',c.score>=85,c.score+'% of window'],['Trend',c.sma!=null&&c.price>c.sma,c.sma==null?'no data':'vs 10m average'],['Depth',c.depth!=null&&c.depth>=85,c.depth==null?'no data':c.depth+'% of typical']];
-  H('chips').innerHTML=r.map(function(x){return '<div class="chip '+(x[1]?'y':'n')+'">'+x[0]+'<b>'+(x[1]?'Yes':'Not yet')+'</b>'+x[2]+'</div>'}).join('');
+function tiles(m){
+  var t=[
+    ['Days to bottom window',m.conf?(m.toBottom>0?m.toBottom:(m.toBottom<0?'+'+Math.abs(m.toBottom):0)):'n/a',m.conf?'~'+fmt(m.botT):'no confirmed top'],
+    ['Days since top',m.top!=null?Math.round((m.now-m.top)/DAY):'n/a',m.top!=null?(m.conf?'of '+m.dur+' projected \u00B7 ':'')+fmt(m.top):'no data'],
+    ['Next halving',m.daysToHalving+'d','Est. '+fmt(m.nxtT)+(DATA.nextEst?' \u00B7 block height':' \u00B7 table')],
+    ['Drawdown from top',m.dd==null?'n/a':m.dd.toFixed(1)+'%','Typical bear: -'+m.ddm.toFixed(0)+'%']];
+  H('tiles').innerHTML=t.map(function(x){return '<div class="tile"><div class="lbl">'+x[0]+'</div><div class="v serif">'+x[1]+'</div><div class="n">'+x[2]+'</div></div>'}).join('');
 }
-
-function faber(c){
+function meters(m){
+  var d=m.depth==null?0:m.depth;
+  H('meters').innerHTML='<div class="meter"><div class="row"><span>Time elapsed</span><span class="serif">'+(m.conf?m.score+'%':'n/a')+'</span></div><div class="bar"><i style="width:'+m.score+'%;background:'+K[m.idx]+'"></i></div></div>'+
+   '<div class="meter"><div class="row"><span>Depth vs past bears</span><span class="serif">'+(m.depth==null?'n/a':d+'%')+'</span></div><div class="bar"><i style="width:'+d+'%;background:#7F77DD"></i></div></div>'+
+   '<div class="small" style="margin-top:10px">Gap between the two bars is the signal. A real bottom has historically closed it.</div>';
+}
+function faber(m){
   var h=H('faber');
-  if(c.sma==null||!(c.price>0)){h.innerHTML='<div class="small" style="margin-top:8px">Add a price and 10 monthly closes in Settings.</div>';return}
-  var up=c.price>c.sma,pct=(c.price/c.sma-1)*100,col=up?'#1D9E75':'#E24B4A';
-  var vals=c.closes.concat([c.price]),all=vals.concat([c.sma]),mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),pad=(mx-mn)*0.12||1;mn-=pad;mx+=pad;
+  if(m.stale||m.sma==null||!(m.price>0)){h.innerHTML='<div class="small" style="margin-top:8px">No fresh price data, so the Faber trend is hidden rather than guessed.</div>';return}
+  var up=m.price>m.sma,pct=(m.price/m.sma-1)*100,col=up?'#1D9E75':'#E24B4A';
+  var vals=m.closes.concat([m.price]),all=vals.concat([m.sma]),mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),pad=(mx-mn)*0.12||1;mn-=pad;mx+=pad;
   var n=vals.length;
-  function X(i){return 10+i*300/(n-1)}
-  function Y(v){return 112-(v-mn)/(mx-mn)*104}
+  function X(i){return 10+i*300/(n-1)}function Y(v){return 112-(v-mn)/(mx-mn)*104}
   var pts=vals.map(function(v,i){return X(i).toFixed(1)+','+Y(v).toFixed(1)}).join(' ');
   var s='<svg width="100%" viewBox="0 0 320 120" role="img" aria-label="Monthly closes versus 10-month average" style="display:block"><title>Monthly closes versus 10-month average</title>'+
-   '<line x1="10" x2="310" y1="'+Y(c.sma).toFixed(1)+'" y2="'+Y(c.sma).toFixed(1)+'" stroke="'+col+'" stroke-dasharray="4 4" stroke-width="1.5"/>'+
+   '<line x1="10" x2="310" y1="'+Y(m.sma).toFixed(1)+'" y2="'+Y(m.sma).toFixed(1)+'" stroke="'+col+'" stroke-dasharray="4 4" stroke-width="1.5"/>'+
    '<polyline points="'+pts+'" fill="none" stroke="var(--ink2)" stroke-width="1.5"/>'+
    vals.map(function(v,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="'+(i===n-1?5:3)+'" fill="'+(i===n-1?col:'var(--ink2)')+'"/>'}).join('')+'</svg>';
   h.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px"><span class="serif" style="font-size:28px;color:'+col+'">'+(up?'Above':'Below')+'</span><span class="serif" style="font-size:16px">'+(pct>0?'+':'')+pct.toFixed(1)+'%</span></div>'+s+
-   '<div class="small">10-month average: <b class="serif">$'+Math.round(c.sma).toLocaleString('en-GB')+'</b>. Dots are the last 10 monthly closes, then today. Dashed line is the average. Faber rule: hold risk while price is above it, step aside below it. The official signal is read at month end.</div>';
+   '<div class="small">10-month average: <b class="serif">$'+Math.round(m.sma).toLocaleString('en-GB')+'</b>. Dots are the last 10 monthly closes, then today. Dashed line is the average. Faber rule: hold risk while price is above it, step aside below it. The official signal is read at month end.</div>';
 }
-
-function tiles(c){
-  var t=[
-    ['Days to bottom window',c.toBottom>0?c.toBottom:(c.toBottom<0?'+'+Math.abs(c.toBottom):0),'~'+fmt(c.botT)],
-    ['Days since top',c.elapsed,'of '+c.dur+' projected · '+fmt(c.topT)],
-    ['Next halving',c.daysToHalving+'d','Est. '+fmt(c.nxtT)],
-    ['Drawdown from top',c.dd==null?'n/a':c.dd.toFixed(1)+'%','Typical bear: -'+c.ddm.toFixed(0)+'%']
-  ];
-  H('tiles').innerHTML=t.map(function(x){return '<div class="tile"><div class="lbl">'+x[0]+'</div><div class="v serif">'+x[1]+'</div><div class="n">'+x[2]+'</div></div>'}).join('');
-}
-
-function meters(c){
-  var d=c.depth==null?0:c.depth;
-  H('meters').innerHTML=
-   '<div class="meter"><div class="row"><span>Time elapsed</span><span class="serif">'+c.score+'%</span></div><div class="bar"><i style="width:'+c.score+'%;background:'+K[c.idx]+'"></i></div></div>'+
-   '<div class="meter"><div class="row"><span>Depth vs past bears</span><span class="serif">'+(c.depth==null?'n/a':d+'%')+'</span></div><div class="bar"><i style="width:'+d+'%;background:#7F77DD"></i></div></div>'+
-   '<div class="small" style="margin-top:10px">Gap between the two bars is the signal. A real bottom has historically closed it.</div>';
-}
-
-function spiral(c){
+function spiral(m){
   var s=H('sp');s.innerHTML='<title>Halving spiral</title><desc>Each turn is one halving cycle.</desc>';
-  var C0=180;
-  function pt(k,f){var a=2*Math.PI*f,r=20+(k+f)*30;return[C0+r*Math.sin(a),C0-r*Math.cos(a)]}
+  var C0=180,n=m.cur+1,step=Math.min(30,130/n);
+  function pt(k,f){var a=2*Math.PI*f,r=20+(k+f)*step;return[C0+r*Math.sin(a),C0-r*Math.cos(a)]}
   function arc(k,f0,f1){var d='';for(var f=f0;f<f1+1e-9;f+=0.004){var p=pt(k,Math.min(f,f1));d+=(d?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)}return d}
-  for(var k=0;k<3;k++)el(s,'path',{d:arc(k,0,1),fill:'none',stroke:'#888780','stroke-opacity':.45,'stroke-width':2,'stroke-linecap':'round'});
-  for(var i=0;i<7;i++)el(s,'path',{d:arc(3,c.B[i]/c.L,c.B[i+1]/c.L),fill:'none',stroke:K[i],'stroke-width':7});
-  [[0,.281],[1,.375],[2,.381]].forEach(function(a){var p=pt(a[0],a[1]);el(s,'circle',{cx:p[0],cy:p[1],r:4,fill:'#E24B4A'})});
-  [[0,.589],[1,.633],[2,.642]].forEach(function(a){var p=pt(a[0],a[1]);el(s,'circle',{cx:p[0],cy:p[1],r:4,fill:'#378ADD'})});
-  var tp=pt(3,clamp(c.topDay/c.L,0,1)),bp=pt(3,clamp(c.botDay/c.L,0,1)),np=pt(3,clamp(c.dayH/c.L,0,1));
-  el(s,'circle',{cx:tp[0],cy:tp[1],r:6,fill:'#E24B4A',stroke:'var(--card)','stroke-width':2});
-  el(s,'circle',{cx:bp[0],cy:bp[1],r:6,fill:'#378ADD',stroke:'var(--card)','stroke-width':2});
-  el(s,'circle',{cx:np[0],cy:np[1],r:11,fill:'none',stroke:'var(--ink)','stroke-width':1.5,'class':'pulse'});
-  var t=el(s,'text',{x:C0,y:C0+4,'text-anchor':'middle',fill:'var(--mute)','font-size':11});t.textContent='Day '+c.dayH;
+  for(var k=0;k<m.cur;k++)el(s,'path',{d:arc(k,0,1),fill:'none',stroke:'#888780','stroke-opacity':.45,'stroke-width':2,'stroke-linecap':'round'});
+  for(var i=0;i<7;i++)el(s,'path',{d:arc(m.cur,m.B[i]/m.L,Math.min(m.B[i+1]/m.L,1)),fill:'none',stroke:K[i],'stroke-width':7});
+  m.cycles.forEach(function(c,k){var len=c.next-c.h;
+    if(c.top){var p=pt(k,clamp((c.top-c.h)/len,0,1));el(s,'circle',{cx:p[0],cy:p[1],r:4,fill:'#E24B4A'})}
+    if(c.bot){var q=pt(k,clamp((c.bot-c.h)/len,0,1));el(s,'circle',{cx:q[0],cy:q[1],r:4,fill:'#378ADD'})}});
+  if(m.top!=null){var tp=pt(m.cur,clamp(m.topDay/m.L,0,1));el(s,'circle',{cx:tp[0],cy:tp[1],r:6,fill:'#E24B4A',stroke:'var(--card)','stroke-width':2})}
+  if(m.conf){var bp=pt(m.cur,clamp((m.topDay+m.dur)/m.L,0,1));el(s,'circle',{cx:bp[0],cy:bp[1],r:6,fill:'#378ADD',stroke:'var(--card)','stroke-width':2})}
+  var np=pt(m.cur,clamp(m.dayH/m.L,0,1));el(s,'circle',{cx:np[0],cy:np[1],r:11,fill:'none',stroke:'var(--ink)','stroke-width':1.5,'class':'pulse'});
+  var t=el(s,'text',{x:C0,y:C0+4,'text-anchor':'middle',fill:'var(--mute)','font-size':11});t.textContent='Day '+m.dayH;
 }
-
-function phases(c){
+function phases(m){
   var tl=H('tl'),leg=H('leg');tl.innerHTML='';leg.innerHTML='';
-  for(var i=0;i<7;i++){
-    var w=(c.B[i+1]-c.B[i])/c.L*100;
-    tl.insertAdjacentHTML('beforeend','<div style="width:'+w+'%;background:'+K[i]+';opacity:'+(i===c.idx?1:.4)+'">'+(w>7?(i+1):'')+'</div>');
-    leg.insertAdjacentHTML('beforeend','<div class="'+(i===c.idx?'on':'')+'"><s style="background:'+K[i]+'"></s>'+(i+1)+'. '+NAMES[i]+'<em>day '+Math.round(c.B[i])+' to '+Math.round(c.B[i+1])+'</em></div>');
-  }
-  H('mk').innerHTML='<i style="left:'+clamp(c.dayH/c.L*100,0,100)+'%"></i>';
+  for(var i=0;i<7;i++){var w=(m.B[i+1]-m.B[i])/m.B[7]*100;
+    tl.insertAdjacentHTML('beforeend','<div style="width:'+w+'%;background:'+K[i]+';opacity:'+(i===m.idx?1:.4)+'">'+(w>7?(i+1):'')+'</div>');
+    leg.insertAdjacentHTML('beforeend','<div class="'+(i===m.idx?'on':'')+'"><s style="background:'+K[i]+'"></s>'+(i+1)+'. '+NAMES[i]+'<em>day '+Math.round(m.B[i])+' to '+Math.round(m.B[i+1])+'</em></div>')}
+  H('mk').innerHTML='<i style="left:'+clamp(m.dayH/m.B[7]*100,0,100)+'%"></i>';
 }
-
+function status(m){
+  var s=H('stat'),ok=!m.stale&&DATA.price!=null;
+  var src=DATA.rowsSrc?DATA.rowsSrc:'no source';
+  s.textContent=m.stale?('\u26A0 No fresh data. '+(m.why||'')+'. Time clock only.'):((ok?'\u25CF Live ':'\u25CB ')+'BTC $'+Math.round(m.price).toLocaleString('en-GB')+' \u00B7 price '+(DATA.priceSrc||src)+' \u00B7 history '+src+(DATA.height?' \u00B7 block '+DATA.height.toLocaleString('en-GB'):''));
+  var c=H('cyc'),rows='';
+  rows+='<b>Cycles</b><br>';
+  m.hals.slice(0,m.cur+1).forEach(function(h,k){
+    var cc=m.cycles[k],isCur=k===m.cur;
+    rows+=fmt(h)+(isCur?' (current): top '+(m.top!=null?fmt(m.top):'n/a')+(m.conf?'':', not confirmed'):(cc&&cc.top?': top '+fmt(cc.top)+', bottom '+fmt(cc.bot)+', fell '+cc.dd+'%':': no top or bottom data'))+'<br>';
+  });
+  rows+='Next halving: '+fmt(m.nxtT)+(DATA.nextEst?' (from block height)':' (table estimate)');
+  c.innerHTML=rows;
+}
 function render(){
-  var c;
-  try{c=calc()}catch(e){return}
-  if(isNaN(c.score)||isNaN(c.L))return;
-  H('asof').textContent=fmt(c.now);
-  gauge(c);chips(c);verdict(c);tiles(c);meters(c);faber(c);spiral(c);phases(c);
+  var m;try{m=model()}catch(e){H('stat').textContent='Error: '+e.message;return}
+  H('asof').textContent=fmt(m.now);
+  gauge(m);chips(m);verdict(m);tiles(m);meters(m);faber(m);spiral(m);phases(m);status(m);
 }
 
-['top','price','halving','nextH','ath','asOfIn','closes','gaps','dds'].forEach(function(id){
-  var e=H(id);e.value=S[id];
-  e.addEventListener('input',function(){S[id]=e.value;try{localStorage.setItem('cc_state',JSON.stringify(S))}catch(x){}render()});
-});
-H('reset').addEventListener('click',function(){
-  S=Object.assign({},DEF);
-  try{localStorage.removeItem('cc_state')}catch(x){}
-  Object.keys(S).forEach(function(k){var e=H(k);if(e)e.value=S[k]});
-  render();
-});
-function stat(){H('stat').textContent=(LIVE.live?'\u25CF Live ':'\u25CB ')+'BTC $'+Math.round(LIVE.price).toLocaleString('en-GB')+' \u00B7 '+LIVE.note}
-function loadJSON(){fetch('data/prices.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
-  if(j.closes&&j.closes.length>=10&&!LIVE.closesLive)LIVE.closes=j.closes;
-  if(!LIVE.live){if(j.price>0)LIVE.price=j.price;LIVE.note='saved '+String(j.updated).slice(0,10)}
-  stat();render()}).catch(function(){stat()})}
-function loadLive(){fetch('https://api.exchange.coinbase.com/products/BTC-USD/ticker').then(function(r){return r.json()}).then(function(j){
-  var p=parseFloat(j.price);
-  if(p>0){LIVE.price=p;LIVE.live=true;LIVE.note='Coinbase '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});stat();render()}}).catch(function(){})}
-function monthsFrom(rows){
-  var last={},n=new Date(),cur=n.getUTCFullYear()*12+n.getUTCMonth();
-  rows.sort(function(a,b){return a[0]-b[0]});
-  rows.forEach(function(r){var d=new Date(r[0]*1000);last[d.getUTCFullYear()*12+d.getUTCMonth()]=r[4]});
-  return Object.keys(last).map(Number).filter(function(k){return k<cur}).sort(function(a,b){return a-b}).map(function(k){return Math.round(last[k])});
+function jget(url){return fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
+function histCoinbase(){
+  var end=todayUTC()+DAY,curH=parse(HALVINGS[HALVINGS.length-1]);
+  var nxt=DATA.nextEst||parse(NEXT_TABLE);if(todayUTC()>=nxt)curH=nxt;
+  var start=Math.min(parse(HALVINGS[HALVINGS.length-1]),curH,todayUTC()-340*DAY),reqs=[];
+  for(var s=start;s<end;s+=299*DAY){var e=Math.min(s+299*DAY,end);
+    reqs.push(jget('https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start='+new Date(s).toISOString()+'&end='+new Date(e).toISOString()))}
+  return Promise.all(reqs).then(function(parts){
+    var seen={},rows=[];parts.forEach(function(p){p.forEach(function(r){var t=r[0]*1000;if(!seen[t]){seen[t]=1;rows.push([t,+r[4]])}})});
+    rows.sort(function(a,b){return a[0]-b[0]});
+    if(rows.length<300)throw new Error('too few candles');return rows});
 }
-function loadCloses(){
-  var A='https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400',e=new Date(),D=864e5;e.setUTCHours(0,0,0,0);
-  function rng(a,b){return fetch(A+'&start='+new Date(e-a*D).toISOString()+'&end='+new Date(e-b*D).toISOString()).then(function(r){return r.json()})}
-  Promise.all([rng(299,0),rng(598,299)]).then(function(x){
-    var m=monthsFrom(x[0].concat(x[1]));
-    if(m.length>=10){LIVE.closes=m.slice(-10);LIVE.closesLive=true;render()}
-  }).catch(function(){});
+function histCC(){
+  return jget('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit=1500').then(function(j){
+    var rows=j.Data.Data.map(function(r){return [r.time*1000,+r.close]}).filter(function(r){return r[1]>0});
+    if(rows.length<300)throw new Error('too few candles');return rows});
 }
-stat();render();loadJSON();loadLive();loadCloses();setInterval(loadLive,60000);
+function loadHistory(){
+  return histCoinbase().then(function(r){DATA.rows=r;DATA.rowsSrc='Coinbase'},function(){
+    return histCC().then(function(r){DATA.rows=r;DATA.rowsSrc='CryptoCompare'},function(){DATA.rows=DATA.rows||null;DATA.rowsSrc=DATA.rows?DATA.rowsSrc:null})}).then(render);
+}
+function loadPrice(){
+  return jget('https://api.exchange.coinbase.com/products/BTC-USD/ticker').then(function(j){var p=parseFloat(j.price);if(!(p>0))throw 0;DATA.price=p;DATA.priceSrc='Coinbase'},function(){
+    return jget('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD').then(function(j){if(!(j.USD>0))throw 0;DATA.price=j.USD;DATA.priceSrc='CryptoCompare'},function(){DATA.price=null;DATA.priceSrc=null})}).then(render);
+}
+function loadHeight(){
+  function use(h){if(!(h>0))throw 0;DATA.height=h;var nh=(Math.floor(h/HALVING_BLOCKS)+1)*HALVING_BLOCKS;DATA.nextEst=todayUTC()+Math.round((nh-h)/144)*DAY}
+  return fetch('https://mempool.space/api/blocks/tip/height').then(function(r){return r.text()}).then(function(t){use(parseInt(t,10))}).catch(function(){
+    return fetch('https://blockstream.info/api/blocks/tip/height').then(function(r){return r.text()}).then(function(t){use(parseInt(t,10))}).catch(function(){DATA.height=null;DATA.nextEst=null})}).then(render);
+}
+function loadAll(){return loadHeight().then(loadHistory).then(loadPrice)}
+H('asOfIn').addEventListener('input',render);
+H('reload').addEventListener('click',function(){H('stat').textContent='Reloading';loadAll()});
+render();loadAll();
+setInterval(loadPrice,60000);
+setInterval(function(){loadHeight().then(loadHistory)},6*3600*1000);
 </script>
 </body>
 </html>
