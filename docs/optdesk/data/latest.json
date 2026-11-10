@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-09T23:50:20+00:00",
+ "generated": "2026-11-10T21:23:44+00:00",
  "rules_version": "1.0",
- "is_monday": true,
+ "is_monday": false,
  "stress": {
-  "vix": 19.92,
-  "vix3m": 20.85,
-  "ratio": 0.955,
+  "vix": 19.45,
+  "vix3m": 20.64,
+  "ratio": 0.942,
   "on": false
  },
  "events": {
@@ -15,7 +15,7 @@
    {
     "name": "CPI",
     "date": "2026-11-10",
-    "days": 1
+    "days": 0
    }
   ],
   "stale": false
@@ -45,43 +45,43 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 67,
+  "dte": 66,
   "legs": [
    {
     "action": "BUY",
     "type": "put",
     "strike": 675.0,
-    "bid": 4.78,
-    "ask": 4.83,
-    "mid": 4.8,
-    "oi": 19905,
-    "volume": 839,
+    "bid": 4.66,
+    "ask": 4.71,
+    "mid": 4.69,
+    "oi": 20057,
+    "volume": 205,
     "delta": -0.11
    },
    {
     "action": "SELL",
     "type": "put",
     "strike": 600.0,
-    "bid": 1.85,
-    "ask": 1.87,
-    "mid": 1.86,
-    "oi": 39259,
-    "volume": 669,
+    "bid": 1.79,
+    "ask": 1.81,
+    "mid": 1.8,
+    "oi": 39464,
+    "volume": 701,
     "delta": -0.04
    }
   ],
-  "net_mid": 2.94,
-  "natural": 2.98,
+  "net_mid": 2.89,
+  "natural": 2.92,
   "width": 75.0,
-  "max_loss_per_contract": 294.5,
+  "max_loss_per_contract": 288.5,
   "pass": true,
   "fails": [],
   "ticker": "SPY",
   "expiry": "2027-01-15",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 2.96,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-15 675 put and SELL 1 SPY 2027-01-15 600 put. Limit 2.94 debit (You pay). Do not accept worse than 2.96. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 2.9,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-15 675 put and SELL 1 SPY 2027-01-15 600 put. Limit 2.89 debit (You pay). Do not accept worse than 2.90. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
