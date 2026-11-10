@@ -80,7 +80,7 @@ var SRC={
   instr:['https://ic-api.internetcomputer.org/api/v3/metrics/instruction-rate'],
   gov:['https://ic-api.internetcomputer.org/api/v3/governance-metrics'],
   disBuckets:['https://ic-api.internetcomputer.org/api/v3/staking-metrics/governance_dissolving_neurons_e8s_bucket'],
-  supply:['https://ic-api.internetcomputer.org/api/v3/metrics/governance_total_supply_icp','https://ledger-api.internetcomputer.org/api/v1/supply/total']
+  supply:['https://ic-api.internetcomputer.org/api/v3/governance-metrics/governance_total_supply_icp','https://ic-api.internetcomputer.org/api/v3/metrics/governance_total_supply_icp_1year','https://ic-api.internetcomputer.org/api/v3/metrics/governance_total_supply_icp','https://ledger-api.internetcomputer.org/api/v1/supply/total','https://ledger-api.internetcomputer.org/api/v1/total-supply']
 };
 var M70={start:'2026-01-13',startInfl:9.72,endInfl:5.42,end:'2027-01-13',target:2.92,burnTarget:0.77};
 var D={dbg:{},icp:null,btc:null,price:null,priceSrc:null,burn:null,can:null,ii:null,instr:null,gov:null,supply:null,cfg:null,status:{}};
@@ -192,6 +192,7 @@ function govFromProm(j){
   return{staked:staked!=null?staked/1e8:null,supply:supply,lt6:lt6!=null?lt6/1e8:null,dis:b?b.dis:null,labelKey:b?b.labelKey:null,cum:!!b&&b.labelKey==='le'};
 }
 function describeGov(r){
+  if(r.dis){D.dbg.govBuckets='Raw buckets (key \u2192 million ICP): '+r.dis.map(function(p){return p[0]+' \u2192 '+(p[1]/1e14).toFixed(2)}).join(', ')}
   return [r.staked!=null?'staked ok':'staked missing',r.supply!=null?'supply ok':'supply missing',r.lt6!=null?'under-6-month stake ok':'under-6-month stake missing',r.dis?('buckets '+r.dis.length+' (label '+r.labelKey+')'):'buckets missing'].join(' \u00B7 ');
 }
 function rowsCoinbase(base,days){
@@ -297,7 +298,13 @@ function compute(){
     c.unit=uname;
     function within(days){
       if(g.cum){var v=0;g.dis.forEach(function(p){if(p[0]*unit<=days+3)v=p[1]});return v/1e8}
-      var sm=0;g.dis.forEach(function(p){if(p[0]*unit<=days+3)sm+=p[1]});return sm/1e8;
+      var tot=0;
+      for(var i=0;i<g.dis.length;i++){
+        var lo=g.dis[i][0]*unit,hi=(i+1<g.dis.length)?g.dis[i+1][0]*unit:lo+(i>0?(lo-g.dis[i-1][0]*unit):365.25);
+        if(lo>=days||hi<=lo)continue;
+        tot+=g.dis[i][1]*(hi<=days?1:(days-lo)/(hi-lo));
+      }
+      return tot/1e8;
     }
     c.wall={d30:within(30),d90:within(90),d180:within(180),d365:within(365)};
     c.wallPct={d30:c.wall.d30/c.supply*100,d90:c.wall.d90/c.supply*100,d180:c.wall.d180/c.supply*100,d365:c.wall.d365/c.supply*100};
@@ -332,7 +339,7 @@ function compute(){
     function scen(kind){
       var r=0;c.neurons.forEach(function(n){var yr=n.icp*n.apy/100;
         if(kind==='flat')r+=yr*n.left/365;
-        else if(kind==='mid')r+=yr*Math.max(0,n.left-182.6)/365});
+        else if(kind==='mid')r+=yr*Math.max(0,n.left-(cfg.min_dissolve_days||182.6))/365});
       var tot=c.stake+c.maturity+r,avgc=c.cost/tot;
       return{rewards:r,total:tot,eff:avgc,yield:(c.maturity+r)/c.stake*100,need:price!=null?(avgc/price-1)*100:null,rewardUsd:price!=null?(c.maturity+r)*price:null};
     }
@@ -393,7 +400,7 @@ function render(){
   h+='</div>';
   h+='<div class="panel"><h2>\uD83E\uDDEE Effective average buy</h2>';
   if(c.sc){
-    var s=c.sc[SCN],why={floor:'No new rewards. Only your waiting maturity.',mid:'A neuron earns until 6 months of delay are left, then nothing.',flat:'Today\u2019s APY holds until each unlock.'}[SCN];
+    var s=c.sc[SCN],why={floor:'No new rewards. Only your waiting maturity.',mid:'A neuron earns until its minimum delay is reached, then nothing.',flat:'Today\u2019s APY holds until each unlock.'}[SCN];
     h+='<div class="seg mini" style="margin-bottom:6px">'+[['floor','Floor'],['mid','Middle'],['flat','Flat']].map(function(x){return '<button data-s="'+x[0]+'" aria-pressed="'+(SCN===x[0])+'">'+x[1]+'</button>'}).join('')+'</div>';
     h+='<div style="font-size:1.7em;font-weight:500;line-height:1.2">'+usd(s.eff,2)+'</div><div class="sub">'+why+'</div><div class="sub">At both unlocks, '+fmtD(c.lastUnlock)+'. Was '+usd(c.avgBuy,2)+'.</div>';
     h+='<div class="ck" style="margin-top:6px"><span>Total ICP then</span><span class="v">'+n0(s.total)+'</span></div><div class="ck"><span>Yield on your stake</span><span class="v">'+n2(s.yield)+'%</span></div><div class="ck"><span>Rise needed from '+usd(c.price,2)+'</span><span class="v">'+pct(s.need,0)+'</span></div>';
@@ -429,13 +436,13 @@ function render(){
       h+='<div class="row" style="font-size:.88em;margin-top:6px"><span>'+x[0]+'</span><span>'+(c.wall[x[1]]/1e6).toFixed(1)+'M \u00B7 '+c.wallPct[x[1]].toFixed(1)+'%</span></div><div class="bar"><i style="width:'+clamp(c.wall[x[1]]/mx*100,0,100).toFixed(0)+'%;background:var(--ac)"></i></div>';
     });
     h+='<div class="tiles">'+tilePanel('Staked',c.stakedPct!=null?c.stakedPct.toFixed(0)+'% of supply':'n/a')+tilePanel('Earning nothing',c.lt6Pct!=null?c.lt6Pct.toFixed(0)+'% of supply':'n/a')+'</div>';
-    h+='<div class="sub" style="margin-top:6px">Only neurons already dissolving. Bucket unit read as '+c.unit+'. Feeds a sell warning above 3% in 90 days.</div>';
+    h+='<div class="sub" style="margin-top:6px">Only neurons already dissolving. Buckets are coarse (unit: '+c.unit+'), so these are estimates. Feeds a sell warning above 3% in 90 days.</div>';
   }else h+='<div class="sub">No governance data yet. See Data status below.</div>';
   h+='</div></div>';
   h+='</div>';
   // data status
   var keys=Object.keys(D.status),bad=keys.filter(function(k){return !D.status[k].ok}).length;
-  h+='<details'+(bad?' open':'')+'><summary>Data status ('+(keys.length-bad)+' of '+keys.length+' sources working)</summary>'+keys.map(function(k){var s=D.status[k];return '<div class="sub"><b style="font-weight:500;color:var(--ink)">'+esc(k)+'</b> \u00B7 '+(s.ok?'ok':'<span class="bad">failed</span>')+' \u00B7 '+esc(s.msg)+(D.dbg[k]&&(!s.ok||/missing/.test(s.msg))?'<br>'+esc(D.dbg[k]):'')+'</div>'}).join('')+'<div class="sub" style="margin-top:6px">ICP network sources are unverified until the first live run. A failed source shows \u201Cno data\u201D, never made-up numbers.</div></details>';
+  h+='<details'+(bad?' open':'')+'><summary>Data status ('+(keys.length-bad)+' of '+keys.length+' sources working)</summary>'+keys.map(function(k){var s=D.status[k];return '<div class="sub"><b style="font-weight:500;color:var(--ink)">'+esc(k)+'</b> \u00B7 '+(s.ok?'ok':'<span class="bad">failed</span>')+' \u00B7 '+esc(s.msg)+(D.dbg[k]&&(!s.ok||/missing/.test(s.msg))?'<br>'+esc(D.dbg[k]):'')+(k==='gov'&&D.dbg.govBuckets?'<br>'+esc(D.dbg.govBuckets):'')+'</div>'}).join('')+'<div class="sub" style="margin-top:6px">ICP network sources are unverified until the first live run. A failed source shows \u201Cno data\u201D, never made-up numbers.</div></details>';
   $('app').innerHTML=h;
   document.querySelectorAll('button[data-s]').forEach(function(b){b.addEventListener('click',function(){SCN=b.getAttribute('data-s');render()})});
 }
