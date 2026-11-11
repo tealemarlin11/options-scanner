@@ -1,5 +1,4 @@
-Option desk, 2026-11-10
+Option desk, 2026-11-11
 Stress brake: off
-NEW TRADES BLOCKED: Event blackout: CPI 2026-11-10
 
 Open risk: 0, SPY-equivalent delta 0.0 shares, theta/day 0.0
