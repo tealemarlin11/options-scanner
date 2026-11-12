@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-11T22:10:38+00:00",
+ "generated": "2026-11-12T21:54:40+00:00",
  "rules_version": "1.0",
  "is_monday": false,
  "stress": {
-  "vix": 17.49,
-  "vix3m": 19.24,
-  "ratio": 0.909,
+  "vix": 18.7,
+  "vix3m": 20.06,
+  "ratio": 0.932,
   "on": false
  },
  "events": {
@@ -22,118 +22,123 @@
  "no_trade": [
   {
    "ticker": "SPY",
-   "spot": 759.81,
+   "spot": 757.12,
    "trend": {
     "state": "UP",
-    "close": 759.81,
-    "sma200": 731.31,
-    "sma50": 764.96
+    "close": 757.12,
+    "sma200": 731.62,
+    "sma50": 764.8
    },
-   "iv_rank": 22.9,
+   "iv_rank": 29.7,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-31: open interest 170 under 1000; volume 14 under 50; open interest 444 under 1000; volume 14 under 50; cost 15.52 over 40% of the 30 width"
+    "2026-12-31: open interest 122 under 1000; open interest 777 under 1000; volume 11 under 50; cost 15.95 over 40% of the 30 width"
    ],
    "structure": "CDS"
   },
   {
    "ticker": "QQQ",
-   "spot": 690.38,
+   "spot": 688.17,
    "trend": {
     "state": "UP",
-    "close": 690.38,
-    "sma200": 681.71,
-    "sma50": 719.04
+    "close": 688.17,
+    "sma200": 681.99,
+    "sma50": 718.62
    },
-   "iv_rank": 45.3,
+   "iv_rank": 53.9,
    "rank_source": "^VXN",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: credit 1.34 under 18% of the 10 width; slippage 0.13 is 10% of the credit",
-    "2026-12-24: open interest 79 under 1000; open interest 316 under 1000; credit 1.49 under 18% of the 10 width; slippage 0.32 is 21% of the credit"
+    "2026-12-24: open interest 155 under 1000; open interest 298 under 1000; credit 1.42 under 18% of the 10 width; slippage 0.22 is 15% of the credit",
+    "2026-12-18: credit 1.44 under 18% of the 10 width; slippage 0.12 is 8% of the credit"
    ],
    "structure": "PCS"
   },
   {
    "ticker": "IWM",
-   "spot": 283.09,
+   "spot": 278.44,
    "trend": {
-    "state": "UP",
-    "close": 283.09,
-    "sma200": 279.26,
-    "sma50": 281.43
+    "state": "DOWN",
+    "close": 278.44,
+    "sma200": 279.34,
+    "sma50": 281.12
    },
-   "iv_rank": 93.8,
+   "iv_rank": 96.6,
    "rank_source": "20-day realized vol (fallback)",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: volume 42 under 50; credit 0.61 under 18% of the 4 width",
-    "2026-12-24: open interest 51 under 1000; volume 11 under 50; open interest 96 under 1000; volume 13 under 50; bid-ask 0.19 too wide; credit 0.57 under 18% of the 4 width; slippage 0.20 is 34% of the credit"
+    "2026-12-24: open interest 10 under 1000; volume 2 under 50; bid-ask 0.23 too wide; open interest 78 under 1000; volume 20 under 50; bid-ask 0.14 too wide; credit 0.57 under 18% of the 4 width; slippage 0.18 is 32% of the credit",
+    "2026-12-18: open interest 970 under 1000; credit 0.62 under 18% of the 4 width"
    ],
-   "structure": "PCS"
+   "structure": "CCS"
   },
   {
    "ticker": "GLD",
-   "spot": 365.17,
+   "spot": 354.89,
    "trend": {
     "state": "DOWN",
-    "close": 365.17,
-    "sma200": 409.82,
-    "sma50": 382.96
+    "close": 354.89,
+    "sma200": 409.12,
+    "sma50": 382.0
    },
-   "iv_rank": 17.5,
+   "iv_rank": 23.9,
    "rank_source": "^GVZ",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-31: open interest 604 under 1000; volume 3 under 50; open interest 850 under 1000; volume 49 under 50; cost 9.42 over 40% of the 20 width"
+    "2026-12-31: open interest 620 under 1000; open interest 903 under 1000; cost 9.52 over 40% of the 20 width"
    ],
    "structure": "PDS"
   },
   {
    "ticker": "TLT",
-   "spot": 80.92,
+   "spot": 79.72,
    "trend": {
-    "state": "MIXED",
-    "close": 80.92,
-    "sma200": 84.37,
-    "sma50": 80.31
+    "state": "DOWN",
+    "close": 79.72,
+    "sma200": 84.33,
+    "sma50": 80.26
    },
-   "iv_rank": 79.4,
+   "iv_rank": 84.6,
    "rank_source": "20-day realized vol (fallback)",
-   "reason": "Trend mixed: close is between the 50 and 200 day averages"
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-12-24: open interest 206 under 1000; open interest 193 under 1000; credit 0.11 under 18% of the 1 width; slippage 0.02 is 18% of the credit",
+    "2026-12-18: credit 0.10 under 18% of the 1 width; slippage 0.02 is 15% of the credit"
+   ],
+   "structure": "CCS"
   },
   {
    "ticker": "XLE",
-   "spot": 63.37,
+   "spot": 64.33,
    "trend": {
     "state": "UP",
-    "close": 63.37,
-    "sma200": 59.33,
-    "sma50": 64.99
+    "close": 64.33,
+    "sma200": 59.4,
+    "sma50": 64.98
    },
-   "iv_rank": 24.7,
+   "iv_rank": 25.2,
    "rank_source": "^OVX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-31: volume 6 under 50; bid-ask 0.80 too wide; volume 32 under 50; bid-ask 0.27 too wide; cost 4.07 over 40% of the 10 width; slippage 0.54 is 13% of the cost"
+    "2026-12-31: bid-ask 0.51 too wide; volume 22 under 50; bid-ask 0.29 too wide; slippage 0.40 is 27% of the cost"
    ],
    "structure": "CDS"
   },
   {
    "ticker": "XLF",
-   "spot": 58.63,
+   "spot": 58.21,
    "trend": {
     "state": "UP",
-    "close": 58.63,
-    "sma200": 53.9,
-    "sma50": 55.95
+    "close": 58.21,
+    "sma200": 53.92,
+    "sma50": 55.96
    },
-   "iv_rank": 22.9,
+   "iv_rank": 29.7,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-31: volume 28 under 50; bid-ask 0.19 too wide; open interest 177 under 1000; volume 2 under 50; bid-ask 0.20 too wide; cost 1.36 over 40% of the 3 width; slippage 0.20 is 14% of the cost"
+    "2026-12-31: open interest 518 under 1000; volume 4 under 50; bid-ask 0.90 too wide; open interest 177 under 1000; volume 19 under 50; bid-ask 0.19 too wide; cost 2.14 over 40% of the 4 width; slippage 0.55 is 25% of the cost"
    ],
    "structure": "CDS"
   }
@@ -152,43 +157,43 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 65,
+  "dte": 64,
   "legs": [
    {
     "action": "BUY",
     "type": "put",
-    "strike": 685.0,
-    "bid": 3.95,
-    "ask": 3.99,
-    "mid": 3.97,
-    "oi": 12501,
-    "volume": 147,
+    "strike": 680.0,
+    "bid": 4.18,
+    "ask": 4.22,
+    "mid": 4.2,
+    "oi": 24744,
+    "volume": 402,
     "delta": -0.1
    },
    {
     "action": "SELL",
     "type": "put",
-    "strike": 610.0,
-    "bid": 1.49,
-    "ask": 1.51,
-    "mid": 1.5,
-    "oi": 6061,
-    "volume": 469,
+    "strike": 605.0,
+    "bid": 1.64,
+    "ask": 1.66,
+    "mid": 1.65,
+    "oi": 4135,
+    "volume": 100,
     "delta": -0.03
    }
   ],
-  "net_mid": 2.47,
-  "natural": 2.5,
+  "net_mid": 2.55,
+  "natural": 2.58,
   "width": 75.0,
-  "max_loss_per_contract": 247.0,
+  "max_loss_per_contract": 255.0,
   "pass": true,
   "fails": [],
   "ticker": "SPY",
   "expiry": "2027-01-15",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 2.49,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-15 685 put and SELL 1 SPY 2027-01-15 610 put. Limit 2.47 debit (You pay). Do not accept worse than 2.49. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 2.56,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-15 680 put and SELL 1 SPY 2027-01-15 605 put. Limit 2.55 debit (You pay). Do not accept worse than 2.56. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
