@@ -97,7 +97,7 @@ var D=null;
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function fmt(n,d){return n==null?'n/a':Number(n).toLocaleString('en-GB',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
-function acct(){var el=$('acct');var v=el?parseFloat(el.value):parseFloat(localStorage.getItem('od_acct')||'');return v>0?v:null}
+function acct(){var el=$('acct'),v=NaN;try{v=el?parseFloat(el.value):parseFloat(localStorage.getItem('od_acct2')||'')}catch(e){}if(!(v>0)&&D&&D.account_size)v=D.account_size;return v>0?v:null}
 var PLAIN={PCS:['Put credit spread','You get paid now. You win if the price stays above your short strike.'],
  CCS:['Call credit spread','You get paid now. You win if the price stays below your short strike.'],
  CDS:['Call debit spread','You pay now. You win if the price rises past your long strike.'],
@@ -183,7 +183,7 @@ function render(){
     '<span class="chip '+(s.on?'no':'ok')+'">Stress brake: '+(s.on?'ON':'off')+(s.ratio!=null?' ('+s.ratio+')':'')+'</span>'+
     (ups.length?ups.slice(0,3).map(function(u){return '<span class="chip '+(u.days<=2?'wa':'')+'">'+esc(u.name)+' '+esc(u.date.slice(5))+' ('+(u.days===0?'today':u.days+'d')+')</span>'}).join(''):'')+
     '<span class="chip">Open trades '+(PF.open_trades||0)+' of '+(PF.max_open||d.max_open)+'</span></div>'+
-    '<label class="acct">Account size <input id="acct" type="number" inputmode="decimal" placeholder="10000" value="'+(a||'')+'"></label></div>';
+    '<label class="acct">Account size <input id="acct" type="number" inputmode="decimal" placeholder="50000" value="'+(a||'')+'"></label></div>';
 
   h+='<div class="grid">';
   // column 1: new trades
@@ -219,7 +219,7 @@ function render(){
    '<div class="tile" style="grid-column:1/-1"><span>Profit per trade, on average</span><b>'+(st.expectancy==null?'n/a':fmt(st.expectancy))+'</b></div></div><div class="note">Needs 30 closed trades before it means much.</div></div></div>';
   h+='</div>';
   $('app').innerHTML=h;
-  var el=$('acct');if(el)el.addEventListener('change',function(){try{localStorage.setItem('od_acct',el.value)}catch(e){}render()});
+  var el=$('acct');if(el)el.addEventListener('change',function(){try{localStorage.setItem('od_acct2',el.value)}catch(e){}render()});
 }
 
 function applyPrefs(){
