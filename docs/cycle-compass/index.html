@@ -48,7 +48,8 @@ summary::-webkit-details-marker{display:none}
 .f .w{grid-column:1/-1}
 button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radius:8px;border:.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .small{font-size:12px;color:var(--mute);line-height:1.55}
-.chips{display:flex;gap:8px;margin-bottom:12px}.chip{flex:1;border:.5px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--card);font-size:12px;color:var(--mute)}.chip b{display:block;font-weight:500;font-size:15px;color:var(--ink)}.chip.y{border-color:#1D9E75}.chip.n{border-color:#E24B4A}
+.chips{display:flex;gap:6px;margin-bottom:12px}.chip{flex:1;border:.5px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--card);font-size:12px;color:var(--mute)}.chip b{display:block;font-weight:500;font-size:15px;color:var(--ink)}.chip.a{border-color:#EF9F27}.chip.y{border-color:#1D9E75}.chip.n{border-color:#E24B4A}
+.fl{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:8px 0;border-top:.5px solid var(--line)}.fl b{font-weight:500;text-align:right}
 @media (prefers-reduced-motion:no-preference){.pulse{animation:p 2s ease-in-out infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.25}}}
 </style>
 </head>
@@ -81,6 +82,11 @@ button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radiu
   </div>
 
   <div class="card">
+    <div class="lbl">Realized price floor</div>
+    <div id="floor"></div>
+  </div>
+
+  <div class="card">
     <div class="lbl">Faber trend, 10-month average</div>
     <div id="faber"></div>
   </div>
@@ -103,14 +109,16 @@ button{font:inherit;font-size:14px;margin-top:12px;padding:8px 14px;border-radiu
     <div class="f">
       <div><label for="asOfIn">View as of (testing only)</label><input type="date" id="asOfIn" autocomplete="off" name="cc_asof_test"></div>
       <div style="display:flex;align-items:flex-end"><button id="reload" type="button" style="margin-top:0">Reload data</button></div>
+      <div class="w"><label for="realIn">Realized price (backup only, used when the live feed fails)</label><input type="number" inputmode="decimal" id="realIn" autocomplete="off" name="cc_real_backup" placeholder="e.g. 55000"></div>
     </div>
     <div class="small" style="margin-top:12px" id="cyc"></div>
-    <p class="small" style="margin-top:12px">Nothing is typed in or saved. Price, daily history, cycle tops and the halving estimate all load automatically. To change the past cycle dates, edit the PAST table at the top of the script in index.html.</p>
+    <p class="small" style="margin-top:12px">Price, daily history, cycle tops, the halving estimate and the realized price all load automatically. The only box you can type in is the realized price backup, and it is ignored whenever live data is available. To change the past cycle dates, edit the PAST table at the top of the script in index.html.</p>
   </details>
 
   <details>
     <summary>How it works</summary>
     <p class="small" style="margin-top:10px">The cycle top is the highest daily close since the last halving. It counts as confirmed once price has fallen 20% from it. Time score = days since the top divided by the median past top-to-bottom length. Depth score = current drawdown divided by the median past drawdown. Phases use days since the last halving. The next halving date comes from the live Bitcoin block height, falling back to a table estimate. When today passes the next halving, a new ring starts by itself.</p>
+    <p class="small" style="margin-top:10px">Realized price is the average price at which every coin last moved on-chain, so roughly the market's cost basis (realized cap divided by supply). Providers calculate it slightly differently, so figures can vary by a few percent. The caution zone is the floor up to 1.25 times the floor. Past bear lows have been reported at or below this level, but that is only a few cycles, and price can stay above it for a long time.</p>
   </details>
 
   <p class="small">Descriptive tool, not financial advice. Three past cycles is a very small sample. The time clock assumes this cycle rhymes with earlier ones, and that may not hold.</p>
@@ -128,9 +136,11 @@ var HALVING_BLOCKS=210000;
 var FALLBACK_TOP={date:'2025-10-06',close:124752};
 var OFF={late:365,after_top:166,after_bot:240,early:150};
 var CONFIRM_DROP=0.20,STALE_DAYS=3;
+var REAL_FALLBACK={px:55179,asof:'2026-02-09',src:'Feb 2026 estimate'};
+var CAUTION=1.25;
 var NAMES=['Post-halving','Early bull','Late bull','Distribution','Bear, maturing','Capitulation','Pre-halving'];
 var K=['#1D9E75','#639922','#EF9F27','#D85A30','#E24B4A','#7F77DD','#378ADD'];
-var DATA={rows:null,rowsSrc:null,price:null,priceSrc:null,height:null,nextEst:null,msgs:[],loadedAt:null};
+var DATA={real:null,rows:null,rowsSrc:null,price:null,priceSrc:null,height:null,nextEst:null,msgs:[],loadedAt:null};
 try{localStorage.removeItem('cc_state')}catch(e){}
 function H(id){return document.getElementById(id)}
 function parse(s){var p=s.split('-');return Date.UTC(+p[0],+p[1]-1,+p[2])}
@@ -220,9 +230,58 @@ function gauge(m){
   t=el(g,'text',{x:cx,y:224,'text-anchor':'middle',fill:'var(--ink2)','font-size':12});
   t.textContent=!m.conf?'No confirmed top yet':(m.toBottom>0?m.toBottom+' days to bottom window':(m.toBottom===0?'Bottom window today':Math.abs(m.toBottom)+' days past window'));
 }
+function money(v){return '$'+Math.round(v).toLocaleString('en-GB')}
+function floorInfo(){
+  if(DATA.real&&DATA.real.px>0)return {px:DATA.real.px,src:DATA.real.src,asof:DATA.real.asof,est:false};
+  var t=NaN;try{t=parseFloat(localStorage.getItem('cc_real')||'')}catch(e){}
+  if(t>1000)return {px:t,src:'typed by you',asof:null,est:true};
+  return {px:REAL_FALLBACK.px,src:REAL_FALLBACK.src,asof:REAL_FALLBACK.asof,est:true};
+}
+function floorGap(m){if(m.asOf||m.price==null)return null;return (m.price/floorInfo().px-1)*100}
+function cycleLow(m){
+  if(!DATA.rows||m.top==null||m.asOf)return null;
+  var lo=Infinity;DATA.rows.forEach(function(r){if(r[0]>=m.top&&r[0]<=m.now+DAY&&r[1]<lo)lo=r[1]});
+  return lo<Infinity?lo:null;
+}
+function floor(m){
+  var box=H('floor'),F=floorInfo();
+  if(m.asOf||m.price==null){box.innerHTML='<div class="small" style="margin-top:8px">'+(m.asOf?'Not shown while replaying a past date. The floor is today\'s figure.':'Needs a live price.')+'</div>';return}
+  var px=m.price,fl=F.px,gap=(px/fl-1)*100,band=fl*CAUTION,low=cycleLow(m);
+  var showLow=low!=null&&low<px*0.995;
+  var mn=Math.min(fl*0.82,px*0.92,showLow?low*0.96:1e12),mx=Math.max(px*1.08,band*1.08);
+  var Y0=16,Y1=268;function Y(v){return Y0+(mx-v)/(mx-mn)*(Y1-Y0)}
+  var col=gap<=0?'#1D9E75':(gap<=25?'#EF9F27':'#8d8b84');
+  var head=gap>0?'<span class="serif" style="font-size:30px">+'+gap.toFixed(0)+'%</span> <span style="color:'+col+'">above the floor</span>':'<span class="serif" style="font-size:30px">'+gap.toFixed(0)+'%</span> <span style="color:'+col+'">below the floor</span>';
+  var sub=gap>0?'Price would need to fall about '+money(px-fl)+' (-'+((1-fl/px)*100).toFixed(0)+'%) to touch it.':'Price is '+money(fl-px)+' under the floor.';
+  var yF=Y(fl),yB=Y(band),yP=Y(px),yL=showLow?Y(low):0,py=yP,ly=yL;
+  if(showLow&&ly-py<30)ly=py+30;
+  var svg='<svg width="100%" viewBox="0 0 360 284" role="img" aria-label="Realized price floor gauge" style="display:block;margin-top:8px"><title>Realized price floor gauge</title><desc>Price against the realized price line and the caution zone above it.</desc>'+
+   '<defs><pattern id="hat" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#E24B4A" fill-opacity=".10"/><rect width="4" height="8" fill="#E24B4A" fill-opacity=".38"/></pattern></defs>'+
+   '<rect x="150" y="'+Y0+'" width="14" height="'+(Y1-Y0)+'" rx="7" fill="var(--track)"/>'+
+   '<rect x="150" y="'+yB+'" width="14" height="'+Math.max(0,yF-yB)+'" fill="#EF9F27" fill-opacity=".45"/>'+
+   '<rect x="150" y="'+yF+'" width="14" height="'+Math.max(0,Y1-yF)+'" rx="0" fill="url(#hat)"/>'+
+   '<line x1="118" x2="352" y1="'+yB+'" y2="'+yB+'" stroke="#EF9F27" stroke-opacity=".6" stroke-dasharray="4 4"/>'+
+   '<text x="352" y="'+(yB-6)+'" text-anchor="end" font-size="12" style="fill:var(--ink2)">1.25\u00D7 floor '+money(band)+'</text>'+
+   '<text x="352" y="'+(yB+14)+'" text-anchor="end" font-size="11" style="fill:var(--mute)">caution zone starts</text>'+
+   '<line x1="118" x2="352" y1="'+yF+'" y2="'+yF+'" stroke="#EF9F27" stroke-width="1.6" stroke-dasharray="5 4"/>'+
+   '<text x="352" y="'+(yF-6)+'" text-anchor="end" font-size="12.5" font-weight="500" style="fill:#EF9F27">REALIZED PRICE '+money(fl)+'</text>'+
+   '<text x="352" y="'+(yF+14)+'" text-anchor="end" font-size="11" style="fill:var(--mute)">average holder breaks even</text>';
+  if(showLow)svg+='<line x1="140" x2="172" y1="'+yL+'" y2="'+yL+'" stroke="#378ADD" stroke-width="2"/><text x="352" y="'+(yL+4)+'" text-anchor="end" font-size="11.5" style="fill:#378ADD">cycle low so far '+money(low)+'</text>';
+  svg+='<circle cx="157" cy="'+yP+'" r="12" style="fill:var(--depth)" stroke="#7F77DD" stroke-width="4"/>'+
+   '<text x="134" y="'+(py-2)+'" text-anchor="end" font-size="14" font-weight="500" style="fill:var(--ink)">'+money(px)+'</text>'+
+   '<text x="134" y="'+(py+13)+'" text-anchor="end" font-size="11" style="fill:var(--mute)">BTC today</text></svg>';
+  var touched=low!=null&&low<=fl;
+  var rows='<div class="fl"><span>Floor touched this cycle?</span><b style="color:'+(touched?'#1D9E75':'#EF9F27')+'">'+(low==null?'n/a':(touched?'Yes, low '+money(low):'Not yet'))+'</b></div>'+
+   '<div class="fl"><span>Lowest daily close since top</span><b>'+(low==null?'n/a':money(low)+' ('+((low/fl-1)*100>0?'+':'')+((low/fl-1)*100).toFixed(0)+'% vs floor)')+'</b></div>';
+  var src='<div class="small" style="margin-top:10px">'+(F.est?'\u26A0 Live realized price unavailable. Using '+esc(F.src)+' ('+money(fl)+'). Treat the gap as approximate.':'Realized price '+money(fl)+' \u00B7 '+esc(F.src)+(F.asof?' \u00B7 '+F.asof:''))+'</div>';
+  box.innerHTML='<div style="margin-top:6px">'+head+'</div><div class="small" style="margin-top:2px;font-size:13px;color:var(--ink2)">'+sub+'</div>'+svg+rows+src;
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function chips(m){
   var r=[['Time',m.conf&&m.score>=85,m.conf?m.score+'% of window':'no top yet'],['Trend',m.sma!=null&&m.price>m.sma,m.sma==null?'no data':'vs 10m average'],['Depth',m.depth!=null&&m.depth>=85,m.depth==null?'no data':m.depth+'% of typical']];
-  H('chips').innerHTML=r.map(function(x){return '<div class="chip '+(x[1]?'y':'n')+'">'+x[0]+'<b>'+(x[1]?'Yes':'Not yet')+'</b>'+x[2]+'</div>'}).join('');
+  var g=floorGap(m),fc=g==null?'n':(g<=0?'y':(g<=25?'a':'n')),fv=g==null?'n/a':(g>0?'+':'')+g.toFixed(0)+'%';
+  H('chips').innerHTML=r.map(function(x){return '<div class="chip '+(x[1]?'y':'n')+'">'+x[0]+'<b>'+(x[1]?'Yes':'Not yet')+'</b>'+x[2]+'</div>'}).join('')+
+    '<div class="chip '+fc+'">Floor<b>'+fv+'</b>'+(g==null?'no data':(g>0?'above floor':'below floor'))+'</div>';
 }
 function verdict(m){
   var v=H('verdict'),tone,title,body;
@@ -308,7 +367,7 @@ function status(m){
 function render(){
   var m;try{m=model()}catch(e){H('stat').textContent='Error: '+e.message;return}
   H('asof').textContent=m.asOf?('Viewing '+fmt(m.now)+' (past)'):fmt(m.now);H('asof').style.background=m.asOf?'#EF9F27':'';H('asof').style.color=m.asOf?'#1a1a1a':'';
-  gauge(m);chips(m);verdict(m);tiles(m);meters(m);faber(m);spiral(m);phases(m);status(m);
+  gauge(m);chips(m);verdict(m);tiles(m);meters(m);floor(m);faber(m);spiral(m);phases(m);status(m);
 }
 
 function jget(url){return fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
@@ -341,8 +400,24 @@ function loadHeight(){
   return fetch('https://mempool.space/api/blocks/tip/height').then(function(r){return r.text()}).then(function(t){use(parseInt(t,10))}).catch(function(){
     return fetch('https://blockstream.info/api/blocks/tip/height').then(function(r){return r.text()}).then(function(t){use(parseInt(t,10))}).catch(function(){DATA.height=null;DATA.nextEst=null})}).then(render);
 }
-function loadAll(){return loadHeight().then(loadHistory).then(loadPrice)}
+function ageDays(iso){return iso?(todayUTC()-parse(iso))/DAY:99}
+function realCM(){
+  return jget('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapRealUSD,SplyCur&frequency=1d&page_size=5&paging_from=end').then(function(j){
+    var d=(j.data||[]).filter(function(x){return +x.CapRealUSD>0&&+x.SplyCur>0}).pop();
+    if(!d)throw new Error('no rows');var px=+d.CapRealUSD/+d.SplyCur;
+    if(!(px>1000&&px<1e6))throw new Error('odd value');
+    return {px:px,asof:String(d.time).slice(0,10),src:'CoinMetrics'}});
+}
+function loadRealized(){
+  return jget('data/realized.json').then(function(j){if(!(j.px>1000))throw 0;return {px:j.px,asof:j.asof,src:(j.src||'CoinMetrics')+' (daily file)'}}).catch(function(){return null}).then(function(a){
+    if(a&&ageDays(a.asof)<=3)return a;
+    return realCM().then(function(b){return b},function(){return a&&ageDays(a.asof)<=30?a:null});
+  }).then(function(r){DATA.real=r}).then(render);
+}
+function loadAll(){return loadHeight().then(loadHistory).then(loadPrice).then(loadRealized)}
 H('asOfIn').value='';
+try{var sv=localStorage.getItem('cc_real');if(sv)H('realIn').value=sv}catch(e){}
+H('realIn').addEventListener('change',function(){try{localStorage.setItem('cc_real',H('realIn').value)}catch(e){}render()});
 H('asOfIn').addEventListener('input',render);
 window.addEventListener('pageshow',function(e){if(e.persisted){H('asOfIn').value='';render()}});
 H('reload').addEventListener('click',function(){H('stat').textContent='Reloading';loadAll()});
