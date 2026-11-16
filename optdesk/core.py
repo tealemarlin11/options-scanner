@@ -224,8 +224,14 @@ def select_trades(tickets, cfg, open_rows=None):
         groups[g] = groups.get(g, 0) + 1
     n_open = len(held)
     chosen = []
+    limit = cfg.get("account_size", 0) * cfg["risk_pct"]
     for t in ok:
         g = cfg["groups"].get(t["ticker"], t["ticker"])
+        # An unaffordable trade must not use up a group slot.
+        if limit and t.get("max_loss_per_contract", 0) > limit * t.get("risk_mult", 1.0):
+            t["skipped"] = (f"Too big for your risk limit: one contract can lose {t['max_loss_per_contract']:.0f}, "
+                            f"your limit is {limit * t.get('risk_mult', 1.0):.0f}")
+            continue
         if groups.get(g, 0) >= cfg["max_per_group"]:
             t["skipped"] = "You already hold a trade in this group" if any(
                 cfg["groups"].get(r["ticker"], r["ticker"]) == g for r in held) else "Group limit"

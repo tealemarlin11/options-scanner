@@ -171,7 +171,7 @@ def main():
     payload = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
                "rules_version": cfg["rules_version"], "is_monday": today.weekday() == 0, "stress": stress,
                "events": ev, "pause": pause, "blocked": global_block,
-               "risk_pct": cfg["risk_pct"], "max_open": cfg["max_open"], "tickets": tickets, "no_trade": no_trade,
+               "risk_pct": cfg["risk_pct"], "account_size": cfg.get("account_size"), "max_open": cfg["max_open"], "tickets": tickets, "no_trade": no_trade,
                "positions": positions, "portfolio": portfolio, "tail": tail, "stats": st, "notes": notes}
     json.dump(payload, open(os.path.join(OUT, "latest.json"), "w"), indent=1, default=_j)
 

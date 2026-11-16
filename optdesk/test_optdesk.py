@@ -232,3 +232,11 @@ def test_monthlies_first_and_neighbour_strike():
     r = core.pick_expiry(ex, today, 28, 56, 40)
     assert r[0][0] == "2026-12-18"  # third Friday wins over nearer weeklies
     assert core.is_monthly("2026-12-18") and not core.is_monthly("2026-12-11")
+
+
+def test_unaffordable_does_not_take_group_slot():
+    cfg = json.loads(json.dumps(CFG)); cfg["account_size"] = 10000
+    big = {"ticker": "QQQ", "pass": True, "slip_pct": 1, "max_loss_per_contract": 814, "risk_mult": 1.0}
+    small = {"ticker": "IWM", "pass": True, "slip_pct": 2, "max_loss_per_contract": 120, "risk_mult": 1.0}
+    out = core.select_trades([big, small], cfg, [])
+    assert [t["ticker"] for t in out] == ["IWM"] and "Too big" in big["skipped"]
