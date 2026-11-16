@@ -1,0 +1,40 @@
+name: Cycle Compass realized price
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch realized price
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, datetime
+          url = ("https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
+                 "?assets=btc&metrics=CapRealUSD,SplyCur&frequency=1d&page_size=5&paging_from=end")
+          try:
+              j = json.load(urllib.request.urlopen(url, timeout=30))
+              rows = [r for r in j["data"] if float(r.get("CapRealUSD") or 0) > 0 and float(r.get("SplyCur") or 0) > 0]
+              r = rows[-1]
+              px = float(r["CapRealUSD"]) / float(r["SplyCur"])
+              assert 1000 < px < 1e6
+              out = {"px": round(px, 2), "asof": r["time"][:10], "src": "CoinMetrics",
+                     "fetched": datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z"}
+              json.dump(out, open("docs/cycle-compass/data/realized.json", "w"), indent=1)
+              print("ok", out)
+          except Exception as e:
+              print("fetch failed, keeping the old file:", e)
+          PY
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/cycle-compass/data/realized.json || true
+          git diff --cached --quiet || (git commit -m "Update realized price" && git push)
