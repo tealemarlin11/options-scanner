@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-16T16:13:25+00:00",
- "rules_version": "1.1",
+ "generated": "2026-11-16T16:20:21+00:00",
+ "rules_version": "1.2",
  "is_monday": true,
  "stress": {
-  "vix": 20.7,
-  "vix3m": 21.54,
-  "ratio": 0.961,
+  "vix": 20.92,
+  "vix3m": 21.68,
+  "ratio": 0.965,
   "on": false
  },
  "events": {
@@ -17,6 +17,7 @@
  "pause": null,
  "blocked": null,
  "risk_pct": 0.015,
+ "account_size": 50000,
  "max_open": 3,
  "tickets": [
   {
@@ -24,161 +25,132 @@
     {
      "action": "SELL",
      "type": "call",
-     "strike": 713.0,
-     "bid": 5.02,
-     "ask": 5.08,
-     "mid": 5.05,
-     "oi": 6171,
-     "volume": 214,
-     "delta": 0.2
+     "strike": 712.0,
+     "bid": 5.03,
+     "ask": 5.1,
+     "mid": 5.06,
+     "oi": 1949,
+     "volume": 30,
+     "delta": 0.21
     },
     {
      "action": "BUY",
      "type": "call",
-     "strike": 723.0,
-     "bid": 3.16,
+     "strike": 722.0,
+     "bid": 3.17,
      "ask": 3.21,
      "mid": 3.19,
-     "oi": 2171,
-     "volume": 37,
-     "delta": 0.14
+     "oi": 6117,
+     "volume": 39,
+     "delta": 0.15
     }
    ],
-   "net_mid": 1.86,
-   "natural": 1.81,
+   "net_mid": 1.87,
+   "natural": 1.82,
    "width": 10.0,
-   "max_loss_per_contract": 814.0,
-   "max_profit_per_contract": 186.0,
-   "take_profit_close_at": 0.93,
-   "stop_close_at": 3.72,
-   "worst_fill": 1.84,
-   "slip_pct": 3.0,
+   "max_loss_per_contract": 813.0,
+   "max_profit_per_contract": 187.0,
+   "take_profit_close_at": 0.94,
+   "stop_close_at": 3.74,
+   "worst_fill": 1.85,
+   "slip_pct": 2.9,
    "structure": "CCS",
    "dte": 32,
    "pass": true,
    "fails": [],
    "ticker": "QQQ",
    "expiry": "2026-12-18",
-   "spot": 666.87,
+   "spot": 668.03,
    "trend": "DOWN",
-   "iv_rank": 68.0,
+   "iv_rank": 67.6,
    "risk_mult": 1.0,
-   "order": "Call credit spread: SELL 1 QQQ 2026-12-18 713 call and BUY 1 QQQ 2026-12-18 723 call. Limit 1.86 credit (You receive). Do not accept worse than 1.84.",
-   "priority": 1,
-   "chosen": true
-  },
-  {
-   "legs": [
-    {
-     "action": "SELL",
-     "type": "call",
-     "strike": 287.0,
-     "bid": 1.73,
-     "ask": 1.78,
-     "mid": 1.75,
-     "oi": 9420,
-     "volume": 26,
-     "delta": 0.23
-    },
-    {
-     "action": "BUY",
-     "type": "call",
-     "strike": 291.0,
-     "bid": 0.97,
-     "ask": 0.99,
-     "mid": 0.98,
-     "oi": 3364,
-     "volume": 36,
-     "delta": 0.15
-    }
-   ],
-   "net_mid": 0.77,
-   "natural": 0.74,
-   "width": 4.0,
-   "max_loss_per_contract": 323.0,
-   "max_profit_per_contract": 77.0,
-   "take_profit_close_at": 0.38,
-   "stop_close_at": 1.54,
-   "worst_fill": 0.76,
-   "slip_pct": 4.5,
-   "structure": "CCS",
-   "dte": 32,
-   "pass": true,
-   "fails": [],
-   "ticker": "IWM",
-   "expiry": "2026-12-18",
-   "spot": 274.58,
-   "trend": "DOWN",
-   "iv_rank": 93.8,
-   "risk_mult": 1.0,
-   "order": "Call credit spread: SELL 1 IWM 2026-12-18 287 call and BUY 1 IWM 2026-12-18 291 call. Limit 0.77 credit (You receive). Do not accept worse than 0.76.",
-   "skipped": "Group limit",
+   "order": "Call credit spread: SELL 1 QQQ 2026-12-18 712 call and BUY 1 QQQ 2026-12-18 722 call. Limit 1.87 credit (You receive). Do not accept worse than 1.85.",
+   "skipped": "Too big for your risk limit: one contract can lose 813, your limit is 750",
    "chosen": false
   }
  ],
  "no_trade": [
   {
    "ticker": "SPY",
-   "spot": 745.53,
+   "spot": 746.21,
    "trend": {
     "state": "UP",
-    "close": 745.53,
+    "close": 746.21,
     "sma200": 732.19,
-    "sma50": 763.93
+    "sma50": 763.95
    },
-   "iv_rank": 41.1,
+   "iv_rank": 42.4,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: credit 1.23 under 18% of the 10 width",
-    "2026-12-24: credit 1.22 under 18% of the 10 width",
-    "2026-12-31: open interest 463 under 500; open interest 436 under 500; credit 1.24 under 18% of the 10 width"
+    "2026-12-18: credit 1.26 under 18% of the 10 width",
+    "2026-12-24: credit 1.20 under 18% of the 10 width",
+    "2026-12-31: open interest 384 under 500; credit 1.28 under 18% of the 10 width"
    ],
    "structure": "PCS"
   },
   {
-   "ticker": "GLD",
-   "spot": 353.57,
+   "ticker": "IWM",
+   "spot": 274.75,
    "trend": {
     "state": "DOWN",
-    "close": 353.57,
+    "close": 274.75,
+    "sma200": 279.49,
+    "sma50": 280.34
+   },
+   "iv_rank": 93.6,
+   "rank_source": "20-day realized vol (fallback)",
+   "reason": "Liquidity or pricing rules not met",
+   "details": [
+    "2026-12-18: credit 0.62 under 18% of the 4 width",
+    "2026-12-24: bid-ask 0.17 too wide; open interest 11 under 500; bid-ask 0.14 too wide; credit 0.58 under 18% of the 4 width; slippage 0.15 is 27% of the credit",
+    "2026-12-31: credit 0.62 under 18% of the 4 width"
+   ],
+   "structure": "CCS"
+  },
+  {
+   "ticker": "GLD",
+   "spot": 353.56,
+   "trend": {
+    "state": "DOWN",
+    "close": 353.56,
     "sma200": 407.96,
     "sma50": 379.84
    },
-   "iv_rank": 24.4,
+   "iv_rank": 24.6,
    "rank_source": "^GVZ",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2027-01-15: cost 11.17 over 40% of the 24 width",
-    "2026-12-31: open interest 466 under 500; cost 10.25 over 40% of the 23 width"
+    "2027-01-15: cost 11.32 over 40% of the 24 width",
+    "2026-12-31: open interest 466 under 500; cost 10.30 over 40% of the 23 width"
    ],
    "structure": "PDS"
   },
   {
    "ticker": "TLT",
-   "spot": 79.46,
+   "spot": 79.4,
    "trend": {
     "state": "DOWN",
-    "close": 79.46,
+    "close": 79.4,
     "sma200": 84.25,
     "sma50": 80.15
    },
-   "iv_rank": 81.8,
+   "iv_rank": 81.7,
    "rank_source": "20-day realized vol (fallback)",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: credit 0.13 under 18% of the 1 width; slippage 0.02 is 15% of the credit",
-    "2026-12-24: open interest 257 under 500; open interest 60 under 500; credit 0.11 under 18% of the 1 width; slippage 0.02 is 18% of the credit",
-    "2026-12-31: bid-ask 0.06 too wide; credit 0.08 under 18% of the 1 width; slippage 0.04 is 50% of the credit"
+    "2026-12-18: credit 0.13 under 18% of the 1 width; slippage 0.01 is 12% of the credit",
+    "2026-12-24: open interest 257 under 500; open interest 60 under 500; credit 0.12 under 18% of the 1 width; slippage 0.02 is 21% of the credit",
+    "2026-12-31: credit 0.11 under 18% of the 1 width; slippage 0.02 is 23% of the credit"
    ],
    "structure": "CCS"
   },
   {
    "ticker": "XLE",
-   "spot": 64.24,
+   "spot": 64.28,
    "trend": {
     "state": "UP",
-    "close": 64.24,
+    "close": 64.28,
     "sma200": 59.54,
     "sma50": 64.99
    },
@@ -187,26 +159,26 @@
    "reason": "Liquidity or pricing rules not met",
    "details": [
     "2027-01-15: could not pair strikes by delta",
-    "2026-12-31: open interest 2 under 500; bid-ask 0.46 too wide; open interest 1 under 500; bid-ask 0.24 too wide; slippage 0.35 is 20% of the cost"
+    "2026-12-31: open interest 2 under 500; bid-ask 0.42 too wide; open interest 1 under 500; bid-ask 0.24 too wide; slippage 0.33 is 19% of the cost"
    ],
    "structure": "CDS"
   },
   {
    "ticker": "XLF",
-   "spot": 58.48,
+   "spot": 58.49,
    "trend": {
     "state": "UP",
-    "close": 58.48,
+    "close": 58.49,
     "sma200": 53.97,
     "sma50": 55.97
    },
-   "iv_rank": 41.1,
+   "iv_rank": 42.4,
    "rank_source": "^VIX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
-    "2026-12-18: bid-ask 0.06 too wide; credit 0.12 under 18% of the 1 width; slippage 0.05 is 38% of the credit",
+    "2026-12-18: bid-ask 0.05 too wide; credit 0.12 under 18% of the 1 width; slippage 0.04 is 33% of the credit",
     "2026-12-24: bid-ask 0.44 too wide; open interest 4 under 500; bid-ask 0.25 too wide; credit 0.12 under 18% of the 1 width; slippage 0.35 is 288% of the credit",
-    "2026-12-31: open interest 110 under 500; bid-ask 0.10 too wide; bid-ask 0.06 too wide; credit 0.14 under 18% of the 1 width; slippage 0.08 is 57% of the credit"
+    "2026-12-31: open interest 110 under 500; bid-ask 0.10 too wide; credit 0.14 under 18% of the 1 width; slippage 0.08 is 54% of the credit"
    ],
    "structure": "PCS"
   }
@@ -231,37 +203,37 @@
     "action": "BUY",
     "type": "put",
     "strike": 670.0,
-    "bid": 4.57,
-    "ask": 4.6,
-    "mid": 4.58,
+    "bid": 4.72,
+    "ask": 4.76,
+    "mid": 4.74,
     "oi": 16925,
-    "volume": 50,
+    "volume": 118,
     "delta": -0.11
    },
    {
     "action": "SELL",
     "type": "put",
     "strike": 595.0,
-    "bid": 1.72,
-    "ask": 1.75,
-    "mid": 1.73,
+    "bid": 1.77,
+    "ask": 1.8,
+    "mid": 1.79,
     "oi": 9157,
     "volume": 16,
     "delta": -0.04
    }
   ],
-  "net_mid": 2.85,
-  "natural": 2.88,
+  "net_mid": 2.96,
+  "natural": 2.99,
   "width": 75.0,
-  "max_loss_per_contract": 285.0,
+  "max_loss_per_contract": 295.5,
   "pass": true,
   "fails": [],
   "ticker": "SPY",
   "expiry": "2027-01-15",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 2.86,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-15 670 put and SELL 1 SPY 2027-01-15 595 put. Limit 2.85 debit (You pay). Do not accept worse than 2.86. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 2.98,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-15 670 put and SELL 1 SPY 2027-01-15 595 put. Limit 2.96 debit (You pay). Do not accept worse than 2.98. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
