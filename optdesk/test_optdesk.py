@@ -82,6 +82,9 @@ def test_liquidity_blocks():
     assert not t["pass"] and any("open interest" in w for w in t["fails"])
     quiet = core.prep(make_chain(spot, vol=5), spot, 40)
     t, _ = core.build_spread("PCS", quiet, spot, 40, CFG)
+    assert t["pass"]  # volume is informational now (Yahoo volume is unreliable)
+    strict = json.loads(json.dumps(CFG)); strict["liquidity"]["min_volume"] = 50
+    t, _ = core.build_spread("PCS", quiet, spot, 40, strict)
     assert not t["pass"] and any("volume" in w for w in t["fails"])
     wide = core.prep(make_chain(spot, half_spread=0.30), spot, 40)
     t, _ = core.build_spread("PCS", wide, spot, 40, CFG)
@@ -221,3 +224,11 @@ if __name__ == "__main__":
         if n.startswith("test_"):
             f()
             print("ok", n)
+
+
+def test_monthlies_first_and_neighbour_strike():
+    today = dt.date(2026, 11, 16)
+    ex = ["2026-12-18", "2026-12-21", "2026-12-23", "2026-12-24"]
+    r = core.pick_expiry(ex, today, 28, 56, 40)
+    assert r[0][0] == "2026-12-18"  # third Friday wins over nearer weeklies
+    assert core.is_monthly("2026-12-18") and not core.is_monthly("2026-12-11")

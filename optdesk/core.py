@@ -88,8 +88,9 @@ def leg_fails(row, cfg):
     return f
 
 
-def _near(df, col, target):
-    return df.iloc[(df[col] - target).abs().argsort()[:1]].iloc[0]
+def _near(df, col, target, rank=0):
+    order = (df[col] - target).abs().argsort()
+    return df.iloc[order.iloc[min(rank, len(order) - 1)] if hasattr(order, "iloc") else order[min(rank, len(order) - 1)]]
 
 
 def _leg(row, action, kind):
@@ -98,8 +99,8 @@ def _leg(row, action, kind):
             "volume": int(row["volume"]), "delta": round(float(row["delta"]), 2)}
 
 
-def build_spread(structure, df, spot, dte, cfg):
-    """Return (ticket or None, list of reasons). df already passed through prep()."""
+def _build_spread(structure, df, spot, dte, cfg, rank=0):
+    """One attempt. rank 0 = strike closest to the target delta, 1 = next closest, and so on."""
     is_put = structure in ("PCS", "PDS")
     side = df[df["is_call"] == (not is_put)].copy()
     side["ad"] = side["delta"].abs()
@@ -110,7 +111,7 @@ def build_spread(structure, df, spot, dte, cfg):
     L = cfg["liquidity"]
     if credit:
         cc = cfg["credit"]
-        short = _near(side, "ad", cc["delta"])
+        short = _near(side, "ad", cc["delta"], rank)
         tw = min(max(round(spot * cfg["width_pct"]), 1), cfg["max_width"])
         want = short["strike"] - tw if is_put else short["strike"] + tw
         far = side[side["strike"] < short["strike"]] if is_put else side[side["strike"] > short["strike"]]
@@ -137,7 +138,7 @@ def build_spread(structure, df, spot, dte, cfg):
     else:
         dc = cfg["debit"]
         lg = _near(side, "ad", dc["long_delta"])
-        sh = _near(side, "ad", dc["short_delta"])
+        sh = _near(side, "ad", dc["short_delta"], rank)
         ok_dir = (sh["strike"] < lg["strike"]) if is_put else (sh["strike"] > lg["strike"])
         if not ok_dir:
             return None, ["could not pair strikes by delta"]
@@ -160,6 +161,26 @@ def build_spread(structure, df, spot, dte, cfg):
     return t, why
 
 
+def build_spread(structure, df, spot, dte, cfg):
+    """Try the strike closest to the target delta, then up to 3 neighbours that stay within
+    0.05 delta of it. Return the first ticket that passes every rule, else the closest-delta one."""
+    first = _build_spread(structure, df, spot, dte, cfg, 0)
+    if first[0] is None or first[0]["pass"]:
+        return first
+    key = "short_delta" if structure in ("CDS", "PDS") else "delta"
+    tgt = cfg["debit" if structure in ("CDS", "PDS") else "credit"][key]
+    for r in (1, 2, 3):
+        t, why = _build_spread(structure, df, spot, dte, cfg, r)
+        if t is None:
+            continue
+        sd = t["legs"][1 if structure in ("CDS", "PDS") else 0]["delta"]
+        if abs(abs(sd) - tgt) > 0.05:
+            continue
+        if t["pass"]:
+            return t, why
+    return first
+
+
 def risk_mult(structure, cfg):
     return 0.5 if (structure == "PDS" and cfg["debit"]["half_size_for_put_debit"]) else 1.0
 
@@ -175,14 +196,21 @@ def order_text(t, sym, expiry):
             f"({way}). Do not accept worse than {t['worst_fill']:.2f}.")
 
 
+def is_monthly(iso):
+    """Standard monthly expiry = third Friday of the month. These carry the deep open interest."""
+    d = dt.date.fromisoformat(iso)
+    return d.weekday() == 4 and 15 <= d.day <= 21
+
+
 def pick_expiry(expiries, today, lo, hi, target):
-    """expiries: list of ISO dates. Returns [(iso, dte)] in range, nearest to target first."""
+    """expiries: list of ISO dates. Returns [(iso, dte)] in range.
+    Standard monthlies come first (nearest to target), then weeklies (nearest to target)."""
     out = []
     for e in expiries:
         d = (dt.date.fromisoformat(e) - today).days
         if lo <= d <= hi:
             out.append((e, d))
-    return sorted(out, key=lambda x: abs(x[1] - target))
+    return sorted(out, key=lambda x: (0 if is_monthly(x[0]) else 1, abs(x[1] - target)))
 
 
 def select_trades(tickets, cfg, open_rows=None):

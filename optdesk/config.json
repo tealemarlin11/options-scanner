@@ -1,5 +1,5 @@
 {
-  "rules_version": "1.0",
+  "rules_version": "1.1",
   "universe": [
     "SPY",
     "QQQ",
@@ -40,8 +40,8 @@
   },
   "stress_ratio": 1.0,
   "credit": {
-    "dte_min": 35,
-    "dte_max": 45,
+    "dte_min": 28,
+    "dte_max": 56,
     "dte_target": 40,
     "delta": 0.2,
     "min_credit_frac": 0.18,
@@ -50,8 +50,8 @@
     "stop_cap_frac": 0.8
   },
   "debit": {
-    "dte_min": 45,
-    "dte_max": 60,
+    "dte_min": 42,
+    "dte_max": 65,
     "dte_target": 52,
     "long_delta": 0.6,
     "short_delta": 0.3,
@@ -64,8 +64,8 @@
   "max_width": 10,
   "exit_dte": 21,
   "liquidity": {
-    "min_oi": 1000,
-    "min_volume": 50,
+    "min_oi": 500,
+    "min_volume": 0,
     "max_spread_abs": 0.05,
     "max_spread_pct": 0.08,
     "max_slippage_frac": 0.08,

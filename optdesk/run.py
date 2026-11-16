@@ -76,7 +76,7 @@ def main():
                 no_trade.append({**info, "reason": reason})
                 continue
             dc = cfg["credit"] if structure in ("PCS", "CCS") else cfg["debit"]
-            cands = core.pick_expiry(data.expiries(sym), today, dc["dte_min"], dc["dte_max"], dc["dte_target"])[:3]
+            cands = core.pick_expiry(data.expiries(sym), today, dc["dte_min"], dc["dte_max"], dc["dte_target"])[:6]
             if not cands:
                 no_trade.append({**info, "reason": "No expiry in the target window"})
                 continue
@@ -98,7 +98,7 @@ def main():
             if best:
                 tickets.append(best)
             else:
-                no_trade.append({**info, "reason": "Liquidity or pricing rules not met", "details": notes_fail[:3],
+                no_trade.append({**info, "reason": "Liquidity or pricing rules not met", "details": notes_fail[:6],
                                  "structure": structure})
         except Exception as ex:
             no_trade.append({"ticker": sym, "reason": f"Data error: {ex}"})
