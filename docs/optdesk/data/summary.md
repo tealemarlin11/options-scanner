@@ -1,5 +1,4 @@
-Option desk, 2026-11-16
-Stress brake: off
+Option desk, 2026-11-17
+Stress brake: ON
 
-New trades (Monday): IWM CCS
 Open risk: 0, SPY-equivalent delta 0.0 shares, theta/day 0.0
