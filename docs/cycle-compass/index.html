@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en-GB" data-theme="auto" data-font="lexend" data-size="m" data-space="normal">
+<html lang="en-GB" data-theme="dark" data-font="lexend" data-size="s" data-space="normal">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark">
 <title>Cycle Compass</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -96,7 +96,7 @@ input[type=date],input[type=number]{width:100%;padding:.55rem .7rem;border-radiu
 .fl b{text-align:right;font-weight:600}
 .leg{display:grid;gap:.35rem;margin-top:.8rem}
 .leg div{display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline;padding:.5rem .6rem;border-radius:10px;font-size:.95rem}
-.leg div.on{background:var(--soft);outline:2px solid var(--ink);font-weight:600}
+.leg div.on{outline:3px solid var(--ink);font-weight:600}
 .leg .nm{display:flex;gap:.5rem;align-items:center}
 .leg .no{width:1.5rem;height:1.5rem;border-radius:6px;color:var(--onp);display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;flex:none}
 .leg em{font-style:normal;color:var(--mute);font-size:.85rem;margin-left:auto}
@@ -118,27 +118,9 @@ input[type=date],input[type=number]{width:100%;padding:.55rem .7rem;border-radiu
     <div class="pill" id="asof"></div>
   </div>
 
-  <details id="reader">
-    <summary><span aria-hidden="true">Aa</span> Reading settings</summary>
-    <div class="lab" style="margin-top:.6rem" id="l-font">Font</div>
-    <div class="seg" role="group" aria-labelledby="l-font" data-k="font">
-      <button type="button" data-v="lexend">Lexend</button><button type="button" data-v="atkinson">Atkinson</button><button type="button" data-v="verdana">Verdana</button></div>
-    <div class="lab" id="l-size">Text size</div>
-    <div class="seg" role="group" aria-labelledby="l-size" data-k="size">
-      <button type="button" data-v="s">Small</button><button type="button" data-v="m">Medium</button><button type="button" data-v="l">Large</button></div>
-    <div class="lab" id="l-space">Spacing</div>
-    <div class="seg" role="group" aria-labelledby="l-space" data-k="space">
-      <button type="button" data-v="normal">Normal</button><button type="button" data-v="wide">Wide</button></div>
-    <div class="lab" id="l-theme">Colours</div>
-    <div class="seg" role="group" aria-labelledby="l-theme" data-k="theme">
-      <button type="button" data-v="auto">Auto</button><button type="button" data-v="cream">Cream</button><button type="button" data-v="mist">Mist</button><button type="button" data-v="dark">Dark</button></div>
-  </details>
 
   <div class="small" id="stat" role="status" aria-live="polite" style="margin:0 0 .9rem"></div>
   <div id="banner"></div>
-
-  <section class="card answer" id="answer" aria-labelledby="h-answer"></section>
-  <div class="chips" id="chips"></div>
 
   <section class="card" aria-labelledby="h-gauge">
     <h2 id="h-gauge">Cycle clock</h2>
@@ -146,6 +128,21 @@ input[type=date],input[type=number]{width:100%;padding:.55rem .7rem;border-radiu
     <svg id="gauge" viewBox="0 0 320 320" role="img" aria-label="Cycle gauge"></svg>
     <div class="small" id="gaugeKey" style="display:flex;justify-content:center;gap:1.4rem;margin-top:.3rem"></div>
   </section>
+
+  <section class="card" aria-labelledby="h-spiral">
+    <h2 id="h-spiral">Halving spiral</h2>
+    <p class="intro">Each turn is one halving cycle. A new turn is added by itself after each halving.</p>
+    <svg id="sp" viewBox="0 0 360 360" role="img" aria-label="Halving spiral"></svg>
+    <ul class="lst">
+      <li><span class="k" aria-hidden="true" style="color:var(--mute)">&#9679;</span><span><b>Grey turns:</b> past cycles</span></li>
+      <li><span class="k" aria-hidden="true" style="color:var(--bad)">&#9679;</span><span><b>Red dot:</b> cycle top</span></li>
+      <li><span class="k" aria-hidden="true" style="color:var(--info)">&#9679;</span><span><b>Blue dot:</b> cycle bottom</span></li>
+      <li><span class="k" aria-hidden="true">&#9711;</span><span><b>Pulsing ring:</b> today</span></li>
+    </ul>
+  </section>
+
+  <section class="card answer" id="answer" aria-labelledby="h-answer"></section>
+  <div class="chips" id="chips"></div>
 
   <section class="card" aria-labelledby="h-timing">
     <h2 id="h-timing">When could the bottom come?</h2>
@@ -178,11 +175,6 @@ input[type=date],input[type=number]{width:100%;padding:.55rem .7rem;border-radiu
     <div class="leg" id="leg"></div>
   </section>
 
-  <details>
-    <summary>Big picture: halving spiral</summary>
-    <p class="small">Each turn is one halving cycle. Grey turns are past cycles. Red dots are tops. Blue dots are bottoms. The pulsing ring is today. A new turn is added by itself after each halving.</p>
-    <svg id="sp" viewBox="0 0 360 360" role="img" aria-label="Halving spiral"></svg>
-  </details>
 
   <details>
     <summary>Settings and data</summary>
@@ -228,7 +220,7 @@ var CONFIRM_DROP=0.20,STALE_DAYS=3,BOTTOM_HOLD=90,BOTTOM_BOUNCE=0.20,CAUTION=1.2
 var REAL_FALLBACK={px:55179,asof:'2026-02-09',src:'Feb 2026 estimate'};
 var NAMES=['Post-halving','Early bull','Late bull','Distribution','Bear, maturing','Capitulation','Pre-halving'];
 var BLURB=['Supply cut just happened. Price often drifts.','Price tends to climb.','Gains speed up. Risk builds.','Usual top zone. Big holders sell.','Long, slow fall.','Usual bottom zone and washout.','Quiet build-up before the next halving.'];
-var DATA={real:null,rows:null,rowsSrc:null,price:null,priceSrc:null,height:null,halv:{},ov:{},loadedAt:null,day:null};
+var DATA={ovFail:false,real:null,rows:null,rowsSrc:null,price:null,priceSrc:null,height:null,halv:{},ov:{},loadedAt:null,day:null};
 
 function H(id){return document.getElementById(id)}
 function parse(s){var p=s.split('-');return Date.UTC(+p[0],+p[1]-1,+p[2])}
@@ -507,7 +499,7 @@ function overlay(m){
     if(m.price!=null&&!m.asOf)now.push([m.sinceTop,m.dd]);
     if(now.length<2)now=null;
   }
-  if(!now&&!past.length){box.innerHTML='<div class="small">'+(m.conf?'Loading past cycles.':'Shown once price has fallen 20% from its top.')+'</div>';return}
+  if(!now&&!past.length){box.innerHTML='<div class="small">'+(m.conf?(DATA.ovFail?'\u26A0 Past cycles could not be loaded. A data source may be blocked or offline. Try Reload data under Settings and data.':'Loading past cycles.'):'Shown once price has fallen 20% from its top.')+'</div>';return}
   var xmax=480,ymin=-90;
   past.forEach(function(p){p.s.forEach(function(r){xmax=Math.max(xmax,r[0]);ymin=Math.min(ymin,r[1])})});
   if(now)now.forEach(function(r){xmax=Math.max(xmax,r[0]+20);ymin=Math.min(ymin,r[1])});
@@ -545,7 +537,7 @@ function overlay(m){
   box.innerHTML='';box.appendChild(svg);
   var li=past.map(function(p){return '<li><span class="k" aria-hidden="true">○</span><span><b>'+p.yr+' cycle:</b> fell '+Math.round(-Math.min.apply(null,p.s.map(function(r){return r[1]})))+'% over '+p.days+' days.</span></li>'}).join('');
   if(now)li+='<li><span class="k" aria-hidden="true">●</span><span><b>This cycle:</b> '+sgn(m.dd,0)+'% after '+m.sinceTop+' days.</span></li>';
-  box.insertAdjacentHTML('beforeend','<ul class="lst">'+li+'</ul><div class="small" style="margin-top:.6rem">Dashed grey lines are past cycles, named by the year of their top. Circles mark their lows. The blue line is now.'+(past.length<m.cycles.filter(function(c){return c.top&&c.bot}).length?' Some past cycles are still loading.':'')+'</div>');
+  box.insertAdjacentHTML('beforeend','<ul class="lst">'+li+'</ul><div class="small" style="margin-top:.6rem">Dashed grey lines are past cycles, named by the year of their top. Circles mark their lows. The blue line is now.'+(past.length<m.cycles.filter(function(c){return c.top&&c.bot}).length?(DATA.ovFail?' \u26A0 Past cycles could not be loaded. A data source may be blocked or offline. Try Reload data under Settings and data.':' Some past cycles are still loading.'):'')+'</div>');
 }
 
 /* ================= Render: Faber ================= */
@@ -636,8 +628,8 @@ function spiral(m){
 function phases(m){
   var tl=H('tl'),leg=H('leg');tl.innerHTML='';leg.innerHTML='';
   for(var i=0;i<7;i++){var w=(m.B[i+1]-m.B[i])/m.B[7]*100;
-    tl.insertAdjacentHTML('beforeend','<div style="width:'+w+'%;background:var(--p'+i+(i===m.idx?';outline:3px solid var(--ink);outline-offset:-3px':'')+'">'+(w>7?(i+1):'')+'</div>');
-    leg.insertAdjacentHTML('beforeend','<div class="'+(i===m.idx?'on':'')+'"'+(i===m.idx?' aria-current="true"':'')+'><span class="nm"><span class="no" style="background:var(--p'+i+')">'+(i+1)+'</span>'+NAMES[i]+(i===m.idx?' (now)':'')+'</span><em>day '+Math.round(m.B[i])+' to '+Math.round(m.B[i+1])+'</em><small>'+BLURB[i]+'</small></div>')}
+    tl.insertAdjacentHTML('beforeend','<div style="width:'+w+'%;background:var(--p'+i+')'+(i===m.idx?';outline:3px solid var(--ink);outline-offset:-3px':'')+'">'+(w>7?(i+1):'')+'</div>');
+    leg.insertAdjacentHTML('beforeend','<div class="'+(i===m.idx?'on':'')+'"'+(i===m.idx?' aria-current="true" style="background:color-mix(in srgb,var(--p'+i+') 22%,var(--card));outline-color:var(--p'+i+')"':'')+'><span class="nm"><span class="no" style="background:var(--p'+i+')">'+(i+1)+'</span>'+NAMES[i]+(i===m.idx?' (now)':'')+'</span><em>day '+Math.round(m.B[i])+' to '+Math.round(m.B[i+1])+'</em><small>'+BLURB[i]+'</small></div>')}
   H('mk').innerHTML='<i style="left:'+clamp(m.dayH/m.B[7]*100,0,100)+'%"></i>';
 }
 
@@ -740,17 +732,35 @@ function loadRealized(){
   }).then(function(r){DATA.real=r}).then(render);
 }
 /* Old cycles are history: fetched once for the overlay chart, then cached on this device. */
+function isoD(t){return new Date(t).toISOString().slice(0,10)}
+function srcCM(a,b){
+  return jget('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=PriceUSD&frequency=1d&page_size=10000&start_time='+isoD(a)+'&end_time='+isoD(b)).then(function(j){
+    var rows=(j.data||[]).filter(function(x){return +x.PriceUSD>0}).map(function(x){return [parse(String(x.time).slice(0,10)),+x.PriceUSD]});
+    if(rows.length<100)throw 0;return rows});
+}
+function srcCC(a,b){
+  var n=Math.min(1990,Math.round((b-a)/DAY)+1);
+  return jget('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit='+n+'&toTs='+Math.floor(b/1000)).then(function(j){
+    var rows=j.Data.Data.map(function(r){return [r.time*1000,+r.close]}).filter(function(r){return r[1]>0});
+    if(rows.length<100)throw 0;return rows});
+}
+function srcCB(a,b){
+  var reqs=[];for(var x=a;x<b;x+=299*DAY){var e=Math.min(x+299*DAY,b);
+    reqs.push(jget('https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start='+new Date(x).toISOString()+'&end='+new Date(e).toISOString()))}
+  return Promise.all(reqs).then(function(parts){var seen={},rows=[];parts.forEach(function(p){p.forEach(function(r){var t=r[0]*1000;if(!seen[t]){seen[t]=1;rows.push([t,+r[4]])}})});
+    rows.sort(function(a,b){return a[0]-b[0]});if(rows.length<100)throw 0;return rows});
+}
 function loadOverlay(){
   var m;try{m=model()}catch(e){return Promise.resolve()}
   var todo=m.cycles.filter(function(c){return c.top&&c.bot&&!DATA.ov[c.top]&&!(DATA.rows&&DATA.rows.length&&DATA.rows[0][0]<=c.top-5*DAY)});
+  if(todo.length)DATA.ovFail=false;
   return Promise.all(todo.map(function(c){
-    var key='cc_ov2_'+c.top,cached=ls(key);
+    var key='cc_ov3_'+c.top,cached=ls(key);
     if(cached){try{DATA.ov[c.top]=JSON.parse(cached);return Promise.resolve()}catch(e){}}
-    var end=Math.min(c.bot+75*DAY,todayUTC()),n=Math.min(1990,Math.round((end-(c.top-6*DAY))/DAY)+1);
-    return jget('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit='+n+'&toTs='+Math.floor(end/1000)).then(function(j){
-      var rows=j.Data.Data.map(function(r){return [r.time*1000,+r.close]}).filter(function(r){return r[1]>0});
-      if(rows.length<100)throw 0;DATA.ov[c.top]=rows;ls(key,JSON.stringify(rows));
-    }).catch(function(){});
+    var a=c.top-8*DAY,b=Math.min(c.bot+80*DAY,todayUTC());
+    return srcCM(a,b).catch(function(){return srcCC(a,b)}).catch(function(){return srcCB(a,b)}).then(function(rows){
+      DATA.ov[c.top]=rows;ls(key,JSON.stringify(rows));
+    }).catch(function(){DATA.ovFail=true});
   })).then(render);
 }
 function loadAll(){
@@ -760,20 +770,6 @@ function loadAll(){
   });
 }
 
-/* ================= Reader settings ================= */
-var PREF={font:'lexend',size:'m',space:'normal',theme:'auto'};
-try{var sp=JSON.parse(ls('cc_pref')||'{}');for(var kk in sp)if(kk in PREF)PREF[kk]=sp[kk]}catch(e){}
-function applyPref(){
-  var r=document.documentElement;
-  r.setAttribute('data-font',PREF.font);r.setAttribute('data-size',PREF.size);r.setAttribute('data-space',PREF.space);
-  r.setAttribute('data-theme',PREF.theme==='cream'?'cream':PREF.theme);
-  var segs=document.querySelectorAll('#reader .seg');
-  for(var i=0;i<segs.length;i++){var k=segs[i].getAttribute('data-k'),bs=segs[i].querySelectorAll('button');
-    for(var j=0;j<bs.length;j++)bs[j].setAttribute('aria-pressed',String(bs[j].getAttribute('data-v')===PREF[k]))}
-}
-document.querySelectorAll('#reader .seg button').forEach(function(b){b.addEventListener('click',function(){
-  PREF[b.parentNode.getAttribute('data-k')]=b.getAttribute('data-v');ls('cc_pref',JSON.stringify(PREF));applyPref()})});
-applyPref();
 
 /* ================= Wiring ================= */
 H('asOfIn').value='';
