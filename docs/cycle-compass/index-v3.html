@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="auto" data-font="lexend" data-size="m" data-space="normal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Cycle Compass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ---------- Themes. All text colours checked for 4.5:1 or better ---------- */
+:root{
+  --font:"Lexend","Verdana","Trebuchet MS",system-ui,sans-serif;
+  --ls:.01em;--ws:.05em;--lh:1.65;
+  --bg:#f7f3e8;--card:#fffdf8;--ink:#1c1b19;--ink2:#443f37;--mute:#5a554b;--line:#d6cfbb;--track:#e6e0cd;--soft:#f1ecda;--depth:#1c1b19;
+  --good:#0b6b4d;--warn:#8a5300;--bad:#b3261e;--info:#1556a8;--vio:#5a4fc4;--dep:#c2188f;
+  --good-f:#1d9e75;--warn-f:#e8960f;--bad-f:#d93f3c;--info-f:#2f7fd6;--vio-f:#7f77dd;
+  --p0:#0f7a5a;--p1:#4a7a12;--p2:#9a5b00;--p3:#b8441b;--p4:#b3261e;--p5:#5b4fc0;--p6:#1d62b3;--onp:#ffffff;
+  color-scheme:light;
+}
+html[data-theme="mist"]{--bg:#e8f0f5;--card:#f9fcfe;--ink:#13202a;--ink2:#34444f;--mute:#4c5b66;--line:#c3d1da;--track:#d9e5ec;--soft:#edf3f7;--depth:#13202a}
+html[data-theme="dark"]{
+  --bg:#121418;--card:#1b1e24;--ink:#f2f0ea;--ink2:#d3d0c6;--mute:#a9a69b;--line:#383c45;--track:#2d3139;--soft:#23272f;--depth:#ffffff;
+  --good:#4fd1a1;--warn:#f5b84a;--bad:#ff8f86;--info:#7db6ff;--vio:#b8b2ff;--dep:#ff7ad9;
+  --p0:#3fc99b;--p1:#9ccc5a;--p2:#f0b04a;--p3:#ff9a6b;--p4:#ff8f86;--p5:#b0a8ff;--p6:#7db6ff;--onp:#101214;color-scheme:dark}
+@media (prefers-color-scheme:dark){
+  html[data-theme="auto"]{
+    --bg:#121418;--card:#1b1e24;--ink:#f2f0ea;--ink2:#d3d0c6;--mute:#a9a69b;--line:#383c45;--track:#2d3139;--soft:#23272f;--depth:#ffffff;
+    --good:#4fd1a1;--warn:#f5b84a;--bad:#ff8f86;--info:#7db6ff;--vio:#b8b2ff;--dep:#ff7ad9;
+    --p0:#3fc99b;--p1:#9ccc5a;--p2:#f0b04a;--p3:#ff9a6b;--p4:#ff8f86;--p5:#b0a8ff;--p6:#7db6ff;--onp:#101214;color-scheme:dark}
+}
+/* ---------- Reader settings ---------- */
+html[data-font="atkinson"]{--font:"Atkinson Hyperlegible","Verdana","Trebuchet MS",system-ui,sans-serif}
+html[data-font="verdana"]{--font:"Verdana","DejaVu Sans","Trebuchet MS",system-ui,sans-serif}
+html[data-size="s"]{font-size:100%}
+html[data-size="m"]{font-size:112.5%}
+html[data-size="l"]{font-size:128%}
+html[data-space="wide"]{--ls:.05em;--ws:.16em;--lh:1.85}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:1rem;line-height:var(--lh);letter-spacing:var(--ls);word-spacing:var(--ws);text-align:left;font-variant-numeric:tabular-nums;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:34rem;margin:0 auto;padding:1.1rem 1rem 3rem}
+svg{font-family:var(--font);display:block;width:100%;height:auto}
+a{color:var(--info)}
+h1{font-size:1.5rem;line-height:1.25;margin:0;font-weight:600}
+h2{font-size:1.1rem;line-height:1.35;margin:0 0 .15rem;font-weight:600}
+.sub{color:var(--mute);font-size:.9rem}
+.small{font-size:.9rem;color:var(--mute);line-height:1.6}
+.ink2{color:var(--ink2)}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.5rem .75rem;margin:.4rem 0 .8rem}
+.pill{font-size:.85rem;padding:.3rem .7rem;border-radius:999px;border:1px solid var(--line);color:var(--ink2);background:var(--card);white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.1rem;margin-bottom:1rem}
+.card .intro{color:var(--ink2);font-size:.95rem;margin:0 0 .6rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:.9rem 1.1rem;margin-bottom:1rem}
+summary{cursor:pointer;font-weight:600;list-style:none;min-height:2.75rem;display:flex;align-items:center;gap:.5rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";margin-left:auto;font-size:1.3rem;color:var(--mute)}
+details[open]>summary::after{content:"\2212"}
+button,input{font:inherit;letter-spacing:inherit;word-spacing:inherit}
+button{min-height:2.75rem;padding:.45rem .9rem;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+button:focus-visible,summary:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+.seg{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .9rem}
+.seg button{flex:1 1 auto}
+.lab{font-size:.9rem;color:var(--ink2);font-weight:500}
+input[type=date],input[type=number]{width:100%;padding:.55rem .7rem;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:2.75rem}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.8rem;align-items:end}
+.fgrid>*{min-width:0}
+.fgrid .w{grid-column:1/-1}
+@media (max-width:26rem){.fgrid{grid-template-columns:1fr}}
+/* answer card */
+.answer{border:2px solid var(--tone,var(--line));background:color-mix(in srgb,var(--tone,var(--line)) 9%,var(--card))}
+.answer .ttl{font-size:1.3rem;line-height:1.3;font-weight:600;color:var(--tone,var(--ink));display:flex;gap:.5rem;align-items:flex-start}
+.answer .ttl .ic{flex:none}
+.answer p{margin:.5rem 0 0;color:var(--ink)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:1rem}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.7rem .8rem}
+.stat .v{font-size:1.75rem;line-height:1.2;font-weight:600;margin:.1rem 0}
+.stat .l{font-size:.9rem;color:var(--ink2)}
+.stat .n{font-size:.85rem;color:var(--mute)}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem}
+.chip{border:2px solid var(--line);border-radius:14px;padding:.55rem .75rem;background:var(--card);font-size:.9rem;color:var(--ink2)}
+.chip b{display:block;font-size:1.05rem;color:var(--ink);font-weight:600}
+.chip.d{border-color:var(--dep)}.chip.d b{color:var(--dep)}
+.chip.y{border-color:var(--good-f)}.chip.a{border-color:var(--warn)}.chip.n{border-color:var(--line)}
+.chip.y b{color:var(--good)}.chip.a b{color:var(--warn)}
+.banner{border:1px solid var(--info);background:color-mix(in srgb,var(--info) 8%,var(--card));border-radius:14px;padding:.7rem .9rem;margin-bottom:1rem;font-size:.95rem}
+/* lists */
+.lst{list-style:none;margin:.7rem 0 0;padding:0}
+.lst li{display:flex;gap:.6rem;padding:.55rem 0;border-top:1px solid var(--line);font-size:.95rem}
+.lst li b{font-weight:600}
+.lst .k{flex:none;width:1.4rem;text-align:center}
+.fl{display:flex;justify-content:space-between;gap:.8rem;padding:.55rem 0;border-top:1px solid var(--line);font-size:.95rem}
+.fl b{text-align:right;font-weight:600}
+.leg{display:grid;gap:.35rem;margin-top:.8rem}
+.leg div{display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline;padding:.5rem .6rem;border-radius:10px;font-size:.95rem}
+.leg div.on{background:var(--soft);outline:2px solid var(--ink);font-weight:600}
+.leg .nm{display:flex;gap:.5rem;align-items:center}
+.leg .no{width:1.5rem;height:1.5rem;border-radius:6px;color:var(--onp);display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;flex:none}
+.leg em{font-style:normal;color:var(--mute);font-size:.85rem;margin-left:auto}
+.leg small{flex-basis:100%;color:var(--ink2);font-size:.85rem;padding-left:2.1rem}
+.tl{display:flex;height:2rem;border-radius:8px;overflow:hidden;gap:2px;margin-top:.5rem}
+.tl div{display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--onp);font-weight:600}
+.mk{position:relative;height:1.1rem}
+.mk i{position:absolute;top:.1rem;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:10px solid var(--ink);transform:translateX(-7px)}
+.big{font-size:1.45rem;font-weight:600;line-height:1.3}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:no-preference){.pulse{animation:p 2.4s ease-in-out infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="small" style="margin-bottom:.3rem"><a href="../">&larr; Spread scanner</a></div>
+  <div class="top">
+    <div><h1>Cycle Compass</h1><div class="sub">Where are we in the Bitcoin cycle?</div></div>
+    <div class="pill" id="asof"></div>
+  </div>
+
+  <details id="reader">
+    <summary><span aria-hidden="true">Aa</span> Reading settings</summary>
+    <div class="lab" style="margin-top:.6rem" id="l-font">Font</div>
+    <div class="seg" role="group" aria-labelledby="l-font" data-k="font">
+      <button type="button" data-v="lexend">Lexend</button><button type="button" data-v="atkinson">Atkinson</button><button type="button" data-v="verdana">Verdana</button></div>
+    <div class="lab" id="l-size">Text size</div>
+    <div class="seg" role="group" aria-labelledby="l-size" data-k="size">
+      <button type="button" data-v="s">Small</button><button type="button" data-v="m">Medium</button><button type="button" data-v="l">Large</button></div>
+    <div class="lab" id="l-space">Spacing</div>
+    <div class="seg" role="group" aria-labelledby="l-space" data-k="space">
+      <button type="button" data-v="normal">Normal</button><button type="button" data-v="wide">Wide</button></div>
+    <div class="lab" id="l-theme">Colours</div>
+    <div class="seg" role="group" aria-labelledby="l-theme" data-k="theme">
+      <button type="button" data-v="auto">Auto</button><button type="button" data-v="cream">Cream</button><button type="button" data-v="mist">Mist</button><button type="button" data-v="dark">Dark</button></div>
+  </details>
+
+  <div class="small" id="stat" role="status" aria-live="polite" style="margin:0 0 .9rem"></div>
+  <div id="banner"></div>
+
+  <section class="card answer" id="answer" aria-labelledby="h-answer"></section>
+  <div class="chips" id="chips"></div>
+
+  <section class="card" aria-labelledby="h-gauge">
+    <h2 id="h-gauge">Cycle clock</h2>
+    <p class="intro">Outer ring: time used up. Inner ring: how far price has fallen.</p>
+    <svg id="gauge" viewBox="0 0 320 320" role="img" aria-label="Cycle gauge"></svg>
+    <div class="small" id="gaugeKey" style="display:flex;justify-content:center;gap:1.4rem;margin-top:.3rem"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-timing">
+    <h2 id="h-timing">When could the bottom come?</h2>
+    <p class="intro" id="timingIntro">A range from past cycles. Not a promise.</p>
+    <div id="timing"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-overlay">
+    <h2 id="h-overlay">How does this bear compare?</h2>
+    <p class="intro">Every bear market lined up from its top.</p>
+    <div id="overlay"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-faber">
+    <h2 id="h-faber">Is the trend up or down?</h2>
+    <p class="intro">Faber rule: price against its 10-month average.</p>
+    <div id="faber"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-floor">
+    <h2 id="h-floor">Realized price floor</h2>
+    <p class="intro">Roughly the average cost of every coin. Bear lows have sat near it.</p>
+    <div id="floor"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-phases">
+    <h2 id="h-phases">Seven phases of this cycle</h2>
+    <div class="tl" id="tl"></div>
+    <div class="mk" id="mk"></div>
+    <div class="leg" id="leg"></div>
+  </section>
+
+  <details>
+    <summary>Big picture: halving spiral</summary>
+    <p class="small">Each turn is one halving cycle. Grey turns are past cycles. Red dots are tops. Blue dots are bottoms. The pulsing ring is today. A new turn is added by itself after each halving.</p>
+    <svg id="sp" viewBox="0 0 360 360" role="img" aria-label="Halving spiral"></svg>
+  </details>
+
+  <details>
+    <summary>Settings and data</summary>
+    <div class="fgrid">
+      <div><label class="lab" for="asOfIn">View as of (testing)</label><input type="date" id="asOfIn" autocomplete="off" name="cc_asof_test"></div>
+      <div><button id="reload" type="button" style="width:100%">Reload data</button></div>
+      <div class="w"><label class="lab" for="realIn">Realized price backup (used only if the live feed fails)</label><input type="number" inputmode="decimal" id="realIn" autocomplete="off" name="cc_real_backup" placeholder="e.g. 55000"></div>
+    </div>
+    <div class="small" style="margin-top:1rem" id="cyc"></div>
+  </details>
+
+  <details>
+    <summary>How it works</summary>
+    <p class="small"><b>Top.</b> The highest daily close since the last halving. It counts as confirmed after a 20% fall.</p>
+    <p class="small"><b>Clock 1.</b> Days from top to bottom in past cycles. The bar spans the shortest to the longest. The marker is the median.</p>
+    <p class="small"><b>Clock 2.</b> Days from bottom to the next halving in past cycles, counted back from the next halving date. That date is an estimate from the block height.</p>
+    <p class="small"><b>Clock 3.</b> Days from a halving to the cycle top in past cycles. It shows only until a top is confirmed.</p>
+    <p class="small"><b>The clocks use the same few cycles.</b> They are not independent proof.</p>
+    <p class="small"><b>Bottom looks in.</b> The low is at least 60% of the shortest past bear after the top. It has held 90 days. Price is 20% above it. This is a rule of thumb.</p>
+    <p class="small"><b>Faber.</b> The 10-month average uses the last 9 closed months plus today's price. That matches a standard TradingView monthly 10-SMA. The rule is read at month end.</p>
+    <p class="small"><b>Realized price.</b> Realized cap divided by supply. Providers differ by a few percent. The caution zone is the floor up to 1.25 times the floor.</p>
+    <p class="small"><b>Next cycle.</b> Halving dates come from the live block height. When a halving happens, a new cycle starts. The finished cycle's top and bottom are found from price history and join the averages. Nothing needs editing.</p>
+  </details>
+
+  <p class="small">Descriptive tool, not financial advice. A handful of past cycles is a very small sample. The clocks assume this cycle rhymes with earlier ones. It may not.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+var DAY=864e5,NS='http://www.w3.org/2000/svg';
+/* ---- Past cycles you have verified. Later cycles are detected from price history. ---- */
+var KNOWN_HAL=['2012-11-28','2016-07-09','2020-05-11','2024-04-20'];
+var PAST=[
+  {top:'2013-12-04',bot:'2015-01-14',dd:85},
+  {top:'2017-12-17',bot:'2018-12-15',dd:84},
+  {top:'2021-11-10',bot:'2022-11-21',dd:77}
+];
+var NEXT_TABLE='2028-04-18',BLOCKS=210000,BPD=144,CYCLE_DAYS=1460;
+var FALLBACK_TOP={date:'2025-10-06',close:124752};
+var OFF={late:365,after_top:166,after_bot:240,early:150};
+var CONFIRM_DROP=0.20,STALE_DAYS=3,BOTTOM_HOLD=90,BOTTOM_BOUNCE=0.20,CAUTION=1.25,MAX_AUTO_BACK=2;
+var REAL_FALLBACK={px:55179,asof:'2026-02-09',src:'Feb 2026 estimate'};
+var NAMES=['Post-halving','Early bull','Late bull','Distribution','Bear, maturing','Capitulation','Pre-halving'];
+var BLURB=['Supply cut just happened. Price often drifts.','Price tends to climb.','Gains speed up. Risk builds.','Usual top zone. Big holders sell.','Long, slow fall.','Usual bottom zone and washout.','Quiet build-up before the next halving.'];
+var DATA={real:null,rows:null,rowsSrc:null,price:null,priceSrc:null,height:null,halv:{},ov:{},loadedAt:null,day:null};
+
+function H(id){return document.getElementById(id)}
+function parse(s){var p=s.split('-');return Date.UTC(+p[0],+p[1]-1,+p[2])}
+function fmt(t){return new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}
+function fmtS(t){return new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'})}
+function med(a){a=a.slice().sort(function(x,y){return x-y});var m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2}
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function el(p,n,a,t){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;p.appendChild(e);return e}
+function todayUTC(){var d=new Date();return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())}
+function money(v){return '$'+Math.round(v).toLocaleString('en-GB')}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function sgn(n,d){return (n>0?'+':(n<0?'−':''))+Math.abs(n).toFixed(d||0)}
+function sum(a){return a.reduce(function(x,y){return x+y},0)}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+try{localStorage.removeItem('cc_state')}catch(e){}
+
+/* ================= Halving dates: self-updating ================= */
+function halvings(){
+  var today=todayUTC(),out=[],h=DATA.height;
+  if(h>0){
+    var n=Math.floor(h/BLOCKS);
+    for(var i=1;i<=n;i++){
+      if(KNOWN_HAL[i-1])out.push({t:parse(KNOWN_HAL[i-1]),src:'known'});
+      else if(DATA.halv[i])out.push({t:DATA.halv[i],src:'block time'});
+      else out.push({t:today-Math.round((h-i*BLOCKS)/BPD)*DAY,src:'estimate'});
+    }
+    out.push({t:today+Math.round((BLOCKS*(n+1)-h)/BPD)*DAY,src:'block height'});
+  }else{
+    KNOWN_HAL.forEach(function(d){out.push({t:parse(d),src:'known'})});
+    out.push({t:parse(NEXT_TABLE),src:'table'});
+  }
+  return out;
+}
+function halvingsFor(now){
+  var hl=halvings();
+  while(now>=hl[hl.length-1].t)hl.push({t:hl[hl.length-1].t+CYCLE_DAYS*DAY,src:'projection'});
+  return hl;
+}
+function curIndex(hl,now){var c=0;for(var i=0;i<hl.length-1;i++){if(hl[i].t<=now)c=i}return c}
+
+/* ================= Cycle detection ================= */
+function detect(rows,h0,h1){
+  if(!rows||!rows.length||rows[0][0]>h0+10*DAY)return null;
+  var seg=rows.filter(function(r){return r[0]>=h0&&r[0]<h1});
+  if(seg.length<30)return null;
+  var top=seg[0];seg.forEach(function(r){if(r[1]>top[1])top=r});
+  var after=seg.filter(function(r){return r[0]>=top[0]}),bot=after[0];
+  after.forEach(function(r){if(r[1]<bot[1])bot=r});
+  return {top:top[0],topPx:top[1],bot:bot[0],botPx:bot[1]};
+}
+function monthlyCloses(rows,nowMs){
+  var n=new Date(nowMs),cur=n.getUTCFullYear()*12+n.getUTCMonth(),last={};
+  rows.forEach(function(r){var d=new Date(r[0]);last[d.getUTCFullYear()*12+d.getUTCMonth()]=r[1]});
+  return Object.keys(last).map(Number).filter(function(k){return k<cur}).sort(function(a,b){return a-b}).map(function(k){return Math.round(last[k])});
+}
+function win(open,mid,close,now){
+  var st,d;
+  if(now<open){st='before';d=Math.ceil((open-now)/DAY)}
+  else if(now<=close){st='inside';d=Math.round((close-now)/DAY)}
+  else{st='after';d=Math.round((now-close)/DAY)}
+  return {open:open,mid:mid,close:close,state:st,days:d};
+}
+
+/* ================= The model ================= */
+function model(){
+  var asOfStr=H('asOfIn').value,asOf=!!asOfStr,today=todayUTC(),now=asOf?parse(asOfStr):today;
+  var rows=DATA.rows?DATA.rows.filter(function(r){return r[0]<=now+DAY}):null;
+  var stale=false,why=null,price=null;
+  if(rows&&rows.length){
+    var lastT=rows[rows.length-1][0];
+    if(!asOf&&(today-lastT)/DAY>STALE_DAYS){stale=true;why='History ends '+fmt(lastT)}
+    price=asOf?rows[rows.length-1][1]:(DATA.price||rows[rows.length-1][1]);
+  }else{stale=true;why='No price history loaded'}
+  var hl=halvingsFor(now),hals=hl.map(function(x){return x.t});
+  var cur=curIndex(hl,now),h0=hals[cur],h1=hals[cur+1],L=Math.round((h1-h0)/DAY),dayH=Math.round((now-h0)/DAY);
+
+  var cycles=[];
+  for(var k=0;k<cur;k++){
+    var c={h:hals[k],next:hals[k+1],hsrc:hl[k].src};
+    if(PAST[k]){c.top=parse(PAST[k].top);c.bot=parse(PAST[k].bot);c.dd=PAST[k].dd;c.src='table'}
+    else if(rows){var d=detect(rows,hals[k],hals[k+1]);if(d){c.top=d.top;c.bot=d.bot;c.topPx=d.topPx;c.botPx=d.botPx;c.dd=Math.round((1-d.botPx/d.topPx)*100);c.src='detected'}}
+    cycles.push(c);
+  }
+  var done=cycles.filter(function(c){return c.top&&c.bot});
+  var G=done.map(function(c){return Math.round((c.bot-c.top)/DAY)}),D=done.map(function(c){return c.dd}),P=done.map(function(c){return Math.round((c.next-c.bot)/DAY)});
+  if(!G.length){G=[376];D=[84];P=[516]}
+  var dur=Math.round(med(G)),gMin=Math.min.apply(null,G),gMax=Math.max.apply(null,G),ddm=med(D);
+  var pMed=Math.round(med(P)),pMin=Math.min.apply(null,P),pMax=Math.max.apply(null,P);
+  var TF=done.map(function(c){return Math.round((c.top-c.h)/DAY)});if(!TF.length)TF=[534];
+  var tMin=Math.min.apply(null,TF),tMax=Math.max.apply(null,TF),tMed=Math.round(med(TF));
+
+  var top=null,topPx=null,conf=false,low=null,lowT=null;
+  var seg=rows?rows.filter(function(r){return r[0]>=h0&&r[0]<=now+DAY}):[];
+  if(seg.length){
+    var t=seg[0];seg.forEach(function(r){if(r[1]>t[1])t=r});top=t[0];topPx=t[1];
+    if(price!=null&&price>topPx&&!stale){top=Math.min(now,today);topPx=price}
+    var after=seg.filter(function(r){return r[0]>=top});
+    low=Infinity;after.forEach(function(r){if(r[1]<low){low=r[1];lowT=r[0]}});
+    if(price!=null&&!stale&&!asOf&&price<low){low=price;lowT=today}
+    if(!isFinite(low)){low=price;lowT=top}
+    conf=low!=null&&low<=topPx*(1-CONFIRM_DROP);
+  }else if(cur===3){
+    top=parse(FALLBACK_TOP.date);topPx=FALLBACK_TOP.close;conf=price!=null?price<=topPx*(1-CONFIRM_DROP):true;
+    if(price!=null){low=price;lowT=now}
+  }
+  var topDay=top!=null?Math.round((top-h0)/DAY):null;
+  var sinceTop=top!=null?Math.round((now-top)/DAY):null;
+  var ddNow=(price!=null&&topPx)?(price/topPx-1)*100:null;
+  var lowDD=(low!=null&&topPx)?(1-low/topPx)*100:0;
+  var bottomIn=!!(conf&&!stale&&lowT!=null&&price!=null&&(now-lowT)/DAY>=BOTTOM_HOLD&&price>=low*(1+BOTTOM_BOUNCE)&&(lowT-top)/DAY>=gMin*0.6&&lowDD>=ddm*0.6);
+  var elapsed=(conf&&top!=null)?sinceTop:0;
+  var score=bottomIn?100:(conf?clamp(Math.round(elapsed/dur*100),0,100):0);
+  var t1=(conf&&!bottomIn&&top!=null)?win(top+gMin*DAY,top+dur*DAY,top+gMax*DAY,now):null;
+  var t2=!bottomIn?win(h1-pMax*DAY,h1-pMed*DAY,h1-pMin*DAY,now):null;
+  var t3=!conf?win(h0+tMin*DAY,h0+tMed*DAY,h0+tMax*DAY,now):null;
+  var ov=null;
+  if(t1&&t2){var a=Math.max(t1.open,t2.open),b=Math.min(t1.close,t2.close);if(a<=b)ov=win(a,Math.round((a+b)/2),b,now)}
+
+  var topEff=conf?topDay:Math.max(dayH+1,OFF.late+1);
+  var botDay=bottomIn?Math.round((lowT-h0)/DAY):topEff+dur;
+  var B=[0,OFF.early,OFF.late,topEff,topEff+OFF.after_top,botDay,botDay+OFF.after_bot,L];
+  for(var j=1;j<8;j++){if(B[j]<=B[j-1])B[j]=B[j-1]+1}
+  var idx;
+  if(conf){idx=6;for(var q=0;q<7;q++){if(dayH>=B[q]&&dayH<B[q+1]){idx=q;break}}}
+  else idx=dayH<OFF.early?0:(dayH<OFF.late?1:2);
+  var depth=(price!=null&&ddNow!=null)?clamp(Math.round((-ddNow)/ddm*100),0,100):null;
+
+  var cl=rows?monthlyCloses(rows,now).slice(-10):[],fab=null;
+  if(cl.length>=10&&!stale&&price>0){
+    var s9=sum(cl.slice(-9)),nm=new Date(now);
+    var nextMonth=Date.UTC(nm.getUTCFullYear(),nm.getUTCMonth()+1,1);
+    fab={sma:(s9+price)/10,trig:s9/9,up:price>s9/9,lastUp:cl[9]>sum(cl)/10,lastClose:cl[9],toMonthEnd:Math.max(0,Math.round((nextMonth-now)/DAY)-1)};
+  }
+  return {asOf:asOf,now:now,today:today,hl:hl,hals:hals,cur:cur,cycles:cycles,h0:h0,h1:h1,L:L,dayH:dayH,
+    dur:dur,gMin:gMin,gMax:gMax,ddm:ddm,pMin:pMin,pMax:pMax,pMed:pMed,G:G,
+    top:top,topPx:topPx,conf:conf,low:low,lowT:lowT,topDay:topDay,sinceTop:sinceTop,bottomIn:bottomIn,elapsed:elapsed,score:score,
+    t1:t1,t2:t2,t3:t3,tMin:tMin,tMax:tMax,ov:ov,B:B,idx:idx,price:stale?null:price,dd:stale?null:ddNow,depth:stale?null:depth,closes:cl,fab:fab,
+    stale:stale,why:why,nxtT:h1,nxtSrc:hl[cur+1].src,daysToHalving:Math.round((h1-now)/DAY)};
+}
+
+/* ================= Plain-language verdict ================= */
+function verdictOf(m){
+  var d=m.depth,tOk=m.conf&&m.score>=85,rOk=m.fab&&m.fab.up,dOk=d!=null&&d>=85;
+  var ddTxt=m.dd==null?'unknown':Math.abs(m.dd).toFixed(0)+'% against a typical '+m.ddm.toFixed(0)+'%';
+  if(m.stale)return {tone:'warn',ic:'⚠',title:'No fresh price data',body:'Showing the time clock only. '+(m.why||'')+'. Reload, or check a VPN or ad blocker.'};
+  if(!m.conf){
+    var ex='Today is day '+m.dayH+' of the cycle. Past tops came '+m.tMin+' to '+m.tMax+' days after a halving.',w3=m.t3&&m.t3.state;
+    if(w3==='before')return {tone:'info',ic:'▲',title:'Early in the cycle',body:ex+' The bear clock starts only after a 20% fall from the top.'};
+    if(w3==='inside')return {tone:'warn',ic:'⚠︎',title:'Inside the usual top window',body:ex+' No 20% fall yet, so the top is not confirmed. High so far: '+money(m.topPx)+'.'};
+    return {tone:'warn',ic:'⚠︎',title:'Past the usual top window',body:ex+' Price is within 20% of its high ('+money(m.topPx)+', '+fmt(m.top)+'), so the top is not confirmed.'};
+  }
+  if(m.bottomIn)return {tone:'good',ic:'✔',title:'The bottom looks in',body:'The low was '+money(m.low)+' on '+fmt(m.lowT)+', '+Math.round((m.lowT-m.top)/DAY)+' days after the top. It has held, and price is back up. This is a rule of thumb, not proof.'};
+  if(tOk&&rOk&&dOk)return {tone:'good',ic:'✔',title:'All three agree',body:'Time, trend and depth all point to a bottom zone.'};
+  var late=(m.t1&&m.t1.state==='after')?' Today is '+m.t1.days+' days past the longest past gap.':'';
+  if(tOk&&rOk)return {tone:'warn',ic:'⚠︎',title:'Time and trend agree, depth does not',body:'The clock is nearly up and price is above its 10-month average. The drop is only '+ddTxt+'. Either this bear is shallower, or a lower low may still come.'+late};
+  if(tOk)return {tone:'warn',ic:'⚠︎',title:'Clock says near, trend says wait',body:'Price is not yet above its 10-month average. Wait for a close above it.'+late};
+  if(m.score>=50)return {tone:'bad',ic:'●',title:'Mid bear. Be patient.',body:'Time is past halfway. Depth is '+(d==null?'unknown':d+'% of the typical bear')+'.'};
+  return {tone:'bad',ic:'●',title:'Early in the downturn',body:'Plenty of time left on the clock.'};
+}
+
+/* ================= Render: answer ================= */
+function answer(m){
+  var v=verdictOf(m),a=H('answer');
+  a.style.setProperty('--tone','var(--'+v.tone+')');
+  var s2;
+  if(m.bottomIn)s2=['Bottom set on',fmtS(m.lowT),new Date(m.lowT).getUTCFullYear()+' \u00B7 low '+money(m.low)];
+  else if(!m.conf){var w=m.t3,rg=fmtS(w.open)+' to '+fmtS(w.close);
+    s2=w.state==='before'?['Days until top window opens',w.days,rg]:(w.state==='inside'?['Days left in top window',w.days,rg]:['Days past top window','+'+w.days,'ended '+fmtS(w.close)])}
+  else if(m.t1.state==='before')s2=['Days until window opens',m.t1.days,fmtS(m.t1.open)+' to '+fmtS(m.t1.close)];
+  else if(m.t1.state==='inside')s2=['Days left in window',m.t1.days,fmtS(m.t1.open)+' to '+fmtS(m.t1.close)];
+  else s2=['Days past the window','+'+m.t1.days,'ended '+fmtS(m.t1.close)];
+  var st=[
+    m.conf?['Days since top',m.sinceTop,'top '+fmt(m.top)]:['Days since halving',m.dayH,'halving '+fmt(m.h0)],
+    s2,
+    ['Days to next halving',m.daysToHalving,'about '+fmt(m.nxtT)],
+    [m.conf?'Fall from top':'Below high so far',m.dd==null?'n/a':sgn(m.dd,1)+'%','typical bear: −'+m.ddm.toFixed(0)+'%']
+  ];
+  a.innerHTML='<h2 id="h-answer" class="sr">Summary</h2><div class="ttl"><span class="ic" aria-hidden="true">'+v.ic+'</span><span>'+esc(v.title)+'</span></div><p>'+esc(v.body)+'</p>'+
+   '<div class="stats">'+st.map(function(x){return '<div class="stat"><div class="l">'+esc(x[0])+'</div><div class="v">'+esc(x[1])+'</div><div class="n">'+esc(x[2])+'</div></div>'}).join('')+'</div>';
+}
+function chips(m){
+  function chip(name,state,big,small,own){var cls=own||(state==='y'?'y':(state==='a'?'a':'n')),ic=state==='y'?'✔ ':(state==='a'?'⚠︎ ':'✖ ');
+    return '<div class="chip '+cls+'">'+name+'<b>'+ic+esc(big)+'</b>'+esc(small)+'</div>'}
+  var timeOk=m.conf&&m.score>=85,tr=m.fab,dp=m.depth;
+  var g=floorGap(m),fs=g==null?'n':(g<=0?'y':(g<=25?'a':'n'));
+  H('chips').innerHTML=
+    chip('Time',timeOk?'y':'n',timeOk?'Due':'Not yet',m.conf?m.score+'% of typical window':'no confirmed top')+
+    chip('Trend',tr&&tr.up?'y':'n',tr?(tr.up?'Up':'Down'):'No data',tr?'vs 10-month average':'')+
+    chip('Depth',dp!=null&&dp>=85?'y':'n',dp!=null&&dp>=85?'Deep':'Not yet',dp==null?'no data':dp+'% of typical fall','d')+
+    chip('Floor',fs,g==null?'No data':(g>0?'Above floor':'Below floor'),g==null?'':sgn(g,0)+'% from realized price');
+}
+
+/* ================= Render: gauge ================= */
+function gauge(m){
+  var g=H('gauge');g.innerHTML='';
+  var col='var(--p'+m.idx+')',cx=160,cy=160;
+  function ring(r,sw,pct,color){var C=2*Math.PI*r;
+    el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:'var(--track)','stroke-width':sw});
+    if(pct>=1.5)el(g,'circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:color,'stroke-width':sw,'stroke-linecap':'round','stroke-dasharray':(C*pct/100).toFixed(1)+' '+C.toFixed(1),transform:'rotate(-90 '+cx+' '+cy+')'})}
+  ring(132,16,m.score,col);ring(106,10,m.depth==null?0:m.depth,'var(--dep)');
+  for(var k=1;k<4;k++){var a=k*Math.PI/2;el(g,'line',{x1:cx+117*Math.sin(a),y1:cy-117*Math.cos(a),x2:cx+148*Math.sin(a),y2:cy-148*Math.cos(a),stroke:'var(--card)','stroke-width':2.5})}
+  el(g,'text',{x:cx,y:118,'text-anchor':'middle',fill:'var(--mute)','font-size':13},'Time used');
+  el(g,'text',{x:cx,y:176,'text-anchor':'middle',fill:'var(--ink)','font-size':60,'font-weight':600},m.conf?m.score+'%':'–');
+  el(g,'text',{x:cx,y:203,'text-anchor':'middle',fill:'var(--ink)','font-size':15,'font-weight':600},NAMES[m.idx]);
+  var line;
+  if(!m.conf)line='No confirmed top yet';
+  else if(m.bottomIn)line='Bottom looks in';
+  else if(m.t1.state==='before')line=m.t1.days+' days to window';
+  else if(m.t1.state==='inside')line=m.t1.days+' days left in window';
+  else line=m.t1.days+' days past window';
+  el(g,'text',{x:cx,y:224,'text-anchor':'middle',fill:'var(--ink2)','font-size':13.5},line);
+  g.setAttribute('aria-label','Cycle clock. '+(m.conf?m.score+' percent of time used. ':'No confirmed top. ')+'Phase: '+NAMES[m.idx]+'. '+line+'. Depth '+(m.depth==null?'unknown':m.depth+' percent of a typical bear')+'.');
+  H('gaugeKey').innerHTML='<span><b style="color:'+col+'" aria-hidden="true">●</b> Time</span><span><b style="color:var(--dep)" aria-hidden="true">●</b> Depth</span>';
+}
+
+/* ================= Render: timing windows ================= */
+function rangeTxt(a,b){return fmtS(a)+' to '+fmt(b)}
+function stateLine(w){return w.state==='inside'?'You are inside it now. '+w.days+' days left.':(w.state==='before'?'It opens in '+w.days+' days.':'It ended '+w.days+' days ago.')}
+function timing(m){
+  var box=H('timing'),ttl=H('h-timing'),intro=H('timingIntro');
+  if(m.bottomIn){
+    ttl.textContent='When was the bottom?';intro.textContent='The low looks set.';
+    box.innerHTML='<div class="big">'+fmt(m.lowT)+'</div><div class="ink2">Low of '+money(m.low)+', '+Math.round((m.lowT-m.top)/DAY)+' days after the top.</div>'+
+      '<div class="small" style="margin-top:.6rem">Past bears took '+m.G.join(', ')+' days from top to bottom.</div>';return}
+  var isTop=!m.conf,w=isTop?m.t3:(m.ov||m.t1);
+  ttl.textContent=isTop?'When could the cycle top come?':'When could the bottom come?';
+  intro.textContent='A range from past cycles. Not a promise.';
+  var why=isTop?'Past tops came '+m.tMin+' to '+m.tMax+' days after a halving.':(m.ov?'Both clocks agree on this range.':'Counted from the top: '+m.gMin+' to '+m.gMax+' days after '+fmt(m.top)+'.');
+  var lo=Math.min(m.now,w.open)-30*DAY,hi=Math.max(m.now,w.close)+30*DAY;
+  var W=360,x0=10,x1=350;function X(t){return x0+(t-lo)/(hi-lo)*(x1-x0)}
+  var svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 '+W+' 100');svg.setAttribute('role','img');
+  svg.setAttribute('aria-label',(isTop?'Top':'Bottom')+' window '+rangeTxt(w.open,w.close)+'. '+stateLine(w));
+  el(svg,'rect',{x:x0,y:36,width:x1-x0,height:26,rx:13,fill:'var(--track)'});
+  var bx=X(w.open);el(svg,'rect',{x:bx,y:36,width:Math.max(16,X(w.close)-bx),height:26,rx:13,fill:isTop?'var(--good-f)':'var(--info-f)'});
+  var tx=X(m.now);el(svg,'line',{x1:tx,x2:tx,y1:26,y2:72,stroke:'var(--bad)','stroke-width':3.5});
+  el(svg,'text',{x:tx,y:18,'text-anchor':tx>W-50?'end':(tx<50?'start':'middle'),'font-size':13.5,'font-weight':700,fill:'var(--bad)'},'Today');
+  var months=(hi-lo)/DAY/30.4,every=1,steps=[1,2,3,6,12,24];
+  for(var si=0;si<steps.length;si++){every=steps[si];if(months/every<=4)break}
+  var d0=new Date(lo),y=d0.getUTCFullYear(),mo=d0.getUTCMonth()+1,tk=0;
+  for(;;mo++){var t=Date.UTC(y,mo,1);if(t>hi)break;if(t<lo)continue;
+    if(((y*12+mo)%every)===0){var xx=X(t),dt=new Date(t);
+      el(svg,'line',{x1:xx,x2:xx,y1:66,y2:74,stroke:'var(--mute)','stroke-width':1.5});
+      el(svg,'text',{x:xx,y:92,'text-anchor':'middle','font-size':12.5,fill:'var(--mute)'},dt.toLocaleDateString('en-GB',{month:'short',timeZone:'UTC'})+(every>=12||dt.getUTCMonth()===0||tk===0?" \u2019"+String(dt.getUTCFullYear()).slice(2):''));}
+    if(++tk>40)break}
+  box.innerHTML='<div class="big">'+rangeTxt(w.open,w.close)+'</div><div class="ink2">'+stateLine(w)+'</div>';
+  box.appendChild(svg);
+  var li='';
+  if(!isTop){
+    li+='<li><span class="k" aria-hidden="true">\u25A0</span><span><b>From the top:</b> '+rangeTxt(m.t1.open,m.t1.close)+'</span></li>';
+    li+='<li><span class="k" aria-hidden="true">\u25CF</span><span><b>Before the halving:</b> '+rangeTxt(m.t2.open,m.t2.close)+'</span></li>';
+    if(!m.ov)li+='<li><span class="k" aria-hidden="true">!</span><span>These two do not overlap, so timing is less certain.</span></li>';
+  }
+  li+='<li><span class="k" aria-hidden="true">i</span><span>'+why.replace(/^Both clocks agree on this range\.$/,'Built from only a few past cycles.')+(isTop?' Built from only a few past cycles.':'')+'</span></li>';
+  box.insertAdjacentHTML('beforeend','<ul class="lst">'+li+'</ul>');
+}
+
+/* ================= Render: overlay chart ================= */
+function seriesFor(c){
+  var a=c.top-5*DAY,b=c.bot+75*DAY,src=null;
+  if(DATA.rows&&DATA.rows.length&&DATA.rows[0][0]<=a)src=DATA.rows;
+  else if(DATA.ov[c.top])src=DATA.ov[c.top];
+  if(!src)return null;
+  var s=src.filter(function(r){return r[0]>=a&&r[0]<=b});
+  if(s.length<30)return null;
+  var tp=0;s.forEach(function(r){if(Math.abs(r[0]-c.top)<=3*DAY&&r[1]>tp)tp=r[1]});
+  if(!tp)return null;
+  return s.filter(function(r){return r[0]>=c.top}).map(function(r){return [Math.round((r[0]-c.top)/DAY),(r[1]/tp-1)*100]});
+}
+function overlay(m){
+  var box=H('overlay');
+  var past=[];
+  m.cycles.forEach(function(c){if(c.top&&c.bot){var s=seriesFor(c);if(s)past.push({c:c,s:s,yr:new Date(c.top).getUTCFullYear(),days:Math.round((c.bot-c.top)/DAY)})}});
+  var now=null;
+  if(m.conf&&m.top!=null&&DATA.rows){
+    now=DATA.rows.filter(function(r){return r[0]>=m.top&&r[0]<=m.now+DAY}).map(function(r){return [Math.round((r[0]-m.top)/DAY),(r[1]/m.topPx-1)*100]});
+    if(m.price!=null&&!m.asOf)now.push([m.sinceTop,m.dd]);
+    if(now.length<2)now=null;
+  }
+  if(!now&&!past.length){box.innerHTML='<div class="small">'+(m.conf?'Loading past cycles.':'Shown once price has fallen 20% from its top.')+'</div>';return}
+  var xmax=480,ymin=-90;
+  past.forEach(function(p){p.s.forEach(function(r){xmax=Math.max(xmax,r[0]);ymin=Math.min(ymin,r[1])})});
+  if(now)now.forEach(function(r){xmax=Math.max(xmax,r[0]+20);ymin=Math.min(ymin,r[1])});
+  xmax=Math.ceil(xmax/100)*100;ymin=Math.floor((ymin-4)/25)*25;
+  var W=360,Hh=290,L=54,R=50,T=16,Bm=44;
+  function X(d){return L+d/xmax*(W-L-R)}function Y(v){return T+(0-v)/(0-ymin)*(Hh-T-Bm)}
+  var svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 '+W+' '+Hh);svg.setAttribute('role','img');
+  var parts=past.map(function(p){return p.yr+' cycle fell '+Math.round(-Math.min.apply(null,p.s.map(function(r){return r[1]})))+'% in '+p.days+' days'});
+  if(now)parts.push('Now: '+sgn(m.dd,0)+'% after '+m.sinceTop+' days');
+  svg.setAttribute('aria-label','Drawdown from the top for each cycle. '+parts.join('. '));
+  if(m.conf){var bx=X(m.gMin),bw=X(m.gMax)-bx;
+    el(svg,'rect',{x:bx,y:T,width:Math.max(3,bw),height:Hh-T-Bm,fill:'var(--warn-f)','fill-opacity':.2});
+    el(svg,'text',{x:bx+bw/2,y:T+13,'text-anchor':'middle','font-size':12.5,'font-weight':600,fill:'var(--warn)'},'Usual bottom window')}
+  for(var g=0;g>=ymin;g-=25){el(svg,'line',{x1:L,x2:W-R,y1:Y(g),y2:Y(g),stroke:'var(--line)','stroke-width':1});
+    el(svg,'text',{x:L-6,y:Y(g)+4,'text-anchor':'end','font-size':12.5,fill:'var(--mute)'},g===0?'Top':'−'+(-g)+'%')}
+  for(var d=0;d<=xmax;d+=100){el(svg,'text',{x:X(d),y:Hh-Bm+18,'text-anchor':'middle','font-size':12.5,fill:'var(--mute)'},String(d))}
+  el(svg,'text',{x:(L+W-R)/2,y:Hh-6,'text-anchor':'middle','font-size':13,fill:'var(--ink2)'},'Days since the top');
+  var dash=['6 4','2 4','9 3 2 3','4 2'],marks=[];
+  past.forEach(function(p,i){
+    var pts=p.s.map(function(r){return X(r[0]).toFixed(1)+','+Y(r[1]).toFixed(1)}).join(' ');
+    el(svg,'polyline',{points:pts,fill:'none',stroke:'var(--mute)','stroke-width':2.2,'stroke-dasharray':dash[i%dash.length],'stroke-linejoin':'round'});
+    var lo=p.s.reduce(function(a,r){return r[1]<a[1]?r:a},p.s[0]),en=p.s[p.s.length-1];
+    el(svg,'circle',{cx:X(lo[0]),cy:Y(lo[1]),r:4.5,fill:'var(--card)',stroke:'var(--mute)','stroke-width':2});
+    marks.push({x:X(en[0])+6,y:Y(en[1])+4,t:String(p.yr)});
+  });
+  marks.sort(function(a,b){return a.y-b.y});var prev=-99;
+  marks.forEach(function(k){var ly=Math.max(k.y,prev+15);prev=ly;
+    el(svg,'text',{x:k.x,y:ly,'text-anchor':'start','font-size':12.5,fill:'var(--ink2)'},k.t)});
+  if(now){
+    el(svg,'polyline',{points:now.map(function(r){return X(r[0]).toFixed(1)+','+Y(r[1]).toFixed(1)}).join(' '),fill:'none',stroke:'var(--info)','stroke-width':4,'stroke-linejoin':'round','stroke-linecap':'round'});
+    var e=now[now.length-1],ex=X(e[0]),ey=Y(e[1]);
+    el(svg,'circle',{cx:ex,cy:ey,r:7,fill:'var(--info)',stroke:'var(--card)','stroke-width':2.5});
+    el(svg,'text',{x:clamp(ex,L+34,W-R-34),y:ey+26,'text-anchor':'middle','font-size':13.5,'font-weight':700,fill:'var(--info)',stroke:'var(--card)','stroke-width':4,'paint-order':'stroke'},'Now '+sgn(e[1],0)+'%');
+  }
+  box.innerHTML='';box.appendChild(svg);
+  var li=past.map(function(p){return '<li><span class="k" aria-hidden="true">○</span><span><b>'+p.yr+' cycle:</b> fell '+Math.round(-Math.min.apply(null,p.s.map(function(r){return r[1]})))+'% over '+p.days+' days.</span></li>'}).join('');
+  if(now)li+='<li><span class="k" aria-hidden="true">●</span><span><b>This cycle:</b> '+sgn(m.dd,0)+'% after '+m.sinceTop+' days.</span></li>';
+  box.insertAdjacentHTML('beforeend','<ul class="lst">'+li+'</ul><div class="small" style="margin-top:.6rem">Dashed grey lines are past cycles, named by the year of their top. Circles mark their lows. The blue line is now.'+(past.length<m.cycles.filter(function(c){return c.top&&c.bot}).length?' Some past cycles are still loading.':'')+'</div>');
+}
+
+/* ================= Render: Faber ================= */
+function faber(m){
+  var h=H('faber'),f=m.fab;
+  if(m.stale||!f){h.innerHTML='<div class="small">No fresh price data, so the trend is hidden rather than guessed.</div>';return}
+  var up=f.up,col=up?'var(--good)':'var(--bad)',pct=(m.price/f.trig-1)*100;
+  var vals=m.closes.concat([m.price]),n=vals.length,all=vals.concat([f.trig]),mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),pad=(mx-mn)*0.14||1;mn-=pad;mx+=pad;
+  function X(i){return 12+i*(336)/(n-1)}function Y(v){return 150-(v-mn)/(mx-mn)*130}
+  var pts=vals.map(function(v,i){return X(i).toFixed(1)+','+Y(v).toFixed(1)}).join(' ');
+  var s='<svg viewBox="0 0 360 172" role="img" aria-label="Last 10 monthly closes and today, with the flip level of '+money(f.trig)+'. Price is '+(up?'above':'below')+' it.">'+
+   '<line x1="12" x2="348" y1="'+Y(f.trig).toFixed(1)+'" y2="'+Y(f.trig).toFixed(1)+'" stroke="'+col+'" stroke-width="2" stroke-dasharray="6 4"/>'+
+   '<text x="348" y="'+(Y(f.trig)+(up?16:-7)).toFixed(1)+'" text-anchor="end" font-size="12.5" font-weight="600" fill="'+col+'">Flip level '+money(f.trig)+'</text>'+
+   '<polyline points="'+pts+'" fill="none" stroke="var(--ink2)" stroke-width="2"/>'+
+   vals.map(function(v,i){var last=i===n-1;return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="'+(last?7:3.5)+'" fill="'+(last?col:'var(--ink2)')+'"'+(last?' stroke="var(--card)" stroke-width="2.5"':'')+'/>'}).join('')+
+   '<text x="12" y="168" font-size="12.5" fill="var(--mute)">10 months ago</text><text x="348" y="168" text-anchor="end" font-size="12.5" fill="var(--mute)">Today</text></svg>';
+  var needTxt=up?'Price falls below the flip level if it drops '+money(m.price-f.trig)+' ('+Math.abs((1-f.trig/m.price)*100).toFixed(0)+'%).':'Price needs to rise '+money(f.trig-m.price)+' ('+((f.trig/m.price-1)*100).toFixed(0)+'%) to flip up.';
+  h.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;gap:.6rem"><span style="font-size:1.6rem;font-weight:600;color:'+col+'"><span aria-hidden="true">'+(up?'▲':'▼')+'</span> '+(up?'Above':'Below')+'</span><span style="font-size:1.05rem">'+sgn(pct,1)+'%</span></div>'+s+
+   '<ul class="lst"><li><span class="k" aria-hidden="true">→</span><span>'+needTxt+'</span></li>'+
+   '<li><span class="k" aria-hidden="true">⏱</span><span><b>Month-end close in '+(f.toMonthEnd===0?'under a day':f.toMonthEnd+' day'+(f.toMonthEnd===1?'':'s'))+'.</b> The rule is read then. Intraday flips can reverse.</span></li>'+
+   '<li><span class="k" aria-hidden="true">'+(f.lastUp?'✔':'✖')+'</span><span><b>Last month-end:</b> '+(f.lastUp?'above':'below')+' its average (closed at '+money(f.lastClose)+').</span></li></ul>';
+}
+
+/* ================= Render: floor ================= */
+function floorInfo(){
+  if(DATA.real&&DATA.real.px>0)return {px:DATA.real.px,src:DATA.real.src,asof:DATA.real.asof,est:false};
+  var t=parseFloat(ls('cc_real')||'');
+  if(t>1000)return {px:t,src:'typed by you',asof:null,est:true};
+  return {px:REAL_FALLBACK.px,src:REAL_FALLBACK.src,asof:REAL_FALLBACK.asof,est:true};
+}
+function floorGap(m){if(m.asOf||m.price==null)return null;return (m.price/floorInfo().px-1)*100}
+function cycleLow(m){
+  if(!DATA.rows||m.top==null||m.asOf)return null;
+  var lo=Infinity;DATA.rows.forEach(function(r){if(r[0]>=m.top&&r[0]<=m.now+DAY&&r[1]<lo)lo=r[1]});
+  return lo<Infinity?lo:null;
+}
+function floor(m){
+  var box=H('floor'),F=floorInfo();
+  if(m.asOf||m.price==null){box.innerHTML='<div class="small">'+(m.asOf?'Not shown while replaying a past date. The floor is today’s figure.':'Needs a live price.')+'</div>';return}
+  var px=m.price,fl=F.px,gap=(px/fl-1)*100,band=fl*CAUTION,low=cycleLow(m),showLow=low!=null&&low<px*0.995;
+  var mn=Math.min(fl*0.82,px*0.92,showLow?low*0.96:1e12),mx=Math.max(px*1.08,band*1.08);
+  var Y0=16,Y1=268;function Y(v){return Y0+(mx-v)/(mx-mn)*(Y1-Y0)}
+  var col=gap<=0?'var(--good)':(gap<=25?'var(--warn)':'var(--mute)');
+  var head=gap>0?'<span style="font-size:1.8rem;font-weight:600">+'+gap.toFixed(0)+'%</span> <span style="color:'+col+'">above the floor</span>':'<span style="font-size:1.8rem;font-weight:600">'+gap.toFixed(0)+'%</span> <span style="color:'+col+'">below the floor</span>';
+  var sub=gap>0?'Price would need to fall about '+money(px-fl)+' (−'+((1-fl/px)*100).toFixed(0)+'%) to touch it.':'Price is '+money(fl-px)+' under the floor.';
+  var yF=Y(fl),yB=Y(band),yP=Y(px),yL=showLow?Y(low):0,py=yP,ly=yL;
+  if(showLow&&ly-py<36)ly=py+36;
+  var svg='<svg viewBox="0 0 360 284" role="img" aria-label="Price '+money(px)+' against realized price '+money(fl)+'. Caution zone ends at '+money(band)+'.">'+
+   '<defs><pattern id="hat" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="var(--bad-f)" fill-opacity=".14"/><rect width="4" height="8" fill="var(--bad-f)" fill-opacity=".5"/></pattern></defs>'+
+   '<rect x="150" y="'+Y0+'" width="14" height="'+(Y1-Y0)+'" rx="7" fill="var(--track)"/>'+
+   '<rect x="150" y="'+yB+'" width="14" height="'+Math.max(0,yF-yB)+'" fill="var(--warn-f)" fill-opacity=".6"/>'+
+   '<rect x="150" y="'+yF+'" width="14" height="'+Math.max(0,Y1-yF)+'" fill="url(#hat)"/>'+
+   '<line x1="118" x2="352" y1="'+yB+'" y2="'+yB+'" stroke="var(--warn)" stroke-dasharray="4 4" stroke-width="1.5"/>'+
+   '<text x="352" y="'+(yB-7)+'" text-anchor="end" font-size="13" fill="var(--ink2)">1.25× floor '+money(band)+'</text>'+
+   '<text x="352" y="'+(yB+16)+'" text-anchor="end" font-size="12.5" fill="var(--mute)">caution zone starts</text>'+
+   '<line x1="118" x2="352" y1="'+yF+'" y2="'+yF+'" stroke="var(--warn)" stroke-width="2.2" stroke-dasharray="6 4"/>'+
+   '<text x="352" y="'+(yF-7)+'" text-anchor="end" font-size="13.5" font-weight="700" fill="var(--warn)">Realized price '+money(fl)+'</text>'+
+   '<text x="352" y="'+(yF+16)+'" text-anchor="end" font-size="12.5" fill="var(--mute)">average holder breaks even</text>';
+  if(showLow)svg+='<line x1="140" x2="172" y1="'+yL+'" y2="'+yL+'" stroke="var(--info-f)" stroke-width="2.5"/><text x="134" y="'+(ly+2)+'" text-anchor="end" font-size="13" font-weight="600" fill="var(--info)">Cycle low</text><text x="134" y="'+(ly+17)+'" text-anchor="end" font-size="13" fill="var(--info)">'+money(low)+'</text>';
+  svg+='<circle cx="157" cy="'+yP+'" r="12" fill="var(--ink)" stroke="var(--vio-f)" stroke-width="4"/>'+
+   '<text x="134" y="'+(py-2)+'" text-anchor="end" font-size="15" font-weight="700" fill="var(--ink)">'+money(px)+'</text>'+
+   '<text x="134" y="'+(py+15)+'" text-anchor="end" font-size="12.5" fill="var(--mute)">BTC today</text></svg>';
+  var touched=low!=null&&low<=fl;
+  var rows='<div class="fl"><span>Floor touched this cycle?</span><b style="color:'+(touched?'var(--good)':'var(--warn)')+'">'+(low==null?'n/a':(touched?'Yes, low '+money(low):'Not yet'))+'</b></div>'+
+   '<div class="fl"><span>Lowest daily close since top</span><b>'+(low==null?'n/a':money(low)+' ('+sgn((low/fl-1)*100,0)+'% vs floor)')+'</b></div>';
+  var src='<div class="small" style="margin-top:.7rem">'+(F.est?'⚠ Live realized price unavailable. Using '+esc(F.src)+' ('+money(fl)+'). Treat the gap as approximate.':'Realized price '+money(fl)+' · '+esc(F.src)+(F.asof?' · '+F.asof:''))+'</div>';
+  box.innerHTML='<div>'+head+'</div><div class="small ink2">'+sub+'</div>'+svg+rows+src;
+}
+
+/* ================= Render: spiral and phases ================= */
+function spiral(m){
+  var s=H('sp');s.innerHTML='';
+  var C0=180,n=m.cur+1,step=Math.min(30,130/n);
+  function pt(k,f){var a=2*Math.PI*f,r=20+(k+f)*step;return[C0+r*Math.sin(a),C0-r*Math.cos(a)]}
+  function arc(k,f0,f1){var d='';for(var f=f0;f<f1+1e-9;f+=0.004){var p=pt(k,Math.min(f,f1));d+=(d?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)}return d}
+  for(var k=0;k<m.cur;k++)el(s,'path',{d:arc(k,0,1),fill:'none',stroke:'var(--mute)','stroke-opacity':.5,'stroke-width':2,'stroke-linecap':'round'});
+  for(var i=0;i<7;i++)el(s,'path',{d:arc(m.cur,m.B[i]/m.L,Math.min(m.B[i+1]/m.L,1)),fill:'none',stroke:'var(--p'+i+')','stroke-width':7});
+  m.cycles.forEach(function(c,k){var len=c.next-c.h;
+    if(c.top){var p=pt(k,clamp((c.top-c.h)/len,0,1));el(s,'circle',{cx:p[0],cy:p[1],r:4.5,fill:'var(--bad-f)'})}
+    if(c.bot){var q=pt(k,clamp((c.bot-c.h)/len,0,1));el(s,'circle',{cx:q[0],cy:q[1],r:4.5,fill:'var(--info-f)'})}});
+  if(step>=14)for(var j=0;j<=m.cur;j++){var p0=pt(j,0);el(s,'text',{x:p0[0]+6,y:p0[1]+4,'font-size':12.5,fill:'var(--ink2)',stroke:'var(--card)','stroke-width':3,'paint-order':'stroke'},String(new Date(m.hals[j]).getUTCFullYear()))}
+  if(m.top!=null){var tp=pt(m.cur,clamp(m.topDay/m.L,0,1));el(s,'circle',{cx:tp[0],cy:tp[1],r:6.5,fill:'var(--bad-f)',stroke:'var(--card)','stroke-width':2})}
+  if(m.bottomIn||m.conf){var bd=m.bottomIn?(m.lowT-m.h0)/DAY:m.topDay+m.dur,bp=pt(m.cur,clamp(bd/m.L,0,1));el(s,'circle',{cx:bp[0],cy:bp[1],r:6.5,fill:'var(--info-f)',stroke:'var(--card)','stroke-width':2})}
+  var np=pt(m.cur,clamp(m.dayH/m.L,0,1));el(s,'circle',{cx:np[0],cy:np[1],r:12,fill:'none',stroke:'var(--ink)','stroke-width':2,'class':'pulse'});
+  el(s,'text',{x:C0,y:C0+5,'text-anchor':'middle',fill:'var(--ink2)','font-size':13},'Day '+m.dayH);
+  s.setAttribute('aria-label','Halving spiral. '+(m.cur+1)+' cycles. Today is day '+m.dayH+' of the current cycle.');
+}
+function phases(m){
+  var tl=H('tl'),leg=H('leg');tl.innerHTML='';leg.innerHTML='';
+  for(var i=0;i<7;i++){var w=(m.B[i+1]-m.B[i])/m.B[7]*100;
+    tl.insertAdjacentHTML('beforeend','<div style="width:'+w+'%;background:var(--p'+i+(i===m.idx?';outline:3px solid var(--ink);outline-offset:-3px':'')+'">'+(w>7?(i+1):'')+'</div>');
+    leg.insertAdjacentHTML('beforeend','<div class="'+(i===m.idx?'on':'')+'"'+(i===m.idx?' aria-current="true"':'')+'><span class="nm"><span class="no" style="background:var(--p'+i+')">'+(i+1)+'</span>'+NAMES[i]+(i===m.idx?' (now)':'')+'</span><em>day '+Math.round(m.B[i])+' to '+Math.round(m.B[i+1])+'</em><small>'+BLURB[i]+'</small></div>')}
+  H('mk').innerHTML='<i style="left:'+clamp(m.dayH/m.B[7]*100,0,100)+'%"></i>';
+}
+
+/* ================= Status, banner, data panel ================= */
+function status(m){
+  var s=H('stat'),ok=!m.stale&&DATA.price!=null;
+  if(m.asOf){s.style.color='var(--warn)';s.style.fontWeight='600';s.textContent='⏪ Replaying '+fmt(m.now)+', not today. Clear the date under Settings and data to see today.';return}
+  s.style.color='';s.style.fontWeight='';
+  var src=DATA.rowsSrc||'no source',tm=DATA.loadedAt?new Date(DATA.loadedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'';
+  s.textContent=m.stale?('⚠ No fresh data. '+(m.why||'')+'. Time clock only.'):((ok?'● Live ':'○ ')+'BTC '+money(m.price)+' · price '+(DATA.priceSrc||src)+' · history '+src+(DATA.height?' · block '+DATA.height.toLocaleString('en-GB'):'')+(tm?' · updated '+tm:''));
+}
+function banner(m){
+  var b=H('banner');b.innerHTML='';
+  if(m.cur>=4&&m.dayH<=60){
+    var pc=m.cycles[m.cur-1],txt='A new cycle began on '+fmt(m.h0)+'. ';
+    if(pc&&pc.top&&pc.bot)txt+='The last cycle (top '+fmt(pc.top)+', bottom '+fmt(pc.bot)+', fell '+pc.dd+'%) now counts in the averages.';
+    else txt+='The last cycle’s top and bottom are still being found from price history.';
+    b.innerHTML='<div class="banner"><span aria-hidden="true">↻</span> '+esc(txt)+'</div>';
+  }
+}
+function dataPanel(m){
+  var rows='<b>Cycles</b><br>';
+  m.hals.slice(0,m.cur+1).forEach(function(h,k){
+    var cc=m.cycles[k],isCur=k===m.cur,hs=m.hl[k].src;
+    rows+=fmt(h)+(hs==='estimate'||hs==='projection'||hs==='table'?' (est.)':'')+(isCur?' (current): top '+(m.top!=null?fmt(m.top):'n/a')+(m.conf?'':', not confirmed')+(m.bottomIn?', bottom '+fmt(m.lowT):''):(cc&&cc.top?': top '+fmt(cc.top)+', bottom '+fmt(cc.bot)+', fell '+cc.dd+'%'+(cc.src==='detected'?' (detected)':''):': no top or bottom data'))+'<br>';
+  });
+  rows+='Next halving: '+fmt(m.nxtT)+' ('+m.nxtSrc+')';
+  H('cyc').innerHTML=rows;
+}
+function render(){
+  var m;try{m=model()}catch(e){H('stat').textContent='Error: '+e.message;if(window.console)console.error(e);return}
+  var ap=H('asof');ap.textContent=m.asOf?('Viewing '+fmt(m.now)+' (past)'):fmt(m.now);
+  ap.style.background=m.asOf?'var(--warn-f)':'';ap.style.color=m.asOf?'#1a1a1a':'';
+  var fns=[answer,chips,gauge,timing,overlay,faber,floor,phases,spiral,banner,status,dataPanel];
+  fns.forEach(function(f){try{f(m)}catch(e){if(window.console)console.error(f.name,e)}});
+  window.__m=m;
+}
+
+/* ================= Data loaders (all self-updating) ================= */
+function jget(url){return fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
+function histStart(){
+  var now=todayUTC(),hl=halvingsFor(now),cur=curIndex(hl,now);
+  /* Cycles beyond the PAST table are detected from price history, so load back to the earliest one we need. */
+  var a=hl[cur].t;
+  if(cur-1>=PAST.length)a=hl[Math.max(PAST.length,cur-MAX_AUTO_BACK)].t;
+  return Math.min(a-5*DAY,now-400*DAY);
+}
+function histCoinbase(){
+  var end=todayUTC()+DAY,start=histStart(),reqs=[];
+  for(var s=start;s<end;s+=299*DAY){var e=Math.min(s+299*DAY,end);
+    reqs.push(jget('https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400&start='+new Date(s).toISOString()+'&end='+new Date(e).toISOString()))}
+  return Promise.all(reqs).then(function(parts){
+    var seen={},rows=[];parts.forEach(function(p){p.forEach(function(r){var t=r[0]*1000;if(!seen[t]){seen[t]=1;rows.push([t,+r[4]])}})});
+    rows.sort(function(a,b){return a[0]-b[0]});
+    if(rows.length<300)throw new Error('too few candles');return rows});
+}
+function histCC(){
+  var n=Math.min(2000,Math.ceil((todayUTC()-histStart())/DAY)+2);
+  return jget('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit='+n).then(function(j){
+    var rows=j.Data.Data.map(function(r){return [r.time*1000,+r.close]}).filter(function(r){return r[1]>0});
+    if(rows.length<300)throw new Error('too few candles');return rows});
+}
+function loadHistory(){
+  return histCoinbase().then(function(r){DATA.rows=r;DATA.rowsSrc='Coinbase'},function(){
+    return histCC().then(function(r){DATA.rows=r;DATA.rowsSrc='CryptoCompare'},function(){if(!DATA.rows)DATA.rowsSrc=null})}).then(function(){DATA.loadedAt=Date.now();render()});
+}
+function loadPrice(){
+  return jget('https://api.exchange.coinbase.com/products/BTC-USD/ticker').then(function(j){var p=parseFloat(j.price);if(!(p>0))throw 0;DATA.price=p;DATA.priceSrc='Coinbase'},function(){
+    return jget('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD').then(function(j){if(!(j.USD>0))throw 0;DATA.price=j.USD;DATA.priceSrc='CryptoCompare'},function(){DATA.price=null;DATA.priceSrc=null})}).then(function(){DATA.loadedAt=Date.now();render()});
+}
+var API=['https://mempool.space/api','https://blockstream.info/api'];
+function apiText(path,i){i=i||0;return fetch(API[i]+path).then(function(r){if(!r.ok)throw 0;return r.text()}).catch(function(){if(i+1<API.length)return apiText(path,i+1);throw 0})}
+function loadHeight(){
+  return apiText('/blocks/tip/height').then(function(t){var h=parseInt(t,10);if(!(h>0))throw 0;DATA.height=h},function(){DATA.height=null}).then(render);
+}
+function fetchHalv(i){
+  var c=parseInt(ls('cc_hal_'+i)||'',10);if(c>0){DATA.halv[i]=c;return Promise.resolve()}
+  return apiText('/block-height/'+(i*BLOCKS)).then(function(hash){return apiText('/block/'+hash.trim())}).then(function(t){
+    var j=JSON.parse(t),d=new Date(j.timestamp*1000),u=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());
+    if(!(u>parse('2020-01-01')))throw 0;DATA.halv[i]=u;ls('cc_hal_'+i,String(u))}).catch(function(){});
+}
+function loadHalvDates(){
+  if(!(DATA.height>0))return Promise.resolve();
+  var n=Math.floor(DATA.height/BLOCKS),p=Promise.resolve();
+  for(var i=1;i<=n;i++)(function(i){if(!KNOWN_HAL[i-1]&&!DATA.halv[i])p=p.then(function(){return fetchHalv(i)})})(i);
+  return p.then(render);
+}
+function ageDays(iso){return iso?(todayUTC()-parse(iso))/DAY:99}
+function realCM(){
+  return jget('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapRealUSD,SplyCur&frequency=1d&page_size=5&paging_from=end').then(function(j){
+    var d=(j.data||[]).filter(function(x){return +x.CapRealUSD>0&&+x.SplyCur>0}).pop();
+    if(!d)throw new Error('no rows');var px=+d.CapRealUSD/+d.SplyCur;
+    if(!(px>1000&&px<1e6))throw new Error('odd value');
+    return {px:px,asof:String(d.time).slice(0,10),src:'CoinMetrics'}});
+}
+function loadRealized(){
+  return jget('data/realized.json').then(function(j){if(!(j.px>1000))throw 0;return {px:j.px,asof:j.asof,src:(j.src||'CoinMetrics')+' (daily file)'}}).catch(function(){return null}).then(function(a){
+    if(a&&ageDays(a.asof)<=3)return a;
+    return realCM().then(function(b){return b},function(){return a&&ageDays(a.asof)<=30?a:null});
+  }).then(function(r){DATA.real=r}).then(render);
+}
+/* Old cycles are history: fetched once for the overlay chart, then cached on this device. */
+function loadOverlay(){
+  var m;try{m=model()}catch(e){return Promise.resolve()}
+  var todo=m.cycles.filter(function(c){return c.top&&c.bot&&!DATA.ov[c.top]&&!(DATA.rows&&DATA.rows.length&&DATA.rows[0][0]<=c.top-5*DAY)});
+  return Promise.all(todo.map(function(c){
+    var key='cc_ov2_'+c.top,cached=ls(key);
+    if(cached){try{DATA.ov[c.top]=JSON.parse(cached);return Promise.resolve()}catch(e){}}
+    var end=Math.min(c.bot+75*DAY,todayUTC()),n=Math.min(1990,Math.round((end-(c.top-6*DAY))/DAY)+1);
+    return jget('https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&limit='+n+'&toTs='+Math.floor(end/1000)).then(function(j){
+      var rows=j.Data.Data.map(function(r){return [r.time*1000,+r.close]}).filter(function(r){return r[1]>0});
+      if(rows.length<100)throw 0;DATA.ov[c.top]=rows;ls(key,JSON.stringify(rows));
+    }).catch(function(){});
+  })).then(render);
+}
+function loadAll(){
+  DATA.day=todayUTC();
+  return loadHeight().then(loadHalvDates).then(function(){
+    return Promise.all([loadHistory().then(loadOverlay),loadPrice(),loadRealized()]);
+  });
+}
+
+/* ================= Reader settings ================= */
+var PREF={font:'lexend',size:'m',space:'normal',theme:'auto'};
+try{var sp=JSON.parse(ls('cc_pref')||'{}');for(var kk in sp)if(kk in PREF)PREF[kk]=sp[kk]}catch(e){}
+function applyPref(){
+  var r=document.documentElement;
+  r.setAttribute('data-font',PREF.font);r.setAttribute('data-size',PREF.size);r.setAttribute('data-space',PREF.space);
+  r.setAttribute('data-theme',PREF.theme==='cream'?'cream':PREF.theme);
+  var segs=document.querySelectorAll('#reader .seg');
+  for(var i=0;i<segs.length;i++){var k=segs[i].getAttribute('data-k'),bs=segs[i].querySelectorAll('button');
+    for(var j=0;j<bs.length;j++)bs[j].setAttribute('aria-pressed',String(bs[j].getAttribute('data-v')===PREF[k]))}
+}
+document.querySelectorAll('#reader .seg button').forEach(function(b){b.addEventListener('click',function(){
+  PREF[b.parentNode.getAttribute('data-k')]=b.getAttribute('data-v');ls('cc_pref',JSON.stringify(PREF));applyPref()})});
+applyPref();
+
+/* ================= Wiring ================= */
+H('asOfIn').value='';
+(function(){var sv=ls('cc_real');if(sv)H('realIn').value=sv})();
+H('realIn').addEventListener('change',function(){ls('cc_real',H('realIn').value);render()});
+H('asOfIn').addEventListener('input',function(){render();loadOverlay()});
+window.addEventListener('pageshow',function(e){if(e.persisted){H('asOfIn').value='';render()}});
+H('reload').addEventListener('click',function(){H('stat').textContent='Reloading';loadAll()});
+render();loadAll();
+setInterval(loadPrice,60000);
+setInterval(function(){loadAll()},6*3600*1000);
+/* New UTC day, or tab woken up: refresh everything so the next day, month or cycle starts on time. */
+setInterval(function(){if(DATA.day!==todayUTC())loadAll();else render()},5*60*1000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden){if(DATA.day!==todayUTC())loadAll();else loadPrice()}});
+window.__cc={model:model,DATA:DATA,render:render,loadAll:loadAll};
+})();
+</script>
+</body>
+</html>
