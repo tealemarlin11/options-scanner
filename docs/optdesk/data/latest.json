@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-25T00:02:15+00:00",
+ "generated": "2026-11-25T23:44:27+00:00",
  "rules_version": "1.2",
  "is_monday": false,
  "stress": {
-  "vix": 26.36,
-  "vix3m": 25.47,
-  "ratio": 1.035,
+  "vix": 28.29,
+  "vix3m": 26.29,
+  "ratio": 1.076,
   "on": true
  },
  "events": {
@@ -34,83 +34,79 @@
  "no_trade": [
   {
    "ticker": "SPY",
-   "spot": 718.78,
+   "spot": 716.7,
    "trend": {
     "state": "DOWN",
-    "close": 718.78,
-    "sma200": 733.04,
-    "sma50": 758.64
+    "close": 716.7,
+    "sma200": 733.16,
+    "sma50": 757.89
    },
-   "iv_rank": 57.5,
+   "iv_rank": 66.1,
    "rank_source": "^VIX",
    "reason": "Stress brake on: no new credit spreads"
   },
   {
    "ticker": "QQQ",
-   "spot": 638.1,
+   "spot": 633.93,
    "trend": {
     "state": "DOWN",
-    "close": 638.1,
-    "sma200": 683.39,
-    "sma50": 708.47
+    "close": 633.93,
+    "sma200": 683.5,
+    "sma50": 707.05
    },
-   "iv_rank": 68.1,
+   "iv_rank": 68.5,
    "rank_source": "^VXN",
    "reason": "Stress brake on: no new credit spreads"
   },
   {
    "ticker": "IWM",
-   "spot": 267.14,
+   "spot": 268.87,
    "trend": {
     "state": "DOWN",
-    "close": 267.14,
-    "sma200": 279.58,
-    "sma50": 277.46
+    "close": 268.87,
+    "sma200": 279.59,
+    "sma50": 277.16
    },
-   "iv_rank": 98.7,
+   "iv_rank": 99.0,
    "rank_source": "20-day realized vol (fallback)",
    "reason": "Stress brake on: no new credit spreads"
   },
   {
    "ticker": "GLD",
-   "spot": 325.45,
+   "spot": 327.45,
    "trend": {
     "state": "DOWN",
-    "close": 325.45,
-    "sma200": 404.51,
-    "sma50": 372.33
+    "close": 327.45,
+    "sma200": 403.83,
+    "sma50": 371.04
    },
-   "iv_rank": 44.1,
+   "iv_rank": 53.2,
    "rank_source": "^GVZ",
-   "reason": "Liquidity or pricing rules not met",
-   "details": [
-    "2027-01-15: open interest 316 under 500; open interest 377 under 500; cost 11.60 over 40% of the 26 width"
-   ],
-   "structure": "PDS"
+   "reason": "Stress brake on: no new credit spreads"
   },
   {
    "ticker": "TLT",
-   "spot": 81.49,
+   "spot": 82.24,
    "trend": {
     "state": "MIXED",
-    "close": 81.49,
-    "sma200": 84.07,
-    "sma50": 80.1
+    "close": 82.24,
+    "sma200": 84.03,
+    "sma50": 80.13
    },
-   "iv_rank": 66.6,
+   "iv_rank": 67.5,
    "rank_source": "20-day realized vol (fallback)",
    "reason": "Trend mixed: close is between the 50 and 200 day averages"
   },
   {
    "ticker": "XLE",
-   "spot": 60.45,
+   "spot": 60.9,
    "trend": {
     "state": "UP",
-    "close": 60.45,
-    "sma200": 59.8,
-    "sma50": 64.49
+    "close": 60.9,
+    "sma200": 59.84,
+    "sma50": 64.43
    },
-   "iv_rank": 22.5,
+   "iv_rank": 22.7,
    "rank_source": "^OVX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
@@ -120,14 +116,14 @@
   },
   {
    "ticker": "XLF",
-   "spot": 56.11,
+   "spot": 56.51,
    "trend": {
     "state": "UP",
-    "close": 56.11,
-    "sma200": 54.03,
-    "sma50": 55.83
+    "close": 56.51,
+    "sma200": 54.05,
+    "sma50": 55.84
    },
-   "iv_rank": 57.5,
+   "iv_rank": 66.1,
    "rank_source": "^VIX",
    "reason": "Stress brake on: no new credit spreads"
   }
@@ -152,39 +148,39 @@
     "action": "BUY",
     "type": "put",
     "strike": 645.0,
-    "bid": 7.88,
-    "ask": 7.94,
-    "mid": 7.91,
-    "oi": 947,
-    "volume": 9,
-    "delta": -0.15
+    "bid": 8.69,
+    "ask": 8.8,
+    "mid": 8.75,
+    "oi": 949,
+    "volume": 143,
+    "delta": -0.16
    },
    {
     "action": "SELL",
     "type": "put",
     "strike": 575.0,
-    "bid": 3.19,
-    "ask": 3.23,
-    "mid": 3.21,
-    "oi": 356,
-    "volume": 14,
+    "bid": 3.6,
+    "ask": 3.67,
+    "mid": 3.63,
+    "oi": 368,
+    "volume": 15,
     "delta": -0.06
    }
   ],
-  "net_mid": 4.7,
-  "natural": 4.75,
+  "net_mid": 5.11,
+  "natural": 5.2,
   "width": 70.0,
-  "max_loss_per_contract": 470.0,
+  "max_loss_per_contract": 511.0,
   "pass": false,
   "fails": [
-   "open interest 356 under 500"
+   "open interest 368 under 500"
   ],
   "ticker": "SPY",
   "expiry": "2027-01-29",
   "balance": 0,
   "can_buy": 0.0,
-  "worst_fill": 4.72,
-  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-29 645 put and SELL 1 SPY 2027-01-29 575 put. Limit 4.70 debit (You pay). Do not accept worse than 4.72. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
+  "worst_fill": 5.16,
+  "order": "Put debit spread (hedge): BUY 1 SPY 2027-01-29 645 put and SELL 1 SPY 2027-01-29 575 put. Limit 5.11 debit (You pay). Do not accept worse than 5.16. In tastytrade this is a Long Put Vertical (debit), not a Short Put Vertical."
  },
  "stats": {
   "closed": 0,
