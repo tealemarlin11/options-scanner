@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-25T23:44:27+00:00",
+ "generated": "2026-11-26T23:58:00+00:00",
  "rules_version": "1.2",
  "is_monday": false,
  "stress": {
-  "vix": 28.29,
+  "vix": 26.8,
   "vix3m": 26.29,
-  "ratio": 1.076,
+  "ratio": 1.019,
   "on": true
  },
  "events": {
@@ -15,11 +15,16 @@
    {
     "name": "JOBS",
     "date": "2026-12-04",
-    "days": 9
+    "days": 8
    },
    {
     "name": "FOMC",
     "date": "2026-12-09",
+    "days": 13
+   },
+   {
+    "name": "CPI",
+    "date": "2026-12-10",
     "days": 14
    }
   ],
@@ -41,7 +46,7 @@
     "sma200": 733.16,
     "sma50": 757.89
    },
-   "iv_rank": 66.1,
+   "iv_rank": 59.5,
    "rank_source": "^VIX",
    "reason": "Stress brake on: no new credit spreads"
   },
@@ -54,7 +59,7 @@
     "sma200": 683.5,
     "sma50": 707.05
    },
-   "iv_rank": 68.5,
+   "iv_rank": 76.0,
    "rank_source": "^VXN",
    "reason": "Stress brake on: no new credit spreads"
   },
@@ -80,7 +85,7 @@
     "sma200": 403.83,
     "sma50": 371.04
    },
-   "iv_rank": 53.2,
+   "iv_rank": 61.5,
    "rank_source": "^GVZ",
    "reason": "Stress brake on: no new credit spreads"
   },
@@ -106,7 +111,7 @@
     "sma200": 59.84,
     "sma50": 64.43
    },
-   "iv_rank": 22.7,
+   "iv_rank": 21.2,
    "rank_source": "^OVX",
    "reason": "Liquidity or pricing rules not met",
    "details": [
@@ -123,7 +128,7 @@
     "sma200": 54.05,
     "sma50": 55.84
    },
-   "iv_rank": 66.1,
+   "iv_rank": 59.5,
    "rank_source": "^VIX",
    "reason": "Stress brake on: no new credit spreads"
   }
@@ -142,7 +147,7 @@
  },
  "tail": {
   "structure": "TAIL",
-  "dte": 65,
+  "dte": 64,
   "legs": [
    {
     "action": "BUY",
